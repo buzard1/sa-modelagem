@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gerenciar Usuários</title>
+  <link rel="stylesheet" href="css/usuarios.css" />
+</head>
+<body>
+  <div class="usuarios-container">
+    <h1>👥 Gerenciar Usuários</h1>
+
+    <div class="add-usuario">
+      <input type="text" placeholder="Nome do usuário" />
+      <input type="email" placeholder="Email" />
+      <select>
+        <option value="admin">Administrador</option>
+        <option value="funcionario">Funcionário</option>
+      </select>
+      <button>➕ Adicionar</button>
+    </div>
+
+    <table class="usuarios-table">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Email</th>
+          <th>Tipo</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>João Silva</td>
+          <td>joao@email.com</td>
+          <td>Administrador</td>
+          <td>
+            <button class="editar">✏️</button>
+            <button class="excluir">🗑️</button>
+          </td>
+        </tr>
+        <!-- outros usuários -->
+      </tbody>
+    </table>
+
+    <a href="dashboard.html" class="btn-voltar">🔙 Voltar</a>
+  </div>
+</body>
+</html>
