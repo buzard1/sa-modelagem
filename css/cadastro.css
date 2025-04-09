@@ -1,0 +1,118 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  body {
+    background-color: #121212;
+    color: #e0e0e0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+  }
+  
+  .register-container {
+    background-color: #1e1e1e;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+    width: 100%;
+    max-width: 450px;
+    animation: slideIn 0.6s ease-out forwards;
+    border: 1px solid #333;
+    opacity: 0;
+  }
+  
+  @keyframes slideIn {
+    0% {
+      transform: translateY(20px);
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  
+  h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #ffffff;
+  }
+  
+  .form-group {
+    margin-bottom: 1rem;
+    opacity: 0;
+    transform: translateY(10px);
+    animation: fadeUp 0.6s ease forwards;
+  }
+  
+  @keyframes fadeUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .fade-in.delay-1 { animation-delay: 0.2s; }
+  .fade-in.delay-2 { animation-delay: 0.4s; }
+  .fade-in.delay-3 { animation-delay: 0.6s; }
+  .fade-in.delay-4 { animation-delay: 0.8s; }
+  .fade-in.delay-5 { animation-delay: 1s; }
+  
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #ccc;
+  }
+  
+  input[type="text"],
+  input[type="email"],
+  input[type="password"] {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: #2b2b2b;
+    border: 1px solid #444;
+    border-radius: 8px;
+    color: #fff;
+  }
+  
+  input::placeholder {
+    color: #888;
+  }
+  
+  .btn-register {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: #03dac6;
+    color: #000;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: background-color 0.3s ease;
+  }
+  
+  .btn-register:hover {
+    background-color: #00bfa5;
+  }
+  
+  .back-link {
+    display: block;
+    text-align: center;
+    margin-top: 1rem;
+    color: #03dac6;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+  
+  .back-link:hover {
+    color: #00bfa5;
+  }
+  

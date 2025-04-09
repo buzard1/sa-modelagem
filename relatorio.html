@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Relatórios</title>
+  <link rel="stylesheet" href="css/relatorio.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>📊 Relatórios</h1>
+
+    <div class="filtros">
+      <label for="data">Data:</label>
+      <input type="date" id="data" name="data">
+
+      <label for="mes">Mês:</label>
+      <select id="mes">
+        <option value="">Todos</option>
+        <option value="1">Janeiro</option>
+        <option value="2">Fevereiro</option>
+        <option value="3">Março</option>
+        <!-- ... -->
+      </select>
+
+      <label for="ano">Ano:</label>
+      <input type="number" id="ano" min="2000" max="2100" value="2025">
+
+      <button onclick="filtrarRelatorio()">Filtrar</button>
+    </div>
+
+    <div class="graficos">
+      <div class="grafico-box">
+        <h2>Pedidos</h2>
+        <canvas id="graficoPedidos"></canvas>
+      </div>
+
+      <div class="grafico-box">
+        <h2>Finanças</h2>
+        <canvas id="graficoFinancas"></canvas>
+      </div>
+    </div>
+
+    <a href="dashboard.html" class="btn-voltar">← Voltar ao Dashboard</a>
+  </div>
+
+  <script>
+    // Dados fictícios iniciais
+    const dadosPedidos = {
+      labels: ['Jan', 'Fev', 'Mar', 'Abr'],
+      datasets: [{
+        label: 'Pedidos',
+        data: [15, 20, 10, 25],
+        backgroundColor: '#03dac6'
+      }]
+    };
+
+    const dadosFinancas = {
+      labels: ['Jan', 'Fev', 'Mar', 'Abr'],
+      datasets: [{
+        label: 'R$ Faturado',
+        data: [1500, 2300, 1100, 2800],
+        backgroundColor: '#bb86fc'
+      }]
+    };
+
+    const configPedidos = {
+      type: 'bar',
+      data: dadosPedidos,
+      options: {
+        responsive: true,
+        plugins: { legend: { labels: { color: '#fff' } } },
+        scales: {
+          x: { ticks: { color: '#fff' } },
+          y: { ticks: { color: '#fff' } }
+        }
+      }
+    };
+
+    const configFinancas = {
+      type: 'line',
+      data: dadosFinancas,
+      options: {
+        responsive: true,
+        plugins: { legend: { labels: { color: '#fff' } } },
+        scales: {
+          x: { ticks: { color: '#fff' } },
+          y: { ticks: { color: '#fff' } }
+        }
+      }
+    };
+
+    const chartPedidos = new Chart(
+      document.getElementById('graficoPedidos'),
+      configPedidos
+    );
+
+    const chartFinancas = new Chart(
+      document.getElementById('graficoFinancas'),
+      configFinancas
+    );
+
+    function filtrarRelatorio() {
+      alert('📌 Filtro aplicado (em breve dados reais)');
+    }
+  </script>
+</body>
+</html>

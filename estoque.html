@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Controle de Estoque</title>
+  <link rel="stylesheet" href="css/form.css">
+</head>
+<body>
+  <div class="form-container fade-in">
+    <h2 class="fade-in delay-1">📦 Controle de Estoque</h2>
+
+    <form class="fade-in delay-2">
+      <label for="produto">Nome do Produto</label>
+      <input type="text" id="produto" name="produto" placeholder="Ex: Tela Samsung A10" required>
+
+      <label for="quantidade">Quantidade</label>
+      <input type="number" id="quantidade" name="quantidade" placeholder="Ex: 10" required>
+
+      <label for="fornecedor">Fornecedor</label>
+      <input type="text" id="fornecedor" name="fornecedor" placeholder="Ex: TechParts" required>
+
+      <label for="valor">Valor Unitário (R$)</label>
+      <input type="number" id="valor" name="valor" placeholder="Ex: 80.00" step="0.01" required>
+
+      <button type="submit" class="btn-login fade-in delay-3">Adicionar ao Estoque</button>
+    </form>
+
+    <a href="dashboard.html" class="btn-voltar fade-in delay-4">← Voltar ao Dashboard</a>
+
+    <hr class="fade-in delay-4" style="margin: 2rem 0; border-color: #444;" />
+
+    <h3 class="fade-in delay-4">📋 Itens no Estoque</h3>
+    <table class="fade-in delay-5">
+      <thead>
+        <tr>
+          <th>Produto</th>
+          <th>Quantidade</th>
+          <th>Fornecedor</th>
+          <th>Valor (R$)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Itens de exemplo -->
+        <tr>
+          <td>Tela iPhone X</td>
+          <td>5</td>
+          <td>AppleTech</td>
+          <td>150.00</td>
+        </tr>
+        <tr>
+          <td>Bateria Samsung A10</td>
+          <td>12</td>
+          <td>SmartParts</td>
+          <td>50.00</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>
