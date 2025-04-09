@@ -5,13 +5,164 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Pedidos</title>
   <link rel="stylesheet" href="css/form.css" />
+  <style>
+    body {
+      background-color: #121212;
+      color: #e0e0e0;
+      font-family: 'Segoe UI', sans-serif;
+      padding: 2rem;
+    }
+
+    .form-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background-color: #1e1e1e;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+
+    h2 {
+      text-align: center;
+      color: #03dac6;
+      margin-bottom: 1.5rem;
+    }
+
+    .pedidos-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 2rem;
+    }
+
+    .pedidos-table th,
+    .pedidos-table td {
+      padding: 1rem;
+      border-bottom: 1px solid #333;
+      text-align: left;
+    }
+
+    .pedidos-table th {
+      background-color: #2a2a2a;
+    }
+
+    .pedidos-table tr:hover {
+      background-color: #2f2f2f;
+    }
+
+    .btn-voltar {
+      display: inline-block;
+      color: #03dac6;
+      text-decoration: none;
+      padding: 0.6rem 1.2rem;
+      border: 1px solid #03dac6;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .btn-voltar:hover {
+      background-color: #03dac6;
+      color: #000;
+    }
+
+    .status-btn {
+      background-color: transparent;
+      border: 1px solid #888;
+      color: #fff;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background-color 0.3s;
+    }
+
+    .status-btn:hover {
+      background-color: #2f2f2f;
+    }
+
+    .status {
+      font-weight: bold;
+    }
+
+    .pendente {
+      color: #ff5252;
+    }
+
+    .andamento {
+      color: #ffca28;
+    }
+
+    .concluido {
+      color: #66bb6a;
+    }
+  </style>
 </head>
 <body>
   <div class="form-container">
     <h2>📦 Lista de Pedidos</h2>
-    <p>Em breve você poderá visualizar os pedidos cadastrados aqui.</p>
-    <!-- Lista dinâmica futura -->
+
+    <table class="pedidos-table">
+      <thead>
+        <tr>
+          <th>Cliente</th>
+          <th>Aparelho</th>
+          <th>Serviço</th>
+          <th>Data</th>
+          <th>Valor</th>
+          <th>Pagamento</th>
+          <th>Status</th>
+          <th>Ação</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>João Silva</td>
+          <td>iPhone 11</td>
+          <td>Troca de tela</td>
+          <td>09/04/2025</td>
+          <td>R$ 250,00</td>
+          <td>Cartão</td>
+          <td class="status pendente">Pendente</td>
+          <td><button class="status-btn" onclick="alterarStatus(this)">Alterar</button></td>
+        </tr>
+        <tr>
+          <td>Maria Oliveira</td>
+          <td>Samsung A21s</td>
+          <td>Reparo no botão</td>
+          <td>08/04/2025</td>
+          <td>R$ 120,00</td>
+          <td>Pix</td>
+          <td class="status andamento">Em andamento</td>
+          <td><button class="status-btn" onclick="alterarStatus(this)">Alterar</button></td>
+        </tr>
+        <tr>
+          <td>Lucas Costa</td>
+          <td>Motorola G9</td>
+          <td>Troca de bateria</td>
+          <td>07/04/2025</td>
+          <td>R$ 180,00</td>
+          <td>Dinheiro</td>
+          <td class="status concluido">Concluído</td>
+          <td><button class="status-btn" onclick="alterarStatus(this)">Alterar</button></td>
+        </tr>
+      </tbody>
+    </table>
+
     <a href="dashboard.html" class="btn-voltar">← Voltar ao Dashboard</a>
   </div>
+
+  <script>
+    function alterarStatus(botao) {
+      const statusTd = botao.parentElement.previousElementSibling;
+      const estados = ['pendente', 'andamento', 'concluido'];
+      const textos = ['Pendente', 'Em andamento', 'Concluído'];
+
+      let estadoAtual = estados.findIndex(e => statusTd.classList.contains(e));
+      let proximo = (estadoAtual + 1) % estados.length;
+
+      estados.forEach(e => statusTd.classList.remove(e));
+      statusTd.classList.add(estados[proximo]);
+      statusTd.textContent = textos[proximo];
+    }
+  </script>
 </body>
 </html>
