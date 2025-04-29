@@ -12,8 +12,11 @@
     <h1>📊 Relatórios</h1>
 
     <div class="filtros">
-      <label for="data">Data:</label>
-      <input type="date" id="data" name="data">
+      <label for="dataInicio">Data Início:</label>
+      <input type="date" id="dataInicio" name="dataInicio">
+
+      <label for="dataFim">Data Fim:</label>
+      <input type="date" id="dataFim" name="dataFim">
 
       <label for="mes">Mês:</label>
       <select id="mes">
@@ -30,13 +33,13 @@
         <option value="10">Outubro</option>
         <option value="11">Novembro</option>
         <option value="12">Dezembro</option>
-        <!-- ... -->
       </select>
 
       <label for="ano">Ano:</label>
       <input type="number" id="ano" min="2000" max="2100" value="2025">
 
       <button onclick="filtrarRelatorio()">Filtrar</button>
+      <button onclick="limparFiltros()">Limpar Filtros</button>
     </div>
 
     <div class="graficos">
@@ -55,63 +58,148 @@
   </div>
 
   <script>
-    // Dados fictícios iniciais
-    const dadosPedidos = {
-      labels: ['Jan', 'Fev', 'Mar', 'Abr'],
-      datasets: [{
-        label: 'Pedidos',
-        data: [15, 20, 10, 25],
-        backgroundColor: '#03dac6'
-      }]
-    };
-
-    const dadosFinancas = {
-      labels: ['Jan', 'Fev', 'Mar', 'Abr'],
-      datasets: [{
-        label: 'R$ Faturado',
-        data: [1500, 2300, 1100, 2800],
-        backgroundColor: '#bb86fc'
-      }]
-    };
-
-    const configPedidos = {
-      type: 'bar',
-      data: dadosPedidos,
-      options: {
-        responsive: true,
-        plugins: { legend: { labels: { color: '#fff' } } },
-        scales: {
-          x: { ticks: { color: '#fff' } },
-          y: { ticks: { color: '#fff' } }
-        }
-      }
-    };
-
-    const configFinancas = {
-      type: 'line',
-      data: dadosFinancas,
-      options: {
-        responsive: true,
-        plugins: { legend: { labels: { color: '#fff' } } },
-        scales: {
-          x: { ticks: { color: '#fff' } },
-          y: { ticks: { color: '#fff' } }
-        }
-      }
-    };
-
     const chartPedidos = new Chart(
       document.getElementById('graficoPedidos'),
-      configPedidos
+      {
+        type: 'bar',
+        data: {
+          labels: ['Jan', 'Fev', 'Mar', 'Abr'],
+          datasets: [{
+            label: 'Pedidos',
+            data: [15, 20, 10, 25],
+            backgroundColor: '#03dac6',
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { labels: { color: '#fff' } } },
+          scales: {
+            x: { ticks: { color: '#fff' } },
+            y: { ticks: { color: '#fff' } }
+          }
+        }
+      }
     );
 
     const chartFinancas = new Chart(
       document.getElementById('graficoFinancas'),
-      configFinancas
+      {
+        type: 'line',
+        data: {
+          labels: ['Jan', 'Fev', 'Mar', 'Abr'],
+          datasets: [{
+            label: 'R$ Faturado',
+            data: [1500, 2300, 1100, 2800],
+            backgroundColor: '#bb86fc',
+            tension: 0.4
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { labels: { color: '#fff' } } },
+          scales: {
+            x: { ticks: { color: '#fff' } },
+            y: {
+              ticks: {
+                color: '#fff',
+                callback: function(value) {
+                  return 'R$ ' + value.toLocaleString('pt-BR');
+                }
+              }
+            }
+          }
+        }
+      }
     );
 
     function filtrarRelatorio() {
-      alert('📌 Filtro aplicado (em breve dados reais)');
+  const dataInicio = document.getElementById('dataInicio').value;
+  const dataFim = document.getElementById('dataFim').value;
+  const mes = document.getElementById('mes').value;
+  const ano = document.getElementById('ano').value;
+
+  // Filtro por intervalo de datas
+  if (dataInicio && dataFim && !mes) {
+    if (dataInicio > dataFim) {
+      alert('⚠️ A data de início não pode ser maior que a data de fim.');
+      return;
+    }
+
+    const dias = gerarDiasEntreDatas(dataInicio, dataFim);
+    const pedidos = dias.map(() => Math.floor(Math.random() * 10 + 1));
+    const faturamento = dias.map(() => Math.floor(Math.random() * 1500 + 500));
+
+    alert(`📌 Filtro aplicado de ${dataInicio} até ${dataFim}`);
+    atualizarGraficos(dias, pedidos, faturamento);
+  
+  // Filtro por mês e ano específicos
+  } else if (mes && ano) {
+    const mesInt = parseInt(mes);
+    const diasNoMes = new Date(ano, mesInt, 0).getDate();
+    const nomeMes = document.querySelector(`#mes option[value="${mes}"]`).textContent;
+
+    const diasDoMes = Array.from({ length: diasNoMes }, (_, i) => {
+      const dia = (i + 1).toString().padStart(2, '0');
+      return `${dia}/${mes.padStart(2, '0')}`;
+    });
+
+    const pedidos = diasDoMes.map(() => Math.floor(Math.random() * 10 + 1));
+    const faturamento = diasDoMes.map(() => Math.floor(Math.random() * 1500 + 500));
+
+    alert(`📌 Filtro aplicado para ${nomeMes}/${ano}`);
+    atualizarGraficos(diasDoMes, pedidos, faturamento);
+
+  // Filtro por ano inteiro (quando mês = "")
+  } else if (!mes && ano) {
+    const nomesMeses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+
+    const pedidosPorMes = Array.from({ length: 12 }, () => Math.floor(Math.random() * 100 + 50));
+    const faturamentoPorMes = Array.from({ length: 12 }, () => Math.floor(Math.random() * 15000 + 5000));
+
+    alert(`📌 Filtro aplicado para o ano de ${ano}`);
+    atualizarGraficos(nomesMeses, pedidosPorMes, faturamentoPorMes);
+
+  } else {
+    alert('⚠️ Preencha intervalo de datas ou selecione mês e/ou ano.');
+  }
+}
+
+
+    function limparFiltros() {
+      document.getElementById('dataInicio').value = '';
+      document.getElementById('dataFim').value = '';
+      document.getElementById('mes').value = '';
+      document.getElementById('ano').value = '2025';
+
+      atualizarGraficos(['Jan', 'Fev', 'Mar', 'Abr'],
+                        [15, 20, 10, 25],
+                        [1500, 2300, 1100, 2800]);
+    }
+
+    function atualizarGraficos(labels, dadosPedidos, dadosFinancas) {
+      chartPedidos.data.labels = labels;
+      chartPedidos.data.datasets[0].data = dadosPedidos;
+      chartPedidos.update();
+
+      chartFinancas.data.labels = labels;
+      chartFinancas.data.datasets[0].data = dadosFinancas;
+      chartFinancas.update();
+    }
+
+    function gerarDiasEntreDatas(inicio, fim) {
+      const dias = [];
+      const dataAtual = new Date(inicio);
+      const dataLimite = new Date(fim);
+
+      while (dataAtual <= dataLimite) {
+        const dia = dataAtual.getDate().toString().padStart(2, '0');
+        const mes = (dataAtual.getMonth() + 1).toString().padStart(2, '0');
+        dias.push(`${dia}/${mes}`);
+        dataAtual.setDate(dataAtual.getDate() + 1);
+      }
+
+      return dias;
     }
   </script>
 </body>
