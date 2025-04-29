@@ -16,7 +16,7 @@
       <select>
         <option value="admin">Administrador</option>
         <option value="funcionario">Funcionário</option>
-        <option value="funcionario">Cliente</option>
+        <option value="cliente">Cliente</option>
       </select>
       <button>➕ Adicionar</button>
     </div>
@@ -34,34 +34,71 @@
         <tr>
           <td>Marina</td>
           <td>Marina@email.com</td>
-          <td>funcionario</td>
+          <td>Atendente</td>
           <td>
             <button class="editar">✏️</button>
             <button class="excluir">🗑️</button>
           </td>
         </tr>
         <tr>
-            <td>Sr inacio</td>
-            <td>inacio@email.com</td>
-            <td>Administrador</td>
-            <td>
-              <button class="editar">✏️</button>
-              <button class="excluir">🗑️</button>
-            </td>
-          </tr>
-          <tr>
-            <td>pedro</td>
-            <td>pedro@email.com</td>
-            <td>Cliente</td>
-            <td>
-              <button class="editar">✏️</button>
-              <button class="excluir">🗑️</button>
-            </td>
-          </tr>
+          <td>Sr inacio</td>
+          <td>inacio@email.com</td>
+          <td>Administrador</td>
+          <td>
+            <button class="editar">✏️</button>
+            <button class="excluir">🗑️</button>
+          </td>
+        </tr>
+        <tr>
+          <td>pedro</td>
+          <td>pedro@email.com</td>
+          <td>Cliente</td>
+          <td>
+            <button class="editar">✏️</button>
+            <button class="excluir">🗑️</button>
+          </td>
+        </tr>
       </tbody>
     </table>
 
     <a href="dashboard.html" class="btn-voltar">🔙 Voltar</a>
   </div>
+
+  <script>
+    document.querySelectorAll('.editar').forEach(botao => {
+      botao.addEventListener('click', () => {
+        const linha = botao.closest('tr');
+        const colunas = linha.querySelectorAll('td');
+
+        if (botao.textContent === '✏️') {
+          // Substituir texto por inputs
+          const nome = colunas[0].textContent;
+          const email = colunas[1].textContent;
+          const tipo = colunas[2].textContent.toLowerCase();
+
+          colunas[0].innerHTML = `<input type="text" value="${nome}" />`;
+          colunas[1].innerHTML = `<input type="email" value="${email}" />`;
+          colunas[2].innerHTML = `
+            <select>
+              <option value="admin" ${tipo === 'administrador' ? 'selected' : ''}>Administrador</option>
+              <option value="Atendente" ${tipo === 'Atendente' ? 'selected' : ''}>Atendente</option>
+              <option value="Técnico" ${tipo === 'Técnico' ? 'selected' : ''}>Técnico</option>
+            </select>
+          `;
+          botao.textContent = '💾'; // mudar para botão de salvar
+        } else {
+          // Salvar os valores e voltar ao modo texto
+          const nome = colunas[0].querySelector('input').value;
+          const email = colunas[1].querySelector('input').value;
+          const tipo = colunas[2].querySelector('select').selectedOptions[0].textContent;
+
+          colunas[0].textContent = nome;
+          colunas[1].textContent = email;
+          colunas[2].textContent = tipo;
+          botao.textContent = '✏️';
+        }
+      });
+    });
+  </script>
 </body>
 </html>
