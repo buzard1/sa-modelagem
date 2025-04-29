@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Suporte</title>
+  <link rel="stylesheet" href="css/suporte.css" />
+</head>
+<body>
+  <div class="form-container">
+    <h2>🛠️ Suporte Técnico</h2>
+
+    <p class="descricao">
+      Está com problemas? Preencha o formulário abaixo e nossa equipe entrará em contato.
+    </p>
+
+    <form>
+      <label for="nome">Nome:</label>
+      <input type="text" id="nome" name="nome" required />
+
+      <label for="email">E-mail:</label>
+      <input type="email" id="email" name="email" required />
+
+      <label for="problema">Descrição do Problema:</label>
+      <textarea id="problema" name="problema" rows="5" required placeholder="Descreva com detalhes..."></textarea>
+
+      <label for="urgencia">Urgência:</label>
+      <select id="urgencia" name="urgencia" required>
+        <option value="baixa">Baixa</option>
+        <option value="media">Média</option>
+        <option value="alta">Alta</option>
+      </select>
+
+      <button type="submit">Enviar</button>
+    </form>
+
+    <p class="contato">📧 Ou envie um e-mail diretamente para <strong>suporte@seudominio.com</strong></p>
+
+    <a href="dashboard.html" class="btn-voltar">← Voltar ao Dashboard</a>
+  </div>
+</body>
+</html>
