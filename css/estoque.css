@@ -1,0 +1,46 @@
+/* Tabela de Itens no Estoque */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    background-color: #1e1e1e;
+    color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+  
+  thead {
+    background-color: #333;
+  }
+  
+  thead th {
+    padding: 1rem;
+    text-align: left;
+    font-weight: bold;
+    border-bottom: 2px solid #444;
+  }
+  
+  tbody td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #444;
+  }
+  
+  tbody tr:hover {
+    background-color: #292929;
+    transition: background-color 0.3s ease;
+  }
+  .btn-editar {
+    background-color: #03dac6;
+    color: #000;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .btn-editar:hover {
+    background-color: #00bfa5;
+  }
+  

@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Controle de Estoque</title>
   <link rel="stylesheet" href="css/sidebar.css">
+  <link rel="stylesheet" href="css/estoque.css">
   <link rel="stylesheet" href="css/form.css" />
   <link rel="icon" href="img/logo.png" type="image/png">
 </head>
@@ -57,21 +58,27 @@
           <th>Quantidade</th>
           <th>Fornecedor</th>
           <th>Valor (R$)</th>
+          <th>Ações</th>
         </tr>
       </thead>
       <tbody>
-        <!-- Itens de exemplo -->
         <tr>
           <td>Tela iPhone X</td>
           <td>5</td>
           <td>AppleTech</td>
           <td>150.00</td>
+          <td><button class="btn-editar">✏️ Editar</button></td>
         </tr>
         <tr>
           <td>Bateria Samsung A10</td>
           <td>12</td>
           <td>SmartParts</td>
           <td>50.00</td>
+          <td><button class="btn-editar">✏️ Editar</button></td>
+        </tr>
+      </tbody>
+    </table>
+    
           <!-- Script para ativar automaticamente o menu ativo -->
   <script>
     const links = document.querySelectorAll('.sidebar .menu li a');
@@ -83,6 +90,36 @@
       }
     });
   </script>
+  <script>
+    document.querySelectorAll(".btn-editar").forEach(button => {
+      button.addEventListener("click", () => {
+        const row = button.closest("tr");
+        const cells = row.querySelectorAll("td");
+  
+        if (button.textContent.includes("✏️")) {
+          // Transformar células em campos de input
+          for (let i = 0; i < 4; i++) {
+            const input = document.createElement("input");
+            input.value = cells[i].textContent;
+            input.style.width = "100%";
+            cells[i].innerHTML = "";
+            cells[i].appendChild(input);
+          }
+          button.textContent = "💾 Salvar";
+        } else {
+          // Salvar os dados editados
+          for (let i = 0; i < 4; i++) {
+            const input = cells[i].querySelector("input");
+            if (input) {
+              cells[i].textContent = input.value;
+            }
+          }
+          button.textContent = "✏️ Editar";
+        }
+      });
+    });
+  </script>
+  
         </tr>
       </tbody>
       
