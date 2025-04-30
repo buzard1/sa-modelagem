@@ -110,6 +110,28 @@
   <div class="form-container">
     <h2>📦 Lista de Ordem de serviço</h2>
 
+    <!-- Filtro de Busca -->
+    <form id="filtro-form" style="margin-bottom: 2rem;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+        <input type="text" name="nome" placeholder="Nome" style="padding: 0.5rem; border-radius: 8px; border: none;">
+        <input type="text" name="cpf_cnpj" placeholder="CPF/CNPJ" style="padding: 0.5rem; border-radius: 8px; border: none;">
+        <input type="text" name="telefone" placeholder="Telefone" style="padding: 0.5rem; border-radius: 8px; border: none;">
+        <input type="email" name="email" placeholder="E-mail" style="padding: 0.5rem; border-radius: 8px; border: none;">
+        <select name="tipo" style="padding: 0.5rem; border-radius: 8px; border: none;">
+          <option value="">Tipo de cliente</option>
+          <option value="pf">Pessoa Física</option>
+          <option value="pj">Pessoa Jurídica</option>
+        </select>
+        <input type="date" name="data_entrada" style="padding: 0.5rem; border-radius: 8px; border: none;">
+      </div>
+
+      <div style="margin-top: 1rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+        <button type="submit" style="padding: 0.6rem 1.2rem; background-color: #03dac6; border: none; border-radius: 8px; color: #000; cursor: pointer;">Buscar</button>
+        <button type="reset" style="padding: 0.6rem 1.2rem; background-color: #444; border: none; border-radius: 8px; color: #fff; cursor: pointer;">Limpar</button>
+      </div>
+    </form>
+
+    <!-- Tabela -->
     <table class="pedidos-table">
       <thead>
         <tr>
@@ -175,10 +197,8 @@
       statusTd.classList.add(estados[proximo]);
       statusTd.textContent = textos[proximo];
     }
-  </script>
 
-  <!-- Script para ativar automaticamente o menu ativo -->
-  <script>
+    // Menu ativo
     const links = document.querySelectorAll('.sidebar .menu li a');
     const currentPage = window.location.pathname.split('/').pop();
 
