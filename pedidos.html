@@ -51,8 +51,6 @@
       background-color: #2f2f2f;
     }
 
-  
-
     .status-btn {
       background-color: transparent;
       border: 1px solid #888;
@@ -83,8 +81,13 @@
     .concluido {
       color: #66bb6a;
     }
+
+    .cancelado {
+      color: #e57373;
+    }
   </style>
 </head>
+<body>
   <!-- Sidebar fixa -->
   <nav class="sidebar">
     <div class="logo">
@@ -103,6 +106,7 @@
       <li><a href="login.html">🚪 <span>Sair</span></a></li>
     </ul>
   </nav>
+
   <div class="form-container">
     <h2>📦 Lista de Ordem de serviço</h2>
 
@@ -112,7 +116,8 @@
           <th>Cliente</th>
           <th>Aparelho</th>
           <th>Serviço</th>
-          <th>Data</th>
+          <th>Data Entrada</th>
+          <th>Data Saída</th>
           <th>Valor</th>
           <th>Pagamento</th>
           <th>Status</th>
@@ -125,6 +130,7 @@
           <td>iPhone 11</td>
           <td>Troca de tela</td>
           <td>09/04/2025</td>
+          <td>-</td>
           <td>R$ 250,00</td>
           <td>Cartão</td>
           <td class="status pendente">Pendente</td>
@@ -135,6 +141,7 @@
           <td>Samsung A21s</td>
           <td>Reparo no botão</td>
           <td>08/04/2025</td>
+          <td>-</td>
           <td>R$ 120,00</td>
           <td>Pix</td>
           <td class="status andamento">Em andamento</td>
@@ -145,6 +152,7 @@
           <td>Motorola G9</td>
           <td>Troca de bateria</td>
           <td>07/04/2025</td>
+          <td>10/04/2025</td>
           <td>R$ 180,00</td>
           <td>Dinheiro</td>
           <td class="status concluido">Concluído</td>
@@ -152,15 +160,13 @@
         </tr>
       </tbody>
     </table>
-
-
   </div>
 
   <script>
     function alterarStatus(botao) {
       const statusTd = botao.parentElement.previousElementSibling;
-      const estados = ['pendente', 'andamento', 'concluido'];
-      const textos = ['Pendente', 'Em andamento', 'Concluído'];
+      const estados = ['pendente', 'andamento', 'concluido', 'cancelado'];
+      const textos = ['Pendente', 'Em andamento', 'Concluído', 'Cancelado'];
 
       let estadoAtual = estados.findIndex(e => statusTd.classList.contains(e));
       let proximo = (estadoAtual + 1) % estados.length;
@@ -168,9 +174,9 @@
       estados.forEach(e => statusTd.classList.remove(e));
       statusTd.classList.add(estados[proximo]);
       statusTd.textContent = textos[proximo];
-
     }
   </script>
+
   <!-- Script para ativar automaticamente o menu ativo -->
   <script>
     const links = document.querySelectorAll('.sidebar .menu li a');

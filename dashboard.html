@@ -27,15 +27,19 @@
           <li><a href="fornecedor.html" class="dashboard-card">🔗Fornecedores</a></li>
           <li><a href="suporte.html" class="dashboard-card">⚠️ Suporte</a></li>
           <li><a href="login.html" class="btn-sair">🚪 Sair</a></li>
-          
         </ul>
       </nav>
     </aside>
 
     <main class="content">
-      <h1>Bem-vindo ao Painel</h1>
+      <h1 id="welcome-message">Bem-vindo ao Painel</h1>
       <p>Selecione uma das opções no menu lateral para começar.</p>
     </main>
   </div>
+
+  <script>
+    const nomeFuncionario = localStorage.getItem('nomeFuncionario') || 'Funcionário';
+    document.getElementById('welcome-message').textContent = `Olá, ${nomeFuncionario}! Bem-vindo de volta.`;
+  </script>
 </body>
 </html>
