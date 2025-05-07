@@ -6,86 +6,9 @@
   <title>Pedidos</title>
   <link rel="stylesheet" href="css/sidebar.css" />
   <link rel="stylesheet" href="css/form.css" />
+  <link rel="stylesheet" href="css/pedidos.css" />
   <link rel="icon" href="img/logo.png" type="image/png">
-  <style>
-    body {
-      background-color: #121212;
-      color: #e0e0e0;
-      font-family: 'Segoe UI', sans-serif;
-      padding: 2rem;
-    }
-
-    .form-container {
-      max-width: 1000px;
-      margin: 0 auto;
-      background-color: #1e1e1e;
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.5);
-    }
-
-    h2 {
-      text-align: center;
-      color: #03dac6;
-      margin-bottom: 1.5rem;
-    }
-
-    .pedidos-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 2rem;
-    }
-
-    .pedidos-table th,
-    .pedidos-table td {
-      padding: 1rem;
-      border-bottom: 1px solid #333;
-      text-align: left;
-    }
-
-    .pedidos-table th {
-      background-color: #2a2a2a;
-    }
-
-    .pedidos-table tr:hover {
-      background-color: #2f2f2f;
-    }
-
-    .status-btn {
-      background-color: transparent;
-      border: 1px solid #888;
-      color: #fff;
-      padding: 0.4rem 0.8rem;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.9rem;
-      transition: background-color 0.3s;
-    }
-
-    .status-btn:hover {
-      background-color: #2f2f2f;
-    }
-
-    .status {
-      font-weight: bold;
-    }
-
-    .pendente {
-      color: #ff5252;
-    }
-
-    .andamento {
-      color: #ffca28;
-    }
-
-    .concluido {
-      color: #66bb6a;
-    }
-
-    .cancelado {
-      color: #e57373;
-    }
-  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
   <!-- Sidebar fixa -->
@@ -143,7 +66,7 @@
           <th>Valor</th>
           <th>Pagamento</th>
           <th>Status</th>
-          <th>Ação</th>
+          <th>Ações</th>
         </tr>
       </thead>
       <tbody>
@@ -156,7 +79,11 @@
           <td>R$ 250,00</td>
           <td>Cartão</td>
           <td class="status pendente">Pendente</td>
-          <td><button class="status-btn" onclick="alterarStatus(this)">Alterar</button></td>
+          <td class="actions">
+            <button class="action-btn edit-btn" onclick="abrirModalEdicao(this)">✏️</button>
+            <button class="action-btn pdf-btn" onclick="gerarPDF(this)">📄</button>
+            <button class="action-btn status-btn" onclick="alterarStatus(this)">🔄</button>
+          </td>
         </tr>
         <tr>
           <td>Maria Oliveira</td>
@@ -167,7 +94,11 @@
           <td>R$ 120,00</td>
           <td>Pix</td>
           <td class="status andamento">Em andamento</td>
-          <td><button class="status-btn" onclick="alterarStatus(this)">Alterar</button></td>
+          <td class="actions">
+            <button class="action-btn edit-btn" onclick="abrirModalEdicao(this)">✏️</button>
+            <button class="action-btn pdf-btn" onclick="gerarPDF(this)">📄</button>
+            <button class="action-btn status-btn" onclick="alterarStatus(this)">🔄</button>
+          </td>
         </tr>
         <tr>
           <td>Lucas Costa</td>
@@ -178,15 +109,78 @@
           <td>R$ 180,00</td>
           <td>Dinheiro</td>
           <td class="status concluido">Concluído</td>
-          <td><button class="status-btn" onclick="alterarStatus(this)">Alterar</button></td>
+          <td class="actions">
+            <button class="action-btn edit-btn" onclick="abrirModalEdicao(this)">✏️</button>
+            <button class="action-btn pdf-btn" onclick="gerarPDF(this)">📄</button>
+            <button class="action-btn status-btn" onclick="alterarStatus(this)">🔄</button>
+          </td>
         </tr>
       </tbody>
     </table>
   </div>
 
+<!-- Modal de Edição -->
+<div id="modal-edicao" class="modal">
+  <div class="modal-content">
+    <span class="close-btn" onclick="fecharModal()">&times;</span>
+    <h2 style="color: #03dac6; margin-bottom: 1.5rem;">Editar Ordem de Serviço</h2>
+    <form id="form-edicao">
+      <div class="form-group">
+        <label for="edit-cliente">Cliente:</label>
+        <input type="text" id="edit-cliente" class="form-input">
+      </div>
+      <div class="form-group">
+        <label for="edit-aparelho">Aparelho:</label>
+        <input type="text" id="edit-aparelho" class="form-input">
+      </div>
+      <div class="form-group">
+        <label for="edit-servico">Serviço:</label>
+        <input type="text" id="edit-servico" class="form-input">
+      </div>
+      <div class="form-group">
+        <label for="edit-data-entrada">Data Entrada:</label>
+        <input type="date" id="edit-data-entrada" class="form-input">
+      </div>
+      <div class="form-group">
+        <label for="edit-data-saida">Data Saída:</label>
+        <input type="date" id="edit-data-saida" class="form-input">
+      </div>
+      <div class="form-group">
+        <label for="edit-valor">Valor:</label>
+        <input type="text" id="edit-valor" class="form-input">
+      </div>
+      <div class="form-group">
+        <label for="edit-pagamento">Pagamento:</label>
+        <select id="edit-pagamento" class="form-input">
+          <option value="Cartão">Cartão</option>
+          <option value="Pix">Pix</option>
+          <option value="Dinheiro">Dinheiro</option>
+          <option value="Boleto">Boleto</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="edit-status">Status:</label>
+        <select id="edit-status" class="form-input">
+          <option value="Pendente">Pendente</option>
+          <option value="Em andamento">Em andamento</option>
+          <option value="Concluído">Concluído</option>
+          <option value="Cancelado">Cancelado</option>
+        </select>
+      </div>
+      <div class="form-buttons">
+        <button type="button" class="btn-salvar" onclick="salvarEdicao()">Salvar</button>
+        <button type="button" class="btn-cancelar" onclick="fecharModal()">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
   <script>
+    // Variável para armazenar a linha sendo editada
+    let linhaEditando = null;
+
     function alterarStatus(botao) {
-      const statusTd = botao.parentElement.previousElementSibling;
+      const statusTd = botao.closest('tr').querySelector('.status');
       const estados = ['pendente', 'andamento', 'concluido', 'cancelado'];
       const textos = ['Pendente', 'Em andamento', 'Concluído', 'Cancelado'];
 
@@ -197,6 +191,128 @@
       statusTd.classList.add(estados[proximo]);
       statusTd.textContent = textos[proximo];
     }
+
+    function abrirModalEdicao(botao) {
+      linhaEditando = botao.closest('tr');
+      const modal = document.getElementById('modal-edicao');
+      
+      // Preencher o modal com os dados da linha
+      document.getElementById('edit-cliente').value = linhaEditando.cells[0].textContent;
+      document.getElementById('edit-aparelho').value = linhaEditando.cells[1].textContent;
+      document.getElementById('edit-servico').value = linhaEditando.cells[2].textContent;
+      
+      // Converter datas para formato input date (YYYY-MM-DD)
+      const dataEntrada = converterDataParaInput(linhaEditando.cells[3].textContent);
+      document.getElementById('edit-data-entrada').value = dataEntrada;
+      
+      const dataSaida = linhaEditando.cells[4].textContent === '-' ? '' : converterDataParaInput(linhaEditando.cells[4].textContent);
+      document.getElementById('edit-data-saida').value = dataSaida;
+      
+      document.getElementById('edit-valor').value = linhaEditando.cells[5].textContent.replace('R$ ', '');
+      document.getElementById('edit-pagamento').value = linhaEditando.cells[6].textContent;
+      document.getElementById('edit-status').value = linhaEditando.cells[7].textContent;
+      
+      // Mostrar o modal
+      modal.style.display = 'block';
+    }
+
+    function converterDataParaInput(data) {
+      if (data === '-' || !data) return '';
+      const partes = data.split('/');
+      return `${partes[2]}-${partes[1]}-${partes[0]}`;
+    }
+
+    function converterInputParaData(input) {
+      if (!input) return '-';
+      const date = new Date(input);
+      return date.toLocaleDateString('pt-BR');
+    }
+
+    function fecharModal() {
+      document.getElementById('modal-edicao').style.display = 'none';
+    }
+
+    function salvarEdicao() {
+      if (!linhaEditando) return;
+      
+      // Atualizar os dados da linha com os valores do formulário
+      linhaEditando.cells[0].textContent = document.getElementById('edit-cliente').value;
+      linhaEditando.cells[1].textContent = document.getElementById('edit-aparelho').value;
+      linhaEditando.cells[2].textContent = document.getElementById('edit-servico').value;
+      linhaEditando.cells[3].textContent = converterInputParaData(document.getElementById('edit-data-entrada').value);
+      linhaEditando.cells[4].textContent = converterInputParaData(document.getElementById('edit-data-saida').value);
+      linhaEditando.cells[5].textContent = 'R$ ' + document.getElementById('edit-valor').value;
+      linhaEditando.cells[6].textContent = document.getElementById('edit-pagamento').value;
+      
+      // Atualizar status (incluindo a classe CSS)
+      const novoStatus = document.getElementById('edit-status').value;
+      const statusTd = linhaEditando.cells[7];
+      statusTd.textContent = novoStatus;
+      
+      // Remover todas as classes de status e adicionar a correta
+      statusTd.className = 'status';
+      if (novoStatus === 'Pendente') statusTd.classList.add('pendente');
+      else if (novoStatus === 'Em andamento') statusTd.classList.add('andamento');
+      else if (novoStatus === 'Concluído') statusTd.classList.add('concluido');
+      else if (novoStatus === 'Cancelado') statusTd.classList.add('cancelado');
+      
+      fecharModal();
+    }
+
+    function gerarPDF(botao) {
+      const { jsPDF } = window.jspdf;
+      const linha = botao.closest('tr');
+      
+      const doc = new jsPDF();
+      
+      // Configurações do documento
+      doc.setFont('helvetica');
+      doc.setFontSize(18);
+      doc.setTextColor(0, 0, 0);
+      
+      // Cabeçalho
+      doc.text('ORDEM DE SERVIÇO', 105, 20, { align: 'center' });
+      doc.setLineWidth(0.5);
+      doc.line(20, 25, 190, 25);
+      
+      // Informações do cliente
+      doc.setFontSize(12);
+      doc.text('DADOS DO CLIENTE', 20, 35);
+      
+      doc.setFontSize(10);
+      doc.text(`Cliente: ${linha.cells[0].textContent}`, 20, 45);
+      doc.text(`Aparelho: ${linha.cells[1].textContent}`, 20, 55);
+      doc.text(`Serviço: ${linha.cells[2].textContent}`, 20, 65);
+      
+      // Informações do serviço
+      doc.setFontSize(12);
+      doc.text('DADOS DO SERVIÇO', 20, 80);
+      
+      doc.setFontSize(10);
+      doc.text(`Data de Entrada: ${linha.cells[3].textContent}`, 20, 90);
+      doc.text(`Data de Saída: ${linha.cells[4].textContent === '-' ? 'Não concluído' : linha.cells[4].textContent}`, 20, 100);
+      doc.text(`Valor: ${linha.cells[5].textContent}`, 20, 110);
+      doc.text(`Forma de Pagamento: ${linha.cells[6].textContent}`, 20, 120);
+      doc.text(`Status: ${linha.cells[7].textContent}`, 20, 130);
+      
+      // Rodapé
+      doc.setLineWidth(0.2);
+      doc.line(20, 260, 190, 260);
+      doc.setFontSize(8);
+      doc.text('Assinatura do Responsável: _________________________________________', 20, 270);
+      doc.text('Assinatura do Cliente: ____________________________________________', 20, 280);
+      
+      // Salvar o PDF
+      doc.save(`Ordem_Servico_${linha.cells[0].textContent.replace(/\s+/g, '_')}.pdf`);
+    }
+
+    // Fechar o modal se clicar fora dele
+    window.onclick = function(event) {
+      const modal = document.getElementById('modal-edicao');
+      if (event.target == modal) {
+        fecharModal();
+      }
+    };
 
     // Menu ativo
     const links = document.querySelectorAll('.sidebar .menu li a');
