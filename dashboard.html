@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Dashboard - Manutenção de Celulares</title>
+  <title>Perfil do Usuário</title>
   <link rel="stylesheet" href="css/dashboard.css" />
   <link rel="icon" href="img/logo.png" type="image/png">
 </head>
@@ -18,28 +18,68 @@
       <!-- MENU -->
       <nav>
         <ul>
-          <li><a href="cadastro-cliente.html">📋 Cadastro de Cliente</a></li> 
+          <li><a href="cadastro-cliente.html">📋 Cadastro de Cliente</a></li>
           <li><a href="cadastro-pedido.html">🛠️ Cadastro de Ordem de serviço</a></li>
           <li><a href="pedidos.html">💼 Ordem de serviço</a></li>
-          <li><a href="relatorio.html" class="dashboard-card">📊 Relatórios</a></li>
-          <li><a href="estoque.html" class="dashboard-card">📦 Estoque</a></li>
-          <li><a href="usuarios.html" class="dashboard-card">👥 Gerenciar Usuários</a></li>
-          <li><a href="fornecedor.html" class="dashboard-card">🔗Fornecedores</a></li>
-          <li><a href="suporte.html" class="dashboard-card">⚠️ Suporte</a></li>
+          <li><a href="relatorio.html">📊 Relatórios</a></li>
+          <li><a href="estoque.html">📦 Estoque</a></li>
+          <li><a href="usuarios.html">👥 Gerenciar Usuários</a></li>
+          <li><a href="fornecedor.html">🔗 Fornecedores</a></li>
+          <li><a href="suporte.html">⚠️ Suporte</a></li>
           <li><a href="login.html" class="btn-sair">🚪 Sair</a></li>
         </ul>
       </nav>
     </aside>
 
     <main class="content">
-      <h1 id="welcome-message">Bem-vindo ao Painel</h1>
-      <p>Selecione uma das opções no menu lateral para começar.</p>
+      <div class="profile-card">
+        <h2>Perfil do Usuário</h2>
+        <div class="profile-container">
+          <div class="profile-photo-box">
+            <img id="profile-photo" class="profile-photo" src="img/default-user.png" alt="Foto de perfil">
+            <br />
+            <input type="file" id="photo-input" accept="image/*" style="display: none;" />
+            <button class="change-photo-btn" onclick="document.getElementById('photo-input').click()">Alterar Foto</button>
+          </div>
+          <div class="profile-info">
+            <p><strong>Nome:</strong> <span id="nome"></span></p>
+            <p><strong>Email:</strong> <span id="email"></span></p>
+            <p><strong>Cargo:</strong> <span id="cargo"></span></p>
+            <p><strong>Último login:</strong> <span id="ultimo-login"></span></p>
+          </div>
+        </div>
+      </div>
     </main>
   </div>
 
   <script>
-    const nomeFuncionario = localStorage.getItem('nomeFuncionario') || 'Funcionário';
-    document.getElementById('welcome-message').textContent = `Olá, ${nomeFuncionario}! Bem-vindo de volta.`;
+    // Preenche informações do perfil
+    document.getElementById('nome').textContent = localStorage.getItem('nomeFuncionario') || 'Funcionário';
+    document.getElementById('email').textContent = localStorage.getItem('emailFuncionario') || 'email@exemplo.com';
+    document.getElementById('cargo').textContent = localStorage.getItem('cargoFuncionario') || 'Técnico';
+    document.getElementById('ultimo-login').textContent = localStorage.getItem('ultimoLogin') || new Date().toLocaleString();
+
+    // Manipulação da foto de perfil
+    const profilePhoto = document.getElementById('profile-photo');
+    const photoInput = document.getElementById('photo-input');
+
+    const storedPhoto = localStorage.getItem('fotoPerfil');
+    if (storedPhoto) {
+      profilePhoto.src = storedPhoto;
+    }
+
+    photoInput.addEventListener('change', function () {
+      const file = this.files[0];
+      if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const base64Image = e.target.result;
+          profilePhoto.src = base64Image;
+          localStorage.setItem('fotoPerfil', base64Image);
+        };
+        reader.readAsDataURL(file);
+      }
+    });
   </script>
 </body>
 </html>
