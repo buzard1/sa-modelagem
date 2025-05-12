@@ -16,7 +16,7 @@ h1 {
   color: #03dac6;
 }
 
-/* Container de Filtro /
+/* Container de Filtro */
 .filtro-container {
   margin-bottom: 2rem;
 }
@@ -43,7 +43,7 @@ h1 {
   width: 22%;
 }
 
-/ Container para Adicionar Usuário /
+/* Container para Adicionar Usuário */
 .add-usuario {
   margin-bottom: 2rem;
 }
@@ -85,7 +85,7 @@ h1 {
   background-color: #00bfa5;
 }
 
-/ Tabela de Usuários /
+/* Tabela de Usuários */
 .tabela-usuarios h2 {
   color: #03dac6;
   margin-bottom: 1rem;
@@ -129,7 +129,7 @@ h1 {
   color: #ff5252;
 }
 
-/ Modal */
+/* Modal */
 .modal {
   position: fixed;
   top: 0; left: 0;
