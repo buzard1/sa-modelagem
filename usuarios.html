@@ -21,7 +21,7 @@
       <li><a href="pedidos.html">💼 <span>Ordem de serviço</span></a></li>
       <li><a href="relatorio.html">📊 <span>Relatórios</span></a></li>
       <li><a href="estoque.html">📦 <span>Estoque</span></a></li>
-      <li><a href="usuarios.html">👥 <span>Usuários</span></a></li>
+      <li><a href="usuarios.html" class="active">👥 <span>Usuários</span></a></li>
       <li><a href="fornecedor.html">🔗 <span>Fornecedores</span></a></li>
       <li><a href="suporte.html">🆘 <span>Suporte</span></a></li>
       <li><a href="login.html">🚪 <span>Sair</span></a></li>
@@ -39,6 +39,7 @@
         <input type="text" id="filtro-cpf" placeholder="CPF" class="filtro-input">
         <input type="text" id="filtro-email" placeholder="E-mail" class="filtro-input">
         <input type="text" id="filtro-cargo" placeholder="Cargo" class="filtro-input">
+        <input type="text" id="filtro-telefone" placeholder="Telefone" class="filtro-input">
       </div>
     </div>
 
@@ -49,6 +50,7 @@
         <input type="text" placeholder="Nome do usuário" />
         <input type="text" placeholder="CPF" />
         <input type="email" placeholder="Email" />
+        <input type="tel" id="telefone-input" placeholder="Telefone" />
         <select>
           <option value="admin">Administrador</option>
           <option value="funcionario">Atendente</option>
@@ -69,6 +71,7 @@
             <th>CPF</th>
             <th>Email</th>
             <th>Cargo</th>
+            <th>Telefone</th>
             <th>Ações</th>
           </tr>
         </thead>
@@ -78,6 +81,7 @@
             <td>123.456.789-00</td>
             <td>Marina@email.com</td>
             <td>Atendente</td>
+            <td>(11) 91234-5678</td>
             <td><button class="editar">✏️</button></td>
           </tr>
           <tr>
@@ -85,6 +89,7 @@
             <td>987.654.321-00</td>
             <td>inacio@email.com</td>
             <td>Administrador</td>
+            <td>(21) 99876-5432</td>
             <td><button class="editar">✏️</button></td>
           </tr>
           <tr>
@@ -92,6 +97,7 @@
             <td>321.789.654-00</td>
             <td>pedro@email.com</td>
             <td>Cliente</td>
+            <td>(19) 98765-4321</td>
             <td><button class="editar">✏️</button></td>
           </tr>
         </tbody>
@@ -106,6 +112,7 @@
       <label>Nome: <input type="text" id="edit-nome" /></label>
       <label>CPF: <input type="text" id="edit-cpf" /></label>
       <label>Email: <input type="email" id="edit-email" /></label>
+      <label>Telefone: <input type="tel" id="edit-telefone" /></label>
       <label>Cargo:
         <select id="edit-cargo">
           <option>Administrador</option>
@@ -114,12 +121,23 @@
           <option>Cliente</option>
         </select>
       </label>
+      <label>Status:
+        <input type="checkbox" id="edit-status" checked /> Ativo
+      </label>
       <div class="modal-buttons">
-        <button id="salvar-edicao">💾 Salvar</button>
+        <button id="salvar-edicao">📏 Salvar</button>
         <button id="cancelar-edicao">❌ Cancelar</button>
       </div>
     </div>
   </div>
+
+  <!-- Script de máscara -->
+  <script src="https://cdn.jsdelivr.net/npm/inputmask/dist/inputmask.min.js"></script>
+  <script>
+    Inputmask({"mask": "(99) 99999-9999"}).mask("#telefone-input");
+    Inputmask({"mask": "(99) 99999-9999"}).mask("#edit-telefone");
+    Inputmask({"mask": "(99) 99999-9999"}).mask("#filtro-telefone");
+  </script>
 
   <script>
     let usuarioEditando = null;
@@ -133,6 +151,10 @@
         document.getElementById('edit-cpf').value = colunas[1].textContent;
         document.getElementById('edit-email').value = colunas[2].textContent;
         document.getElementById('edit-cargo').value = colunas[3].textContent;
+        document.getElementById('edit-telefone').value = colunas[4].textContent;
+
+        // Status: considera ativo por padrão
+        document.getElementById('edit-status').checked = !usuarioEditando.classList.contains('inativo');
 
         document.getElementById('modal-editar').classList.remove('hidden');
       });
@@ -147,7 +169,9 @@
         nome: document.getElementById('edit-nome').value,
         cpf: document.getElementById('edit-cpf').value,
         email: document.getElementById('edit-email').value,
-        cargo: document.getElementById('edit-cargo').value
+        cargo: document.getElementById('edit-cargo').value,
+        telefone: document.getElementById('edit-telefone').value,
+        ativo: document.getElementById('edit-status').checked
       };
 
       const colunas = usuarioEditando.querySelectorAll('td');
@@ -155,6 +179,9 @@
       colunas[1].textContent = inputs.cpf;
       colunas[2].textContent = inputs.email;
       colunas[3].textContent = inputs.cargo;
+      colunas[4].textContent = inputs.telefone;
+
+      usuarioEditando.classList.toggle('inativo', !inputs.ativo);
 
       document.getElementById('modal-editar').classList.add('hidden');
     });
@@ -175,6 +202,7 @@
         const cpfFiltro = document.getElementById('filtro-cpf').value.toLowerCase();
         const emailFiltro = document.getElementById('filtro-email').value.toLowerCase();
         const cargoFiltro = document.getElementById('filtro-cargo').value.toLowerCase();
+        const telefoneFiltro = document.getElementById('filtro-telefone').value.replace(/\D/g, '');
 
         const linhas = document.querySelectorAll('.usuarios-table tbody tr');
 
@@ -184,17 +212,25 @@
           const cpf = colunas[1].textContent.toLowerCase();
           const email = colunas[2].textContent.toLowerCase();
           const cargo = colunas[3].textContent.toLowerCase();
+          const telefone = colunas[4].textContent.replace(/\D/g, '');
 
-          // Verifica se cada valor de coluna corresponde ao filtro
           const corresponde = nome.includes(nomeFiltro) &&
                               cpf.includes(cpfFiltro) &&
                               email.includes(emailFiltro) &&
-                              cargo.includes(cargoFiltro);
+                              cargo.includes(cargoFiltro) &&
+                              telefone.includes(telefoneFiltro);
 
           linha.style.display = corresponde ? '' : 'none';
         });
       });
     });
   </script>
+
+  <style>
+    .inativo {
+      opacity: 0.5;
+      text-decoration: line-through;
+    }
+  </style>
 </body>
 </html>
