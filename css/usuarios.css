@@ -16,16 +16,52 @@ h1 {
   color: #03dac6;
 }
 
+/* Container de Filtro /
+.filtro-container {
+  margin-bottom: 2rem;
+}
+
+.filtro-container h2 {
+  color: #03dac6;
+  margin-bottom: 1rem;
+}
+
+.filtro {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.filtro-input {
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: none;
+  background-color: #1e1e1e;
+  color: #fff;
+  border: 1px solid #444;
+  font-size: 1rem;
+  width: 22%;
+}
+
+/ Container para Adicionar Usuário /
 .add-usuario {
+  margin-bottom: 2rem;
+}
+
+.add-usuario h2 {
+  color: #03dac6;
+  margin-bottom: 1rem;
+}
+
+.form-adicionar {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
-  margin-bottom: 2rem;
   justify-content: center;
 }
 
-.add-usuario input,
-.add-usuario select {
+.form-adicionar input,
+.form-adicionar select {
   padding: 0.75rem;
   border-radius: 8px;
   border: none;
@@ -34,7 +70,7 @@ h1 {
   border: 1px solid #444;
 }
 
-.add-usuario button {
+.form-adicionar button {
   background-color: #03dac6;
   border: none;
   padding: 0.75rem 1.5rem;
@@ -45,8 +81,14 @@ h1 {
   transition: background-color 0.3s;
 }
 
-.add-usuario button:hover {
+.form-adicionar button:hover {
   background-color: #00bfa5;
+}
+
+/ Tabela de Usuários /
+.tabela-usuarios h2 {
+  color: #03dac6;
+  margin-bottom: 1rem;
 }
 
 .usuarios-table {
@@ -87,7 +129,7 @@ h1 {
   color: #ff5252;
 }
 
-/* Modal */
+/ Modal */
 .modal {
   position: fixed;
   top: 0; left: 0;

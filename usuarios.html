@@ -31,59 +31,72 @@
   <div class="usuarios-container">
     <h1>👥 Gerenciar Usuários</h1>
 
-    <div class="add-usuario">
-      <input type="text" placeholder="Nome do usuário" />
-      <input type="text" placeholder="CPF" />
-      <input type="email" placeholder="Email" />
-      <select>
-        <option value="admin">Administrador</option>
-        <option value="funcionario">Atendente</option>
-        <option value="cliente">Técnico</option>
-        <option value="cliente">Cliente</option>
-      </select>
-      <button>➕ Adicionar</button>
+    <!-- Filtro de Usuários -->
+    <div class="filtro-container">
+      <h2>🔍 Buscar Usuários</h2>
+      <div class="filtro">
+        <input type="text" id="filtro-nome" placeholder="Nome" class="filtro-input">
+        <input type="text" id="filtro-cpf" placeholder="CPF" class="filtro-input">
+        <input type="text" id="filtro-email" placeholder="E-mail" class="filtro-input">
+        <input type="text" id="filtro-cargo" placeholder="Cargo" class="filtro-input">
+      </div>
     </div>
 
-    <table class="usuarios-table">
-      <thead>
-        <tr>
-          <th>Nome</th>
-          <th>CPF</th>
-          <th>Email</th>
-          <th>Cargo</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Marina</td>
-          <td>123.456.789-00</td>
-          <td>Marina@email.com</td>
-          <td>Atendente</td>
-          <td>
-            <button class="editar">✏️</button>
-          </td>
-        </tr>
-        <tr>
-          <td>Sr Inácio</td>
-          <td>987.654.321-00</td>
-          <td>inacio@email.com</td>
-          <td>Administrador</td>
-          <td>
-            <button class="editar">✏️</button>
-          </td>
-        </tr>
-        <tr>
-          <td>Pedro</td>
-          <td>321.789.654-00</td>
-          <td>pedro@email.com</td>
-          <td>Cliente</td>
-          <td>
-            <button class="editar">✏️</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <!-- Adicionar Usuário -->
+    <div class="add-usuario">
+      <h2>➕ Adicionar Novo Usuário</h2>
+      <div class="form-adicionar">
+        <input type="text" placeholder="Nome do usuário" />
+        <input type="text" placeholder="CPF" />
+        <input type="email" placeholder="Email" />
+        <select>
+          <option value="admin">Administrador</option>
+          <option value="funcionario">Atendente</option>
+          <option value="cliente">Técnico</option>
+          <option value="cliente">Cliente</option>
+        </select>
+        <button>➕ Adicionar</button>
+      </div>
+    </div>
+
+    <!-- Tabela de Usuários -->
+    <div class="tabela-usuarios">
+      <h2>Usuários Cadastrados</h2>
+      <table class="usuarios-table">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>CPF</th>
+            <th>Email</th>
+            <th>Cargo</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Marina</td>
+            <td>123.456.789-00</td>
+            <td>Marina@email.com</td>
+            <td>Atendente</td>
+            <td><button class="editar">✏️</button></td>
+          </tr>
+          <tr>
+            <td>Sr Inácio</td>
+            <td>987.654.321-00</td>
+            <td>inacio@email.com</td>
+            <td>Administrador</td>
+            <td><button class="editar">✏️</button></td>
+          </tr>
+          <tr>
+            <td>Pedro</td>
+            <td>321.789.654-00</td>
+            <td>pedro@email.com</td>
+            <td>Cliente</td>
+            <td><button class="editar">✏️</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
   <!-- Modal de edição -->
@@ -153,6 +166,34 @@
       if (link.getAttribute('href') === currentPage) {
         link.classList.add('active');
       }
+    });
+
+    // Filtro avançado
+    document.querySelectorAll('.filtro-input').forEach(filtro => {
+      filtro.addEventListener('input', function () {
+        const nomeFiltro = document.getElementById('filtro-nome').value.toLowerCase();
+        const cpfFiltro = document.getElementById('filtro-cpf').value.toLowerCase();
+        const emailFiltro = document.getElementById('filtro-email').value.toLowerCase();
+        const cargoFiltro = document.getElementById('filtro-cargo').value.toLowerCase();
+
+        const linhas = document.querySelectorAll('.usuarios-table tbody tr');
+
+        linhas.forEach(linha => {
+          const colunas = linha.querySelectorAll('td');
+          const nome = colunas[0].textContent.toLowerCase();
+          const cpf = colunas[1].textContent.toLowerCase();
+          const email = colunas[2].textContent.toLowerCase();
+          const cargo = colunas[3].textContent.toLowerCase();
+
+          // Verifica se cada valor de coluna corresponde ao filtro
+          const corresponde = nome.includes(nomeFiltro) &&
+                              cpf.includes(cpfFiltro) &&
+                              email.includes(emailFiltro) &&
+                              cargo.includes(cargoFiltro);
+
+          linha.style.display = corresponde ? '' : 'none';
+        });
+      });
     });
   </script>
 </body>
