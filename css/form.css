@@ -64,6 +64,27 @@ button:hover {
   background-color: #00bfa5;
 }
 
+.btn-voltar {
+  display: inline-block;
+  margin-top: 1.5rem;
+  padding: 0.75rem 1.5rem;
+  background-color: transparent;
+  color: #03dac6;
+  text-decoration: none;
+  border: 2px solid #03dac6;
+  border-radius: 8px;
+  text-align: center;
+  transition: all 0.3s ease;
+  font-weight: bold;
+}
+
+.btn-voltar:hover {
+  background-color: #03dac6;
+  color: #000;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
