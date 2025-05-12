@@ -9,33 +9,36 @@
   <link rel="icon" href="img/logo.png" type="image/png">
 </head>
 <body>
-    <!-- Sidebar fixa -->
-    <nav class="sidebar">
-      <div class="logo">
-        <img src="img/logo.png" alt="Logo do sistema">
-      </div>
-      <ul class="menu">
-        <li><a href="dashboard.html">🏠 <span>Dashboard</span></a></li>
-        <li><a href="cadastro-cliente.html">📋 <span>Cadastro Cliente</span></a></li>
-        <li><a href="cadastro-pedido.html">🛠️ <span>Cadastro de <br>Ordem de Serviço</span></a></li>
-        <li><a href="pedidos.html">💼 <span>Ordem de serviço</span></a></li>
-        <li><a href="relatorio.html">📊 <span>Relatórios</span></a></li>
-        <li><a href="estoque.html">📦 <span>Estoque</span></a></li>
-        <li><a href="usuarios.html">👥 <span>Usuários</span></a></li>
-        <li><a href="fornecedor.html">🔗 <span>Fornecedores</span></a></li>
-        <li><a href="suporte.html">🆘 <span>Suporte</span></a></li>
-        <li><a href="login.html">🚪 <span>Sair</span></a></li>
-      </ul>
-    </nav>
+  <!-- Sidebar fixa -->
+  <nav class="sidebar">
+    <div class="logo">
+      <img src="img/logo.png" alt="Logo do sistema">
+    </div>
+    <ul class="menu">
+      <li><a href="dashboard.html">🏠 <span>Dashboard</span></a></li>
+      <li><a href="cadastro-cliente.html">📋 <span>Cadastro Cliente</span></a></li>
+      <li><a href="cadastro-pedido.html">🛠️ <span>Cadastro de <br>Ordem de Serviço</span></a></li>
+      <li><a href="pedidos.html">💼 <span>Ordem de serviço</span></a></li>
+      <li><a href="relatorio.html">📊 <span>Relatórios</span></a></li>
+      <li><a href="estoque.html">📦 <span>Estoque</span></a></li>
+      <li><a href="usuarios.html">👥 <span>Usuários</span></a></li>
+      <li><a href="fornecedor.html">🔗 <span>Fornecedores</span></a></li>
+      <li><a href="suporte.html">🆘 <span>Suporte</span></a></li>
+      <li><a href="login.html">🚪 <span>Sair</span></a></li>
+    </ul>
+  </nav>
+
   <div class="usuarios-container">
     <h1>👥 Gerenciar Usuários</h1>
 
     <div class="add-usuario">
       <input type="text" placeholder="Nome do usuário" />
+      <input type="text" placeholder="CPF" />
       <input type="email" placeholder="Email" />
       <select>
         <option value="admin">Administrador</option>
-        <option value="funcionario">Funcionário</option>
+        <option value="funcionario">Atendente</option>
+        <option value="cliente">Técnico</option>
         <option value="cliente">Cliente</option>
       </select>
       <button>➕ Adicionar</button>
@@ -45,91 +48,112 @@
       <thead>
         <tr>
           <th>Nome</th>
+          <th>CPF</th>
           <th>Email</th>
-          <th>Tipo</th>
+          <th>Cargo</th>
           <th>Ações</th>
         </tr>
       </thead>
       <tbody>
         <tr>
           <td>Marina</td>
+          <td>123.456.789-00</td>
           <td>Marina@email.com</td>
           <td>Atendente</td>
           <td>
             <button class="editar">✏️</button>
-            <button class="excluir">🗑️</button>
           </td>
         </tr>
         <tr>
-          <td>Sr inacio</td>
+          <td>Sr Inácio</td>
+          <td>987.654.321-00</td>
           <td>inacio@email.com</td>
           <td>Administrador</td>
           <td>
             <button class="editar">✏️</button>
-            <button class="excluir">🗑️</button>
           </td>
         </tr>
         <tr>
-          <td>pedro</td>
+          <td>Pedro</td>
+          <td>321.789.654-00</td>
           <td>pedro@email.com</td>
           <td>Cliente</td>
           <td>
             <button class="editar">✏️</button>
-            <button class="excluir">🗑️</button>
           </td>
         </tr>
       </tbody>
     </table>
+  </div>
 
+  <!-- Modal de edição -->
+  <div id="modal-editar" class="modal hidden">
+    <div class="modal-content">
+      <h2>Editar Usuário</h2>
+      <label>Nome: <input type="text" id="edit-nome" /></label>
+      <label>CPF: <input type="text" id="edit-cpf" /></label>
+      <label>Email: <input type="email" id="edit-email" /></label>
+      <label>Cargo:
+        <select id="edit-cargo">
+          <option>Administrador</option>
+          <option>Atendente</option>
+          <option>Técnico</option>
+          <option>Cliente</option>
+        </select>
+      </label>
+      <div class="modal-buttons">
+        <button id="salvar-edicao">💾 Salvar</button>
+        <button id="cancelar-edicao">❌ Cancelar</button>
+      </div>
+    </div>
   </div>
 
   <script>
+    let usuarioEditando = null;
+
     document.querySelectorAll('.editar').forEach(botao => {
       botao.addEventListener('click', () => {
-        const linha = botao.closest('tr');
-        const colunas = linha.querySelectorAll('td');
+        usuarioEditando = botao.closest('tr');
+        const colunas = usuarioEditando.querySelectorAll('td');
 
-        if (botao.textContent === '✏️') {
-          // Substituir texto por inputs
-          const nome = colunas[0].textContent;
-          const email = colunas[1].textContent;
-          const tipo = colunas[2].textContent.toLowerCase();
+        document.getElementById('edit-nome').value = colunas[0].textContent;
+        document.getElementById('edit-cpf').value = colunas[1].textContent;
+        document.getElementById('edit-email').value = colunas[2].textContent;
+        document.getElementById('edit-cargo').value = colunas[3].textContent;
 
-          colunas[0].innerHTML = `<input type="text" value="${nome}" />`;
-          colunas[1].innerHTML = `<input type="email" value="${email}" />`;
-          colunas[2].innerHTML = `
-            <select>
-              <option value="admin" ${tipo === 'administrador' ? 'selected' : ''}>Administrador</option>
-              <option value="Atendente" ${tipo === 'Atendente' ? 'selected' : ''}>Atendente</option>
-              <option value="Técnico" ${tipo === 'Técnico' ? 'selected' : ''}>Técnico</option>
-            </select>
-          `;
-          botao.textContent = '💾'; // mudar para botão de salvar
-        } else {
-          // Salvar os valores e voltar ao modo texto
-          const nome = colunas[0].querySelector('input').value;
-          const email = colunas[1].querySelector('input').value;
-          const tipo = colunas[2].querySelector('select').selectedOptions[0].textContent;
-
-          colunas[0].textContent = nome;
-          colunas[1].textContent = email;
-          colunas[2].textContent = tipo;
-          botao.textContent = '✏️';
-        }
+        document.getElementById('modal-editar').classList.remove('hidden');
       });
     });
-  </script>
-  <!-- Script: ativa o menu da página atual -->
-  <script>
+
+    document.getElementById('cancelar-edicao').addEventListener('click', () => {
+      document.getElementById('modal-editar').classList.add('hidden');
+    });
+
+    document.getElementById('salvar-edicao').addEventListener('click', () => {
+      const inputs = {
+        nome: document.getElementById('edit-nome').value,
+        cpf: document.getElementById('edit-cpf').value,
+        email: document.getElementById('edit-email').value,
+        cargo: document.getElementById('edit-cargo').value
+      };
+
+      const colunas = usuarioEditando.querySelectorAll('td');
+      colunas[0].textContent = inputs.nome;
+      colunas[1].textContent = inputs.cpf;
+      colunas[2].textContent = inputs.email;
+      colunas[3].textContent = inputs.cargo;
+
+      document.getElementById('modal-editar').classList.add('hidden');
+    });
+
+    // Ativa menu atual na sidebar
     const links = document.querySelectorAll('.sidebar .menu li a');
     const currentPage = window.location.pathname.split('/').pop();
-
     links.forEach(link => {
       if (link.getAttribute('href') === currentPage) {
         link.classList.add('active');
       }
     });
-    
   </script>
 </body>
 </html>
