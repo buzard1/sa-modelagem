@@ -47,8 +47,10 @@
       <button type="submit" class="btn-login fade-in delay-3">Adicionar ao Estoque</button>
     </form>
 
-
     <hr class="fade-in delay-4" style="margin: 2rem 0; border-color: #444;" />
+
+    <!-- Campo de busca -->
+    <input type="text" id="searchInput" placeholder="Buscar produto..." class="search-input fade-in delay-2">
 
     <h3 class="fade-in delay-4">📋 Itens no Estoque</h3>
     <table class="fade-in delay-5">
@@ -78,52 +80,78 @@
         </tr>
       </tbody>
     </table>
-    
-          <!-- Script para ativar automaticamente o menu ativo -->
-  <script>
-    const links = document.querySelectorAll('.sidebar .menu li a');
-    const currentPage = window.location.pathname.split('/').pop();
+  </div>
 
-    links.forEach(link => {
-      if (link.getAttribute('href') === currentPage) {
-        link.classList.add('active');
-      }
-    });
-  </script>
+  <!-- Modal de Edição -->
+  <div id="editModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Editar Produto</h2>
+      <form id="editForm">
+        <label for="editProduto">Nome do Produto</label>
+        <input type="text" id="editProduto" name="produto" required>
+
+        <label for="editQuantidade">Quantidade</label>
+        <input type="number" id="editQuantidade" name="quantidade" required>
+
+        <label for="editFornecedor">Fornecedor</label>
+        <input type="text" id="editFornecedor" name="fornecedor" required>
+
+        <label for="editValor">Valor Unitário (R$)</label>
+        <input type="number" id="editValor" name="valor" step="0.01" required>
+
+        <button type="submit" class="btn-login">Salvar Alterações</button>
+      </form>
+    </div>
+  </div>
+
   <script>
+    // Função de busca
+    document.getElementById('searchInput').addEventListener('input', function () {
+      const searchValue = this.value.toLowerCase();
+      const rows = document.querySelectorAll('tbody tr');
+      rows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        const productName = cells[0].textContent.toLowerCase();
+        row.style.display = productName.includes(searchValue) ? '' : 'none';
+      });
+    });
+
+    // Função do modal de edição
     document.querySelectorAll(".btn-editar").forEach(button => {
       button.addEventListener("click", () => {
         const row = button.closest("tr");
         const cells = row.querySelectorAll("td");
-  
-        if (button.textContent.includes("✏️")) {
-          // Transformar células em campos de input
-          for (let i = 0; i < 4; i++) {
-            const input = document.createElement("input");
-            input.value = cells[i].textContent;
-            input.style.width = "100%";
-            cells[i].innerHTML = "";
-            cells[i].appendChild(input);
-          }
-          button.textContent = "💾 Salvar";
-        } else {
-          // Salvar os dados editados
-          for (let i = 0; i < 4; i++) {
-            const input = cells[i].querySelector("input");
-            if (input) {
-              cells[i].textContent = input.value;
-            }
-          }
-          button.textContent = "✏️ Editar";
+
+        document.getElementById('editProduto').value = cells[0].textContent;
+        document.getElementById('editQuantidade').value = cells[1].textContent;
+        document.getElementById('editFornecedor').value = cells[2].textContent;
+        document.getElementById('editValor').value = cells[3].textContent;
+
+        const modal = document.getElementById("editModal");
+        modal.style.display = "block";
+
+        const span = document.getElementsByClassName("close")[0];
+        span.onclick = function () {
+          modal.style.display = "none";
         }
+
+        window.onclick = function (event) {
+          if (event.target === modal) {
+            modal.style.display = "none";
+          }
+        }
+
+        document.getElementById("editForm").addEventListener("submit", function (e) {
+          e.preventDefault();
+          cells[0].textContent = document.getElementById('editProduto').value;
+          cells[1].textContent = document.getElementById('editQuantidade').value;
+          cells[2].textContent = document.getElementById('editFornecedor').value;
+          cells[3].textContent = document.getElementById('editValor').value;
+          modal.style.display = "none";
+        });
       });
     });
   </script>
-  
-        </tr>
-      </tbody>
-      
-    </table>
-  </div>
 </body>
 </html>
