@@ -117,6 +117,15 @@
       });
     });
 
+    // Ativa menu atual na sidebar
+    const links = document.querySelectorAll('.sidebar .menu li a');
+    const currentPage = window.location.pathname.split('/').pop();
+    links.forEach(link => {
+      if (link.getAttribute('href') === currentPage) {
+        link.classList.add('active');
+      }
+    });
+
     // Função do modal de edição
     document.querySelectorAll(".btn-editar").forEach(button => {
       button.addEventListener("click", () => {
