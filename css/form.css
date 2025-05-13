@@ -47,7 +47,14 @@ select {
   margin-bottom: 1rem;
 }
 
-button {
+.form-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem; /* Espaço entre os botões */
+  margin-top: 1rem;
+}
+
+.form-buttons button[type="submit"] {
   width: 100%;
   padding: 0.75rem;
   background-color: #03dac6;
@@ -60,29 +67,29 @@ button {
   transition: background-color 0.3s ease;
 }
 
-button:hover {
+.form-buttons button[type="submit"]:hover {
   background-color: #00bfa5;
 }
 
-.btn-voltar {
-  display: inline-block;
-  margin-top: 1.5rem;
-  padding: 0.75rem 1.5rem;
+.form-buttons button#cancelar {
+  width: 100%;
+  padding: 0.75rem;
   background-color: transparent;
-  color: #03dac6;
-  text-decoration: none;
-  border: 2px solid #03dac6;
-  border-radius: 8px;
-  text-align: center;
-  transition: all 0.3s ease;
+  color: #03dac6; /* Cor do site (turquesa) */
   font-weight: bold;
+  border: 2px solid #03dac6; /* Borda na cor do site */
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.btn-voltar:hover {
-  background-color: #03dac6;
-  color: #000;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+.form-buttons button#cancelar:hover {
+  background-color: #ff5252; /* Vermelho no hover */
+  color: #fff; /* Texto branco no hover */
+  border-color: #ff5252; /* Borda vermelha no hover */
+  transform: translateY(-2px); /* Efeito sutil de levantar */
+  box-shadow: 0 4px 8px rgba(255, 82, 82, 0.3); /* Sombra vermelha sutil */
 }
 
 @keyframes fadeIn {
