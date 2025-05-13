@@ -118,3 +118,20 @@ button {
 button:hover {
   background-color: #00bfa5;
 }
+.btn-voltar {
+  display: block;
+  text-align: center;
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background-color: transparent;
+  color: #03dac6;
+  border: 1px solid #03dac6;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.btn-voltar:hover {
+  background-color: #03dac6;
+  color: #000;
+}
