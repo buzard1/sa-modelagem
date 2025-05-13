@@ -246,3 +246,33 @@ body {
     padding: 0.6rem 1rem;
   }
 }
+.action-btn {
+  position: relative;
+  cursor: pointer;
+}
+
+.action-btn .tooltip-text {
+  visibility: hidden;
+  width: max-content;
+  max-width: 150px;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  position: absolute;
+  bottom: 125%; /* Exibe acima do botão */
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.action-btn:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}

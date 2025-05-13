@@ -80,9 +80,9 @@
           <td>Cartão</td>
           <td class="status pendente">Pendente</td>
           <td class="actions">
-            <button class="action-btn edit-btn" onclick="abrirModalEdicao(this)">✏️</button>
-            <button class="action-btn pdf-btn" onclick="gerarPDF(this)">📄</button>
-            <button class="action-btn status-btn" onclick="alterarStatus(this)">🔄</button>
+            <button class="action-btn edit-btn" onclick="abrirModalEdicao(this)">✏️<span class="tooltip-text">Editar</span></button>
+            <button class="action-btn pdf-btn" onclick="gerarPDF(this)">📄<span class="tooltip-text">Gerar PDF</span></button>
+            <button class="action-btn status-btn" onclick="alterarStatus(this)">🔄<span class="tooltip-text">Alterar Status</span></button>          
           </td>
         </tr>
         <tr>
@@ -95,9 +95,9 @@
           <td>Pix</td>
           <td class="status andamento">Em andamento</td>
           <td class="actions">
-            <button class="action-btn edit-btn" onclick="abrirModalEdicao(this)">✏️</button>
-            <button class="action-btn pdf-btn" onclick="gerarPDF(this)">📄</button>
-            <button class="action-btn status-btn" onclick="alterarStatus(this)">🔄</button>
+            <button class="action-btn edit-btn" onclick="abrirModalEdicao(this)">✏️<span class="tooltip-text">Editar</span></button>
+            <button class="action-btn pdf-btn" onclick="gerarPDF(this)">📄<span class="tooltip-text">Gerar PDF</span></button>
+            <button class="action-btn status-btn" onclick="alterarStatus(this)">🔄<span class="tooltip-text">Alterar Status</span></button>
           </td>
         </tr>
         <tr>
@@ -110,9 +110,9 @@
           <td>Dinheiro</td>
           <td class="status concluido">Concluído</td>
           <td class="actions">
-            <button class="action-btn edit-btn" onclick="abrirModalEdicao(this)">✏️</button>
-            <button class="action-btn pdf-btn" onclick="gerarPDF(this)">📄</button>
-            <button class="action-btn status-btn" onclick="alterarStatus(this)">🔄</button>
+            <button class="action-btn edit-btn" onclick="abrirModalEdicao(this)">✏️<span class="tooltip-text">Editar</span></button>
+            <button class="action-btn pdf-btn" onclick="gerarPDF(this)">📄<span class="tooltip-text">Gerar PDF</span></button>
+            <button class="action-btn status-btn" onclick="alterarStatus(this)">🔄<span class="tooltip-text">Alterar Status</span></button>
           </td>
         </tr>
       </tbody>
@@ -168,7 +168,7 @@
         </select>
       </div>
       <div class="form-buttons">
-        <button type="button" class="btn-salvar" onclick="salvarEdicao()">Salvar</button>
+        <button type="button" class="btn-salvar" onclick="salvarEdicao()">Salvar</button> 
         <button type="button" class="btn-cancelar" onclick="fecharModal()">Cancelar</button>
       </div>
     </form>
