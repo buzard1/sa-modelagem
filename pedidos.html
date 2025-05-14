@@ -37,8 +37,7 @@
     <form id="filtro-form" style="margin-bottom: 2rem;">
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
         <input type="text" name="nome" placeholder="Nome" style="padding: 0.5rem; border-radius: 8px; border: none;">
-        <input type="text" name="cpf_cnpj" placeholder="CPF/CNPJ" style="padding: 0.5rem; border-radius: 8px; border: none;">
-        <input type="text" name="telefone" placeholder="Telefone" style="padding: 0.5rem; border-radius: 8px; border: none;">
+        <input type="text" name="cpf_cnpj" id="cpf_cnpj" placeholder="CPF/CNPJ" style="padding: 0.5rem; border-radius: 8px; border: none;">        <input type="text" name="telefone" placeholder="Telefone" style="padding: 0.5rem; border-radius: 8px; border: none;">
         <input type="email" name="email" placeholder="E-mail" style="padding: 0.5rem; border-radius: 8px; border: none;">
         <select name="tipo" style="padding: 0.5rem; border-radius: 8px; border: none;">
           <option value="">Tipo de cliente</option>
@@ -175,6 +174,34 @@
   </div>
 </div>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+
+<script>
+  const input = document.getElementById('cpf_cnpj');
+
+  input.addEventListener('input', function () {
+    let value = input.value.replace(/\D/g, '');
+
+    // Limita para no máximo 14 dígitos (CNPJ)
+    value = value.slice(0, 14);
+
+    if (value.length <= 11) {
+      // CPF: 000.000.000-00
+      value = value.replace(/(\d{3})(\d)/, '$1.$2');
+      value = value.replace(/(\d{3})(\d)/, '$1.$2');
+      value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+    } else {
+      // CNPJ: 00.000.000/0000-00
+      value = value.replace(/^(\d{2})(\d)/, '$1.$2');
+      value = value.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
+      value = value.replace(/\.(\d{3})(\d)/, '.$1/$2');
+      value = value.replace(/(\d{4})(\d)/, '$1-$2');
+    }
+
+    input.value = value;
+  });
+</script>
   <script>
     // Variável para armazenar a linha sendo editada
     let linhaEditando = null;
