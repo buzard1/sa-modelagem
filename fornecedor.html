@@ -15,7 +15,7 @@
       <img src="img/logo.png" alt="Logo do sistema">
     </div>
     <ul class="menu">
-      <li><a href="dashboard.html">👤 <span>User</span></a></li>
+      <li><a href="dashboard.html">🏠 <span>Dashboard</span></a></li>
       <li><a href="cadastro-cliente.html">📋 <span>Cadastro Cliente</span></a></li>
       <li><a href="cadastro-pedido.html">🛠️ <span>Cadastro de <br>Ordem de Serviço</span></a></li>
       <li><a href="pedidos.html">💼 <span>Ordem de serviço</span></a></li>
@@ -43,6 +43,7 @@
         <input type="email" id="email" name="email" required />
       </div>
       
+
       <button type="submit" class="btn-submit">Cadastrar</button>
     </form>
 
@@ -59,6 +60,12 @@
       }
     });
     
+  </script>
+  <!-- Máscaras de entrada -->
+  <script src="https://cdn.jsdelivr.net/npm/inputmask/dist/inputmask.min.js"></script>
+  <script>
+    Inputmask({ mask: "(99) 99999-9999" }).mask("#telefone");
+    Inputmask({ mask: "999.999.999-99" }).mask("#cpf");
   </script>
 </body>
 </html>
