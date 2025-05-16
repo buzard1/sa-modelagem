@@ -37,8 +37,13 @@
     <form id="filtro-form" style="margin-bottom: 2rem;">
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
         <input type="text" name="nome" placeholder="Nome" style="padding: 0.5rem; border-radius: 8px; border: none;">
+<<<<<<< Updated upstream
         <input type="text" name="cpf_cnpj" id="cpf_cnpj" placeholder="CPF/CNPJ" style="padding: 0.5rem; border-radius: 8px; border: none;">        
         <input type="text" name="telefone" id="telefone" placeholder="Telefone" style="padding: 0.5rem; border-radius: 8px; border: none;">
+=======
+        <input type="text" name="cpf_cnpj" id="cpf_cnpj" placeholder="CPF/CNPJ" style="padding: 0.5rem; border-radius: 8px; border: none;">
+        <input type="text" name="telefone" id="telefone" placeholder="Telefone" style="padding: 0.5rem; border-radius: 8px; border: none;" maxlength="15">
+>>>>>>> Stashed changes
         <input type="email" name="email" placeholder="E-mail" style="padding: 0.5rem; border-radius: 8px; border: none;">
         <select name="tipo" style="padding: 0.5rem; border-radius: 8px; border: none;">
           <option value="">Tipo de cliente</option>
@@ -176,6 +181,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
 
 <script>
+  // Máscara para CPF/CNPJ
   const input = document.getElementById('cpf_cnpj');
 
   input.addEventListener('input', function () {
@@ -199,137 +205,202 @@
 
     input.value = value;
   });
+
+  // Máscara para telefone (fixo ou celular)
+  const telefoneInput = document.getElementById('telefone');
+  
+  telefoneInput.addEventListener('input', function() {
+    // Remove tudo que não é dígito
+    let value = this.value.replace(/\D/g, '');
+    
+    // Limita o tamanho (11 dígitos para celular com DDD)
+    value = value.slice(0, 11);
+    
+    // Aplica a máscara
+    if (value.length > 0) {
+      // Formato: (XX) XXXX-XXXX para telefone fixo (10 dígitos)
+      if (value.length <= 10) {
+        value = value.replace(/(\d{2})(\d)/, '($1) $2');
+        value = value.replace(/(\d{4})(\d)/, '$1-$2');
+      } 
+      // Formato: (XX) XXXXX-XXXX para celular (11 dígitos)
+      else {
+        value = value.replace(/(\d{2})(\d)/, '($1) $2');
+        value = value.replace(/(\d{5})(\d)/, '$1-$2');
+      }
+    }
+    
+    this.value = value;
+  });
+
+  // Validação para permitir apenas números e controlar o backspace
+  telefoneInput.addEventListener('keydown', function(e) {
+    // Permite: backspace, delete, tab, escape, enter
+    if ([46, 8, 9, 27, 13].includes(e.keyCode) || 
+        // Permite: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+        (e.keyCode == 65 && e.ctrlKey === true) || 
+        (e.keyCode == 67 && e.ctrlKey === true) || 
+        (e.keyCode == 86 && e.ctrlKey === true) || 
+        (e.keyCode == 88 && e.ctrlKey === true) ||
+        // Permite: home, end, left, right
+        (e.keyCode >= 35 && e.keyCode <= 39)) {
+          return;
+    }
+    // Bloqueia se não for número
+    if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+      e.preventDefault();
+    }
+  });
 </script>
-  <script>
-    // Variável para armazenar a linha sendo editada
-    let linhaEditando = null;
 
-    function alterarStatus(botao) {
-      const statusTd = botao.closest('tr').querySelector('.status');
-      const estados = ['pendente', 'andamento', 'concluido', 'cancelado'];
-      const textos = ['Pendente', 'Em andamento', 'Concluído', 'Cancelado'];
+<script>
+  // Variável para armazenar a linha sendo editada
+  let linhaEditando = null;
 
-      let estadoAtual = estados.findIndex(e => statusTd.classList.contains(e));
-      let proximo = (estadoAtual + 1) % estados.length;
+  function alterarStatus(botao) {
+    const statusTd = botao.closest('tr').querySelector('.status');
+    const estados = ['pendente', 'andamento', 'concluido', 'cancelado'];
+    const textos = ['Pendente', 'Em andamento', 'Concluído', 'Cancelado'];
 
-      estados.forEach(e => statusTd.classList.remove(e));
-      statusTd.classList.add(estados[proximo]);
-      statusTd.textContent = textos[proximo];
-    }
+    let estadoAtual = estados.findIndex(e => statusTd.classList.contains(e));
+    let proximo = (estadoAtual + 1) % estados.length;
 
-    function abrirModalEdicao(botao) {
-      linhaEditando = botao.closest('tr');
-      const modal = document.getElementById('modal-edicao');
-      
-      // Preencher o modal com os dados da linha
-      document.getElementById('edit-cliente').value = linhaEditando.cells[0].textContent;
-      document.getElementById('edit-aparelho').value = linhaEditando.cells[1].textContent;
-      document.getElementById('edit-servico').value = linhaEditando.cells[2].textContent;
-      
-      // Converter datas para formato input date (YYYY-MM-DD)
-      const dataEntrada = converterDataParaInput(linhaEditando.cells[3].textContent);
-      document.getElementById('edit-data-entrada').value = dataEntrada;
-      
-      const dataSaida = linhaEditando.cells[4].textContent === '-' ? '' : converterDataParaInput(linhaEditando.cells[4].textContent);
-      document.getElementById('edit-data-saida').value = dataSaida;
-      
-      document.getElementById('edit-valor').value = linhaEditando.cells[5].textContent.replace('R$ ', '');
-      document.getElementById('edit-pagamento').value = linhaEditando.cells[6].textContent;
-      document.getElementById('edit-status').value = linhaEditando.cells[7].textContent;
-      
-      // Mostrar o modal
-      modal.style.display = 'block';
-    }
+    estados.forEach(e => statusTd.classList.remove(e));
+    statusTd.classList.add(estados[proximo]);
+    statusTd.textContent = textos[proximo];
+  }
 
-    function converterDataParaInput(data) {
-      if (data === '-' || !data) return '';
-      const partes = data.split('/');
-      return `${partes[2]}-${partes[1]}-${partes[0]}`;
-    }
+  function abrirModalEdicao(botao) {
+    linhaEditando = botao.closest('tr');
+    const modal = document.getElementById('modal-edicao');
+    
+    // Preencher o modal com os dados da linha
+    document.getElementById('edit-cliente').value = linhaEditando.cells[0].textContent;
+    document.getElementById('edit-aparelho').value = linhaEditando.cells[1].textContent;
+    document.getElementById('edit-servico').value = linhaEditando.cells[2].textContent;
+    
+    // Converter datas para formato input date (YYYY-MM-DD)
+    const dataEntrada = converterDataParaInput(linhaEditando.cells[3].textContent);
+    document.getElementById('edit-data-entrada').value = dataEntrada;
+    
+    const dataSaida = linhaEditando.cells[4].textContent === '-' ? '' : converterDataParaInput(linhaEditando.cells[4].textContent);
+    document.getElementById('edit-data-saida').value = dataSaida;
+    
+    document.getElementById('edit-valor').value = linhaEditando.cells[5].textContent.replace('R$ ', '');
+    document.getElementById('edit-pagamento').value = linhaEditando.cells[6].textContent;
+    document.getElementById('edit-status').value = linhaEditando.cells[7].textContent;
+    
+    // Mostrar o modal
+    modal.style.display = 'block';
+  }
 
-    function converterInputParaData(input) {
-      if (!input) return '-';
-      const date = new Date(input);
-      return date.toLocaleDateString('pt-BR');
-    }
+  function converterDataParaInput(data) {
+    if (data === '-' || !data) return '';
+    const partes = data.split('/');
+    return `${partes[2]}-${partes[1]}-${partes[0]}`;
+  }
 
-    function fecharModal() {
-      document.getElementById('modal-edicao').style.display = 'none';
-    }
+  function converterInputParaData(input) {
+    if (!input) return '-';
+    const date = new Date(input);
+    return date.toLocaleDateString('pt-BR');
+  }
 
-    function salvarEdicao() {
-      if (!linhaEditando) return;
-      
-      // Atualizar os dados da linha com os valores do formulário
-      linhaEditando.cells[0].textContent = document.getElementById('edit-cliente').value;
-      linhaEditando.cells[1].textContent = document.getElementById('edit-aparelho').value;
-      linhaEditando.cells[2].textContent = document.getElementById('edit-servico').value;
-      linhaEditando.cells[3].textContent = converterInputParaData(document.getElementById('edit-data-entrada').value);
-      linhaEditando.cells[4].textContent = converterInputParaData(document.getElementById('edit-data-saida').value);
-      linhaEditando.cells[5].textContent = 'R$ ' + document.getElementById('edit-valor').value;
-      linhaEditando.cells[6].textContent = document.getElementById('edit-pagamento').value;
-      
-      // Atualizar status (incluindo a classe CSS)
-      const novoStatus = document.getElementById('edit-status').value;
-      const statusTd = linhaEditando.cells[7];
-      statusTd.textContent = novoStatus;
-      
-      // Remover todas as classes de status e adicionar a correta
-      statusTd.className = 'status';
-      if (novoStatus === 'Pendente') statusTd.classList.add('pendente');
-      else if (novoStatus === 'Em andamento') statusTd.classList.add('andamento');
-      else if (novoStatus === 'Concluído') statusTd.classList.add('concluido');
-      else if (novoStatus === 'Cancelado') statusTd.classList.add('cancelado');
-      
+  function fecharModal() {
+    document.getElementById('modal-edicao').style.display = 'none';
+  }
+
+  function salvarEdicao() {
+    if (!linhaEditando) return;
+    
+    // Atualizar os dados da linha com os valores do formulário
+    linhaEditando.cells[0].textContent = document.getElementById('edit-cliente').value;
+    linhaEditando.cells[1].textContent = document.getElementById('edit-aparelho').value;
+    linhaEditando.cells[2].textContent = document.getElementById('edit-servico').value;
+    linhaEditando.cells[3].textContent = converterInputParaData(document.getElementById('edit-data-entrada').value);
+    linhaEditando.cells[4].textContent = converterInputParaData(document.getElementById('edit-data-saida').value);
+    linhaEditando.cells[5].textContent = 'R$ ' + document.getElementById('edit-valor').value;
+    linhaEditando.cells[6].textContent = document.getElementById('edit-pagamento').value;
+    
+    // Atualizar status (incluindo a classe CSS)
+    const novoStatus = document.getElementById('edit-status').value;
+    const statusTd = linhaEditando.cells[7];
+    statusTd.textContent = novoStatus;
+    
+    // Remover todas as classes de status e adicionar a correta
+    statusTd.className = 'status';
+    if (novoStatus === 'Pendente') statusTd.classList.add('pendente');
+    else if (novoStatus === 'Em andamento') statusTd.classList.add('andamento');
+    else if (novoStatus === 'Concluído') statusTd.classList.add('concluido');
+    else if (novoStatus === 'Cancelado') statusTd.classList.add('cancelado');
+    
+    fecharModal();
+  }
+
+  function gerarPDF(botao) {
+    const { jsPDF } = window.jspdf;
+    const linha = botao.closest('tr');
+    
+    const doc = new jsPDF();
+    
+    // Configurações do documento
+    doc.setFont('helvetica');
+    doc.setFontSize(18);
+    doc.setTextColor(0, 0, 0);
+    
+    // Cabeçalho
+    doc.text('ORDEM DE SERVIÇO', 105, 20, { align: 'center' });
+    doc.setLineWidth(0.5);
+    doc.line(20, 25, 190, 25);
+    
+    // Informações do cliente
+    doc.setFontSize(12);
+    doc.text('DADOS DO CLIENTE', 20, 35);
+    
+    doc.setFontSize(10);
+    doc.text(`Cliente: ${linha.cells[0].textContent}`, 20, 45);
+    doc.text(`Aparelho: ${linha.cells[1].textContent}`, 20, 55);
+    doc.text(`Serviço: ${linha.cells[2].textContent}`, 20, 65);
+    
+    // Informações do serviço
+    doc.setFontSize(12);
+    doc.text('DADOS DO SERVIÇO', 20, 80);
+    
+    doc.setFontSize(10);
+    doc.text(`Data de Entrada: ${linha.cells[3].textContent}`, 20, 90);
+    doc.text(`Data de Saída: ${linha.cells[4].textContent === '-' ? 'Não concluído' : linha.cells[4].textContent}`, 20, 100);
+    doc.text(`Valor: ${linha.cells[5].textContent}`, 20, 110);
+    doc.text(`Forma de Pagamento: ${linha.cells[6].textContent}`, 20, 120);
+    doc.text(`Status: ${linha.cells[7].textContent}`, 20, 130);
+    
+    // Rodapé
+    doc.setLineWidth(0.2);
+    doc.line(20, 260, 190, 260);
+    doc.setFontSize(8);
+    doc.text('Assinatura do Responsável: _________________________________________', 20, 270);
+    doc.text('Assinatura do Cliente: ____________________________________________', 20, 280);
+    
+    // Salvar o PDF
+    doc.save(`Ordem_Servico_${linha.cells[0].textContent.replace(/\s+/g, '_')}.pdf`);
+  }
+
+  // Fechar o modal se clicar fora dele
+  window.onclick = function(event) {
+    const modal = document.getElementById('modal-edicao');
+    if (event.target == modal) {
       fecharModal();
     }
+  };
 
-    function gerarPDF(botao) {
-      const { jsPDF } = window.jspdf;
-      const linha = botao.closest('tr');
-      
-      const doc = new jsPDF();
-      
-      // Configurações do documento
-      doc.setFont('helvetica');
-      doc.setFontSize(18);
-      doc.setTextColor(0, 0, 0);
-      
-      // Cabeçalho
-      doc.text('ORDEM DE SERVIÇO', 105, 20, { align: 'center' });
-      doc.setLineWidth(0.5);
-      doc.line(20, 25, 190, 25);
-      
-      // Informações do cliente
-      doc.setFontSize(12);
-      doc.text('DADOS DO CLIENTE', 20, 35);
-      
-      doc.setFontSize(10);
-      doc.text(`Cliente: ${linha.cells[0].textContent}`, 20, 45);
-      doc.text(`Aparelho: ${linha.cells[1].textContent}`, 20, 55);
-      doc.text(`Serviço: ${linha.cells[2].textContent}`, 20, 65);
-      
-      // Informações do serviço
-      doc.setFontSize(12);
-      doc.text('DADOS DO SERVIÇO', 20, 80);
-      
-      doc.setFontSize(10);
-      doc.text(`Data de Entrada: ${linha.cells[3].textContent}`, 20, 90);
-      doc.text(`Data de Saída: ${linha.cells[4].textContent === '-' ? 'Não concluído' : linha.cells[4].textContent}`, 20, 100);
-      doc.text(`Valor: ${linha.cells[5].textContent}`, 20, 110);
-      doc.text(`Forma de Pagamento: ${linha.cells[6].textContent}`, 20, 120);
-      doc.text(`Status: ${linha.cells[7].textContent}`, 20, 130);
-      
-      // Rodapé
-      doc.setLineWidth(0.2);
-      doc.line(20, 260, 190, 260);
-      doc.setFontSize(8);
-      doc.text('Assinatura do Responsável: _________________________________________', 20, 270);
-      doc.text('Assinatura do Cliente: ____________________________________________', 20, 280);
-      
-      // Salvar o PDF
-      doc.save(`Ordem_Servico_${linha.cells[0].textContent.replace(/\s+/g, '_')}.pdf`);
+  // Menu ativo
+  const links = document.querySelectorAll('.sidebar .menu li a');
+  const currentPage = window.location.pathname.split('/').pop();
+
+  links.forEach(link => {
+    if (link.getAttribute('href') === currentPage) {
+      link.classList.add('active');
     }
+<<<<<<< Updated upstream
 
     // Fechar o modal se clicar fora dele
     window.onclick = function(event) {
@@ -355,5 +426,9 @@
     Inputmask({ mask: "(99) 99999-9999" }).mask("#telefone");
     Inputmask({ mask: "999.999.999-99" }).mask("#cpf");
   </script>
+=======
+  });
+</script>
+>>>>>>> Stashed changes
 </body>
 </html>
