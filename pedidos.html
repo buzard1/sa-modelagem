@@ -9,6 +9,64 @@
   <link rel="stylesheet" href="css/pedidos.css" />
   <link rel="icon" href="img/logo.png" type="image/png">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    /* Adicionando estilo para a mini aba de peças */
+    .mini-aba {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #1e1e1e;
+      padding: 20px;
+      border-radius: 8px;
+      z-index: 1000;
+      width: 300px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    }
+    
+    .mini-aba h3 {
+      margin-top: 0;
+      color: #03dac6;
+    }
+    
+    .lista-pecas {
+      max-height: 200px;
+      overflow-y: auto;
+      margin: 10px 0;
+    }
+    
+    .peca-item {
+      padding: 8px;
+      margin: 5px 0;
+      background: #333;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    
+    .peca-item:hover {
+      background: #444;
+    }
+    
+    .peca-selecionada {
+      margin-top: 10px;
+      padding: 10px;
+      background: #333;
+      border-radius: 4px;
+      display: none;
+    }
+    
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      z-index: 999;
+    }
+  </style>
 </head>
 <body>
   <!-- Sidebar fixa -->
@@ -70,7 +128,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr>
+        <tr data-peca='null'>
           <td>João Silva</td>
           <td>iPhone 11</td>
           <td>Troca de tela</td>
@@ -84,7 +142,7 @@
             <button class="action-btn pdf-btn" onclick="gerarPDF(this)">📄<span class="tooltip-text">Gerar PDF</span></button>
           </td>
         </tr>
-        <tr>
+        <tr data-peca='null'>
           <td>Maria Oliveira</td>
           <td>Samsung A21s</td>
           <td>Reparo no botão</td>
@@ -98,7 +156,7 @@
             <button class="action-btn pdf-btn" onclick="gerarPDF(this)">📄<span class="tooltip-text">Gerar PDF</span></button>
           </td>
         </tr>
-        <tr>
+        <tr data-peca='null'>
           <td>Lucas Costa</td>
           <td>Motorola G9</td>
           <td>Troca de bateria</td>
@@ -134,6 +192,17 @@
         <label for="edit-servico">Serviço:</label>
         <input type="text" id="edit-servico" class="form-input">
       </div>
+      
+      <!-- Seção de Peças -->
+      <div class="form-group">
+        <label>Peça utilizada:</label>
+        <div id="peca-selecionada" class="peca-selecionada">
+          <span id="peca-nome">Nenhuma peça selecionada</span>
+          <button type="button" onclick="removerPeca()" style="margin-left: 10px; background: #ff4444; color: white; border: none; border-radius: 4px; padding: 2px 5px; cursor: pointer;">X</button>
+        </div>
+        <button type="button" onclick="abrirMiniAbaPecas()" style="margin-top: 5px; background: #03dac6; color: black; border: none; border-radius: 4px; padding: 5px 10px; cursor: pointer;">Atribuir Peça</button>
+      </div>
+      
       <div class="form-group">
         <label for="edit-data-entrada">Data Entrada:</label>
         <input type="date" id="edit-data-entrada" class="form-input">
@@ -170,6 +239,21 @@
       </div>
     </form>
   </div>
+</div>
+
+<!-- Mini Aba de Peças -->
+<div id="overlay" class="overlay" onclick="fecharMiniAbaPecas()"></div>
+<div id="mini-aba-pecas" class="mini-aba">
+  <h3>Selecione uma Peça</h3>
+  <input type="text" id="busca-peca" placeholder="Buscar peça..." style="width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 4px; border: none;">
+  <div class="lista-pecas">
+    <div class="peca-item" onclick="selecionarPeca('Tela LCD iPhone 11', 'TELA-IP11')">Tela LCD iPhone 11</div>
+    <div class="peca-item" onclick="selecionarPeca('Bateria Motorola G9', 'BAT-MOTG9')">Bateria Motorola G9</div>
+    <div class="peca-item" onclick="selecionarPeca('Botão Power Samsung A21s', 'BTN-SAMA21')">Botão Power Samsung A21s</div>
+    <div class="peca-item" onclick="selecionarPeca('Conector de Carga Universal', 'CON-USB')">Conector de Carga Universal</div>
+    <div class="peca-item" onclick="selecionarPeca('Película Protetora', 'PEL-UNI')">Película Protetora</div>
+  </div>
+  <button type="button" onclick="fecharMiniAbaPecas()" style="margin-top: 10px; background: #444; color: white; border: none; border-radius: 4px; padding: 5px 10px; cursor: pointer;">Cancelar</button>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -252,6 +336,42 @@
   // Variável para armazenar a linha sendo editada
   let linhaEditando = null;
 
+  // Funções para manipulação de peças
+  function abrirMiniAbaPecas() {
+    document.getElementById('overlay').style.display = 'block';
+    document.getElementById('mini-aba-pecas').style.display = 'block';
+  }
+  
+  function fecharMiniAbaPecas() {
+    document.getElementById('overlay').style.display = 'none';
+    document.getElementById('mini-aba-pecas').style.display = 'none';
+  }
+  
+  function selecionarPeca(nome, codigo) {
+    if (!linhaEditando) return;
+    
+    // Armazena a peça como um objeto JSON no atributo data-peca da linha
+    const peca = JSON.stringify({ nome, codigo });
+    linhaEditando.setAttribute('data-peca', peca);
+    
+    // Atualiza a exibição no modal
+    document.getElementById('peca-nome').textContent = nome;
+    document.getElementById('peca-selecionada').style.display = 'block';
+    
+    fecharMiniAbaPecas();
+  }
+  
+  function removerPeca() {
+    if (!linhaEditando) return;
+    
+    // Remove a peça da linha
+    linhaEditando.setAttribute('data-peca', 'null');
+    
+    // Atualiza a exibição no modal
+    document.getElementById('peca-nome').textContent = 'Nenhuma peça selecionada';
+    document.getElementById('peca-selecionada').style.display = 'none';
+  }
+
   function alterarStatus(botao) {
     const statusTd = botao.closest('tr').querySelector('.status');
     const estados = ['pendente', 'andamento', 'concluido', 'cancelado'];
@@ -284,6 +404,17 @@
     document.getElementById('edit-valor').value = linhaEditando.cells[5].textContent.replace('R$ ', '');
     document.getElementById('edit-pagamento').value = linhaEditando.cells[6].textContent;
     document.getElementById('edit-status').value = linhaEditando.cells[7].textContent;
+    
+    // Verificar se há peça atribuída e mostrar no modal
+    const pecaData = linhaEditando.getAttribute('data-peca');
+    if (pecaData && pecaData !== 'null') {
+      const peca = JSON.parse(pecaData);
+      document.getElementById('peca-nome').textContent = peca.nome;
+      document.getElementById('peca-selecionada').style.display = 'block';
+    } else {
+      document.getElementById('peca-nome').textContent = 'Nenhuma peça selecionada';
+      document.getElementById('peca-selecionada').style.display = 'none';
+    }
     
     // Mostrar o modal
     modal.style.display = 'block';
@@ -336,6 +467,10 @@
     const { jsPDF } = window.jspdf;
     const linha = botao.closest('tr');
     
+    // Obter a peça atribuída (se existir)
+    const pecaData = linha.getAttribute('data-peca');
+    const peca = pecaData && pecaData !== 'null' ? JSON.parse(pecaData) : null;
+    
     const doc = new jsPDF();
     
     // Configurações do documento
@@ -367,6 +502,11 @@
     doc.text(`Valor: ${linha.cells[5].textContent}`, 20, 110);
     doc.text(`Forma de Pagamento: ${linha.cells[6].textContent}`, 20, 120);
     doc.text(`Status: ${linha.cells[7].textContent}`, 20, 130);
+    
+    // Adicionando informação da peça se existir
+    if (peca) {
+      doc.text(`Peça utilizada: ${peca.nome} (${peca.codigo})`, 20, 140);
+    }
     
     // Rodapé
     doc.setLineWidth(0.2);
