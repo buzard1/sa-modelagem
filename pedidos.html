@@ -37,13 +37,8 @@
     <form id="filtro-form" style="margin-bottom: 2rem;">
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
         <input type="text" name="nome" placeholder="Nome" style="padding: 0.5rem; border-radius: 8px; border: none;">
-<<<<<<< Updated upstream
-        <input type="text" name="cpf_cnpj" id="cpf_cnpj" placeholder="CPF/CNPJ" style="padding: 0.5rem; border-radius: 8px; border: none;">        
-        <input type="text" name="telefone" id="telefone" placeholder="Telefone" style="padding: 0.5rem; border-radius: 8px; border: none;">
-=======
         <input type="text" name="cpf_cnpj" id="cpf_cnpj" placeholder="CPF/CNPJ" style="padding: 0.5rem; border-radius: 8px; border: none;">
         <input type="text" name="telefone" id="telefone" placeholder="Telefone" style="padding: 0.5rem; border-radius: 8px; border: none;" maxlength="15">
->>>>>>> Stashed changes
         <input type="email" name="email" placeholder="E-mail" style="padding: 0.5rem; border-radius: 8px; border: none;">
         <select name="tipo" style="padding: 0.5rem; border-radius: 8px; border: none;">
           <option value="">Tipo de cliente</option>
@@ -400,35 +395,7 @@
     if (link.getAttribute('href') === currentPage) {
       link.classList.add('active');
     }
-<<<<<<< Updated upstream
-
-    // Fechar o modal se clicar fora dele
-    window.onclick = function(event) {
-      const modal = document.getElementById('modal-edicao');
-      if (event.target == modal) {
-        fecharModal();
-      }
-    };
-
-    // Menu ativo
-    const links = document.querySelectorAll('.sidebar .menu li a');
-    const currentPage = window.location.pathname.split('/').pop();
-
-    links.forEach(link => {
-      if (link.getAttribute('href') === currentPage) {
-        link.classList.add('active');
-      }
-    });
-  </script>
-  <!-- Máscaras de entrada -->
-  <script src="https://cdn.jsdelivr.net/npm/inputmask/dist/inputmask.min.js"></script>
-  <script>
-    Inputmask({ mask: "(99) 99999-9999" }).mask("#telefone");
-    Inputmask({ mask: "999.999.999-99" }).mask("#cpf");
-  </script>
-=======
   });
 </script>
->>>>>>> Stashed changes
 </body>
 </html>
