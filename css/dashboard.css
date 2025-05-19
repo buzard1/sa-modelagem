@@ -82,6 +82,7 @@ body {
   line-height: 2;
   font-size: 1rem;
 }
+
 .profile-container {
   display: flex;
   align-items: flex-start;
@@ -114,5 +115,80 @@ body {
 }
 
 .change-photo-btn:hover {
+  background-color: #00bfa5;
+}
+
+/* Edição de email */
+.email-container {
+  position: relative;
+}
+
+.email-display {
+  display: inline-block;
+  margin-right: 5px;
+}
+
+.email-input {
+  background-color: #333;
+  color: #e0e0e0;
+  border: 1px solid #03dac6;
+  border-radius: 4px;
+  padding: 2px 5px;
+  width: 200px;
+}
+
+.edit-btn {
+  color: #03dac6;
+  border-color: #03dac6;
+  background: none;
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 2px 5px;
+  margin-left: 5px;
+  font-size: 0.9rem;
+   /* Bordas na cor do botão */
+}
+
+.save-btn, .cancel-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  margin-left: 5px;
+  padding: 2px 5px;
+  border-radius: 4px;
+}
+
+
+
+.save-btn {
+  background-color: #03dac6;
+  color: #000;
+}
+
+.cancel-btn {
+  background-color: #ff4444;
+  color: #fff;
+}
+
+/* Botão alterar senha */
+.change-password {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #333;
+}
+
+.change-password-btn {
+  background-color: #03dac6;
+  color: #000;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.change-password-btn:hover {
   background-color: #00bfa5;
 }
