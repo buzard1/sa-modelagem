@@ -21,7 +21,7 @@
       padding: 20px;
       border-radius: 8px;
       z-index: 1000;
-      width: 300px;
+      width: 400px;
       box-shadow: 0 0 20px rgba(0,0,0,0.5);
     }
     
@@ -48,12 +48,38 @@
       background: #444;
     }
     
-    .peca-selecionada {
-      margin-top: 10px;
-      padding: 10px;
+    .peca-adicionada {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px;
+      margin: 5px 0;
       background: #333;
       border-radius: 4px;
-      display: none;
+    }
+    
+    .peca-info {
+      flex-grow: 1;
+    }
+    
+    .peca-quantidade {
+      width: 50px;
+      margin: 0 10px;
+      padding: 3px;
+      text-align: center;
+      border-radius: 4px;
+      border: none;
+      background: #444;
+      color: white;
+    }
+    
+    .remove-peca {
+      background: #ff4444;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 2px 5px;
+      cursor: pointer;
     }
     
     .overlay {
@@ -65,6 +91,78 @@
       height: 100%;
       background: rgba(0,0,0,0.7);
       z-index: 999;
+    }
+    
+    /* Estilos existentes */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.7);
+    }
+    
+    .modal-content {
+      background-color: #1e1e1e;
+      margin: 5% auto;
+      padding: 20px;
+      border-radius: 8px;
+      width: 80%;
+      max-width: 600px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    }
+    
+    .close-btn {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    
+    .close-btn:hover {
+      color: #fff;
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    .form-input {
+      width: 100%;
+      padding: 8px;
+      border-radius: 4px;
+      border: none;
+      background: #333;
+      color: white;
+    }
+    
+    .form-buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
+    .btn-salvar {
+      padding: 8px 16px;
+      background-color: #03dac6;
+      border: none;
+      border-radius: 4px;
+      color: #000;
+      cursor: pointer;
+    }
+    
+    .btn-cancelar {
+      padding: 8px 16px;
+      background-color: #444;
+      border: none;
+      border-radius: 4px;
+      color: #fff;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -128,7 +226,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr data-peca='null'>
+        <tr data-pecas='[]'>
           <td>João Silva</td>
           <td>iPhone 11</td>
           <td>Troca de tela</td>
@@ -142,7 +240,7 @@
             <button class="action-btn pdf-btn" onclick="gerarPDF(this)">📄<span class="tooltip-text">Gerar PDF</span></button>
           </td>
         </tr>
-        <tr data-peca='null'>
+        <tr data-pecas='[]'>
           <td>Maria Oliveira</td>
           <td>Samsung A21s</td>
           <td>Reparo no botão</td>
@@ -156,7 +254,7 @@
             <button class="action-btn pdf-btn" onclick="gerarPDF(this)">📄<span class="tooltip-text">Gerar PDF</span></button>
           </td>
         </tr>
-        <tr data-peca='null'>
+        <tr data-pecas='[]'>
           <td>Lucas Costa</td>
           <td>Motorola G9</td>
           <td>Troca de bateria</td>
@@ -195,12 +293,13 @@
       
       <!-- Seção de Peças -->
       <div class="form-group">
-        <label>Peça utilizada:</label>
-        <div id="peca-selecionada" class="peca-selecionada">
-          <span id="peca-nome">Nenhuma peça selecionada</span>
-          <button type="button" onclick="removerPeca()" style="margin-left: 10px; background: #ff4444; color: white; border: none; border-radius: 4px; padding: 2px 5px; cursor: pointer;">X</button>
+        <label>Peças utilizadas:</label>
+        <div id="lista-pecas-adicionadas" style="margin-bottom: 10px;">
+          <!-- As peças adicionadas aparecerão aqui -->
         </div>
-        <button type="button" onclick="abrirMiniAbaPecas()" style="margin-top: 5px; background: #03dac6; color: black; border: none; border-radius: 4px; padding: 5px 10px; cursor: pointer;">Atribuir Peça</button>
+        <div style="display: flex; gap: 10px;">
+          <button type="button" onclick="abrirMiniAbaPecas()" style="background: #03dac6; color: black; border: none; border-radius: 4px; padding: 5px 10px; cursor: pointer;">Adicionar Peça</button>
+        </div>
       </div>
       
       <div class="form-group">
@@ -244,8 +343,9 @@
 <!-- Mini Aba de Peças -->
 <div id="overlay" class="overlay" onclick="fecharMiniAbaPecas()"></div>
 <div id="mini-aba-pecas" class="mini-aba">
-  <h3>Selecione uma Peça</h3>
+  <h3>Adicionar Peça</h3>
   <input type="text" id="busca-peca" placeholder="Buscar peça..." style="width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 4px; border: none;">
+  
   <div class="lista-pecas">
     <div class="peca-item" onclick="selecionarPeca('Tela LCD iPhone 11', 'TELA-IP11')">Tela LCD iPhone 11</div>
     <div class="peca-item" onclick="selecionarPeca('Bateria Motorola G9', 'BAT-MOTG9')">Bateria Motorola G9</div>
@@ -253,6 +353,15 @@
     <div class="peca-item" onclick="selecionarPeca('Conector de Carga Universal', 'CON-USB')">Conector de Carga Universal</div>
     <div class="peca-item" onclick="selecionarPeca('Película Protetora', 'PEL-UNI')">Película Protetora</div>
   </div>
+  
+  <div style="margin-top: 15px; display: flex; align-items: center; justify-content: space-between;">
+    <div style="display: flex; align-items: center;">
+      <label style="margin-right: 10px;">Quantidade:</label>
+      <input type="number" id="peca-quantidade" min="1" value="1" style="width: 60px; padding: 5px; border-radius: 4px; border: none; background: #444; color: white;">
+    </div>
+    <button type="button" onclick="adicionarPeca()" style="background: #03dac6; color: black; border: none; border-radius: 4px; padding: 5px 10px; cursor: pointer;">Adicionar</button>
+  </div>
+  
   <button type="button" onclick="fecharMiniAbaPecas()" style="margin-top: 10px; background: #444; color: white; border: none; border-radius: 4px; padding: 5px 10px; cursor: pointer;">Cancelar</button>
 </div>
 
@@ -330,16 +439,17 @@
       e.preventDefault();
     }
   });
-</script>
 
-<script>
-  // Variável para armazenar a linha sendo editada
+  // Variáveis globais
   let linhaEditando = null;
+  let pecaSelecionada = null;
 
   // Funções para manipulação de peças
   function abrirMiniAbaPecas() {
     document.getElementById('overlay').style.display = 'block';
     document.getElementById('mini-aba-pecas').style.display = 'block';
+    document.getElementById('peca-quantidade').value = 1;
+    pecaSelecionada = null;
   }
   
   function fecharMiniAbaPecas() {
@@ -348,28 +458,41 @@
   }
   
   function selecionarPeca(nome, codigo) {
-    if (!linhaEditando) return;
+    pecaSelecionada = { nome, codigo };
+    // Destacar a peça selecionada
+    const pecas = document.querySelectorAll('.peca-item');
+    pecas.forEach(p => p.style.background = '#333');
+    event.target.style.background = '#03dac6';
+    event.target.style.color = '#000';
+  }
+  
+  function adicionarPeca() {
+    if (!pecaSelecionada || !linhaEditando) return;
     
-    // Armazena a peça como um objeto JSON no atributo data-peca da linha
-    const peca = JSON.stringify({ nome, codigo });
-    linhaEditando.setAttribute('data-peca', peca);
+    const quantidade = parseInt(document.getElementById('peca-quantidade').value) || 1;
+    const peca = {
+      ...pecaSelecionada,
+      quantidade
+    };
     
-    // Atualiza a exibição no modal
-    document.getElementById('peca-nome').textContent = nome;
-    document.getElementById('peca-selecionada').style.display = 'block';
+    // Adicionar a peça à lista no modal
+    const listaPecas = document.getElementById('lista-pecas-adicionadas');
+    const pecaDiv = document.createElement('div');
+    pecaDiv.className = 'peca-adicionada';
+    pecaDiv.dataset.codigo = peca.codigo;
     
+    pecaDiv.innerHTML = `
+      <div class="peca-info">${peca.nome} (${peca.codigo})</div>
+      <input type="number" class="peca-quantidade" value="${peca.quantidade}" min="1">
+      <button class="remove-peca" onclick="removerPeca(this)">X</button>
+    `;
+    
+    listaPecas.appendChild(pecaDiv);
     fecharMiniAbaPecas();
   }
   
-  function removerPeca() {
-    if (!linhaEditando) return;
-    
-    // Remove a peça da linha
-    linhaEditando.setAttribute('data-peca', 'null');
-    
-    // Atualiza a exibição no modal
-    document.getElementById('peca-nome').textContent = 'Nenhuma peça selecionada';
-    document.getElementById('peca-selecionada').style.display = 'none';
+  function removerPeca(botao) {
+    botao.closest('.peca-adicionada').remove();
   }
 
   function alterarStatus(botao) {
@@ -405,15 +528,26 @@
     document.getElementById('edit-pagamento').value = linhaEditando.cells[6].textContent;
     document.getElementById('edit-status').value = linhaEditando.cells[7].textContent;
     
-    // Verificar se há peça atribuída e mostrar no modal
-    const pecaData = linhaEditando.getAttribute('data-peca');
-    if (pecaData && pecaData !== 'null') {
-      const peca = JSON.parse(pecaData);
-      document.getElementById('peca-nome').textContent = peca.nome;
-      document.getElementById('peca-selecionada').style.display = 'block';
-    } else {
-      document.getElementById('peca-nome').textContent = 'Nenhuma peça selecionada';
-      document.getElementById('peca-selecionada').style.display = 'none';
+    // Carregar peças existentes
+    const listaPecas = document.getElementById('lista-pecas-adicionadas');
+    listaPecas.innerHTML = '';
+    
+    const pecasData = linhaEditando.getAttribute('data-pecas');
+    if (pecasData && pecasData !== '[]') {
+      const pecas = JSON.parse(pecasData);
+      pecas.forEach(peca => {
+        const pecaDiv = document.createElement('div');
+        pecaDiv.className = 'peca-adicionada';
+        pecaDiv.dataset.codigo = peca.codigo;
+        
+        pecaDiv.innerHTML = `
+          <div class="peca-info">${peca.nome} (${peca.codigo})</div>
+          <input type="number" class="peca-quantidade" value="${peca.quantidade}" min="1">
+          <button class="remove-peca" onclick="removerPeca(this)">X</button>
+        `;
+        
+        listaPecas.appendChild(pecaDiv);
+      });
     }
     
     // Mostrar o modal
@@ -460,6 +594,24 @@
     else if (novoStatus === 'Concluído') statusTd.classList.add('concluido');
     else if (novoStatus === 'Cancelado') statusTd.classList.add('cancelado');
     
+    // Atualizar peças
+    const pecasAdicionadas = document.querySelectorAll('#lista-pecas-adicionadas .peca-adicionada');
+    const pecasArray = [];
+    
+    pecasAdicionadas.forEach(pecaDiv => {
+      const nome = pecaDiv.querySelector('.peca-info').textContent.split(' (')[0];
+      const codigo = pecaDiv.dataset.codigo;
+      const quantidade = parseInt(pecaDiv.querySelector('.peca-quantidade').value) || 1;
+      
+      pecasArray.push({
+        nome,
+        codigo,
+        quantidade
+      });
+    });
+    
+    linhaEditando.setAttribute('data-pecas', JSON.stringify(pecasArray));
+    
     fecharModal();
   }
 
@@ -467,9 +619,9 @@
     const { jsPDF } = window.jspdf;
     const linha = botao.closest('tr');
     
-    // Obter a peça atribuída (se existir)
-    const pecaData = linha.getAttribute('data-peca');
-    const peca = pecaData && pecaData !== 'null' ? JSON.parse(pecaData) : null;
+    // Obter as peças atribuídas (se existirem)
+    const pecasData = linha.getAttribute('data-pecas');
+    const pecas = pecasData && pecasData !== '[]' ? JSON.parse(pecasData) : [];
     
     const doc = new jsPDF();
     
@@ -503,9 +655,17 @@
     doc.text(`Forma de Pagamento: ${linha.cells[6].textContent}`, 20, 120);
     doc.text(`Status: ${linha.cells[7].textContent}`, 20, 130);
     
-    // Adicionando informação da peça se existir
-    if (peca) {
-      doc.text(`Peça utilizada: ${peca.nome} (${peca.codigo})`, 20, 140);
+    // Adicionando informações das peças se existirem
+    if (pecas.length > 0) {
+      doc.setFontSize(12);
+      doc.text('PEÇAS UTILIZADAS', 20, 145);
+      
+      doc.setFontSize(10);
+      let yPosition = 155;
+      pecas.forEach(peca => {
+        doc.text(`- ${peca.nome} (${peca.codigo}) - Qtd: ${peca.quantidade}`, 20, yPosition);
+        yPosition += 10;
+      });
     }
     
     // Rodapé
