@@ -189,3 +189,105 @@ h1 {
   background-color: #ff5252;
   color: #fff;
 }
+
+/* Estilo comum para ambos os botões */
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+/* Estilo para o botão de salvar */
+.btn-save {
+  background-color: #4CAF50; /* Verde */
+  color: white;
+}
+
+.btn-save:hover {
+  background-color: #45a049;
+}
+
+.btn-save:active {
+  transform: scale(0.98);
+}
+
+/* Estilo para o botão de cancelar */
+.btn-cancel {
+  background-color: #f44336; /* Vermelho */
+  color: white;
+}
+
+.btn-cancel:hover {
+  background-color: #e53935;
+}
+
+.btn-cancel:active {
+  transform: scale(0.98);
+}
+
+/* Estilo específico para os botões na área do modal */
+.modal-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 20px;
+}
+/* Estilo para o checkbox de status (como toggle switch) */
+input[type="checkbox"] {
+  appearance: none; /* Remove o estilo padrão do checkbox */
+  -webkit-appearance: none; /* Para Safari */
+  width: 60px;
+  height: 30px;
+  border-radius: 30px;
+  background-color: #ccc; /* Cor de fundo para o estado inativo */
+  position: relative;
+  transition: background-color 0.3s ease; /* Suaviza a mudança de cor */
+  cursor: pointer; /* Cursor de pointer para indicar interatividade */
+}
+
+/* Estilo para o botão (indicador do toggle) */
+input[type="checkbox"]::before {
+  content: "";
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%; /* Círculo */
+  background-color: white;
+  transition: transform 0.3s ease; /* Transição suave para mover o círculo */
+}
+
+/* Quando o checkbox está marcado (Ativo) */
+input[type="checkbox"]:checked {
+  background-color: #4CAF50; /* Verde para "Ativo" */
+}
+
+input[type="checkbox"]:checked::before {
+  transform: translateX(30px); /* Move o círculo para a direita */
+}
+
+/* Quando o checkbox não está marcado (Inativo) */
+input[type="checkbox"]:not(:checked) {
+  background-color: #f44336; /* Vermelho para "Inativo" */
+}
+
+input[type="checkbox"]:not(:checked)::before {
+  transform: translateX(0px); /* Círculo na posição inicial */
+}
+
+/* Efeito de hover (passar o mouse sobre o toggle) */
+input[type="checkbox"]:hover {
+  background-color: #8bc34a; /* Cor verde clara ao passar o mouse */
+}
+
+/* Opção de texto do status */
+label {
+  font-size: 16px;
+  color: #333;
+  margin-left: 10px;
+  font-weight: bold;
+}

@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Gerenciar Usuários</title>
-  <link rel="stylesheet" href="css/sidebar.css" />
   <link rel="stylesheet" href="css/usuarios.css" />
+  <link rel="stylesheet" href="css/sidebar.css" />
   <link rel="icon" href="img/logo.png" type="image/png">
 </head>
 <body>
@@ -129,12 +129,15 @@
       <label>Status:
         <input type="checkbox" id="edit-status" checked /> Ativo
       </label>
+      </label>
       <div class="modal-buttons">
-        <button id="salvar-edicao">📏 Salvar</button>
-        <button id="cancelar-edicao">❌ Cancelar</button>
+        <button id="salvar-edicao" class="btn btn-save">📏 Salvar</button>
+        <button id="cancelar-edicao" class="btn btn-cancel">❌ Cancelar</button>
+        
       </div>
     </div>
   </div>
+  
 
   <!-- Script de máscara -->
   <script src="https://cdn.jsdelivr.net/npm/inputmask/dist/inputmask.min.js"></script>
