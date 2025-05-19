@@ -287,7 +287,7 @@ input[type="checkbox"]:hover {
 /* Opção de texto do status */
 label {
   font-size: 16px;
-  color: #333;
+  color: #fcfcfc;
   margin-left: 10px;
   font-weight: bold;
 }
