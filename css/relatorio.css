@@ -1,83 +1,127 @@
 body {
-    margin: 0;
-    padding: 0;
-    background-color: #121212;
-    color: #e0e0e0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  }
-  
-  .container {
-    max-width: 1000px;
-    margin: 2rem auto;
-    padding: 1rem;
-  }
-  
-  h1 {
-    text-align: center;
-    margin-bottom: 2rem;
-    color: #03dac6;
-  }
-  
-  .filtros {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 2rem;
-  }
-  
-  .filtros label {
-    font-weight: bold;
-  }
-  
-  .filtros input,
-  .filtros select {
-    padding: 0.5rem;
-    border-radius: 6px;
-    border: 1px solid #333;
-    background-color: #2b2b2b;
-    color: #fff;
-  }
-  
-  .filtros button {
-    padding: 0.5rem 1rem;
-    background-color: #03dac6;
-    border: none;
-    color: #000;
-    font-weight: bold;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .filtros button:hover {
-    background-color: #00bfa5;
-  }
-  
-  .graficos {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-  }
-  
-  .grafico-box {
-    background-color: #1e1e1e;
-    padding: 1rem;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.4);
-  }
-  
-  .grafico-box h2 {
-    text-align: center;
-    margin-bottom: 1rem;
-    color: #ffffff;
-  }
-  
-  canvas {
-    width: 100%;
-    height: 300px;
-  }
-  
- 
-  
+  margin: 0;
+  padding: 0;
+  background-color: #121212;
+  color: #e0e0e0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.container {
+  max-width: 1000px;
+  margin: 2rem auto;
+  padding: 1rem;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #03dac6;
+}
+
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.filtros label {
+  font-weight: bold;
+}
+
+.filtros input,
+.filtros select {
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #333;
+  background-color: #2b2b2b;
+  color: #fff;
+}
+
+.filtros button {
+  padding: 0.5rem 1rem;
+  background-color: #03dac6;
+  border: none;
+  color: #000;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.filtros button:hover {
+  background-color: #00bfa5;
+}
+
+.graficos {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.grafico-box {
+  background-color: #1e1e1e;
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.4);
+}
+
+.grafico-box h2 {
+  text-align: center;
+  margin-bottom: 1rem;
+  color: #ffffff;
+}
+
+.filtro-pecas {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.filtro-pecas select {
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #333;
+  background-color: #2b2b2b;
+  color: #fff;
+  width: 200px;
+}
+
+canvas {
+  width: 100%;
+  height: 300px;
+}
+
+.busca-peca-topo {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.busca-peca-topo input {
+  padding: 0.5rem;
+  width: 250px;
+  border-radius: 6px;
+  border: 1px solid #333;
+  background-color: #2b2b2b;
+  color: #fff;
+}
+
+.busca-peca-topo button {
+  padding: 0.5rem 1rem;
+  background-color: #03dac6;
+  border: none;
+  color: #000;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.busca-peca-topo button:hover {
+  background-color: #00bfa5;
+}

@@ -16,19 +16,19 @@
       <img src="img/logo.png" alt="Logo do sistema">
     </div>
     <ul class="menu">
-      <ul class="menu">
-        <li><a href="dashboard.html">👤 <span>Perfil</span></a></li>
-        <li><a href="cadastro-cliente.html">📋 <span>Cadastro Cliente</span></a></li>
-        <li><a href="cadastro-ordem_serv.html">🛠️ <span>Cadastro de <br>Ordem de Serviço</span></a></li>
-        <li><a href="ordem_serv.html">💼 <span>Ordem de serviço</span></a></li>
-        <li><a href="relatorio.html">📊 <span>Relatórios</span></a></li>
-        <li><a href="estoque.html">📦 <span>Estoque</span></a></li>
-        <li><a href="usuarios.html">👥 <span>Usuários</span></a></li>
-        <li><a href="fornecedor.html">🔗 <span>Fornecedores</span></a></li>
-        <li><a href="suporte.html">🆘 <span>Suporte</span></a></li>
-        <li><a href="login.html">🚪 <span>Sair</span></a></li>
-      </ul>
+      <li><a href="dashboard.html">👤 <span>Perfil</span></a></li>
+      <li><a href="cadastro-cliente.html">📋 <span>Cadastro Cliente</span></a></li>
+      <li><a href="cadastro-ordem_serv.html">🛠️ <span>Cadastro de <br>Ordem de Serviço</span></a></li>
+      <li><a href="ordem_serv.html">💼 <span>Ordem de serviço</span></a></li>
+      <li><a href="relatorio.html">📊 <span>Relatórios</span></a></li>
+      <li><a href="estoque.html">📦 <span>Estoque</span></a></li>
+      <li><a href="usuarios.html">👥 <span>Usuários</span></a></li>
+      <li><a href="fornecedor.html">🔗 <span>Fornecedores</span></a></li>
+      <li><a href="suporte.html">🆘 <span>Suporte</span></a></li>
+      <li><a href="login.html">🚪 <span>Sair</span></a></li>
+    </ul>
   </nav>
+
   <div class="container">
     <h1>📊 Relatórios</h1>
 
@@ -73,131 +73,218 @@
         <h2>Finanças</h2>
         <canvas id="graficoFinancas"></canvas>
       </div>
+      <div class="grafico-box">
+        <div class="filtro-pecas">
+          <h2>Saída de Peças</h2>
+          <div class="busca-peca-topo">
+            <input list="listaPecas" id="pecaSelecionada" oninput="filtrarPorPeca()" placeholder="🔍 Buscar peça para saída">
+            <button onclick="confirmarBuscaPeca()">Confirmar</button>
+          </div>
+          <datalist id="listaPecas">
+            <option value="todas">Todas as Peças</option>
+            <option value="processador">Processador</option>
+            <option value="memoria">Memória RAM</option>
+            <option value="placa_mae">Placa Mãe</option>
+            <option value="hd">HD/SSD</option>
+            <option value="fonte">Fonte</option>
+            <option value="gabinete">Gabinete</option>
+          </datalist>
+        </div>
+        <canvas id="graficoSaidaPecas"></canvas>
+      </div>
     </div>
-
   </div>
 
   <script>
-    const chartPedidos = new Chart(
-      document.getElementById('graficoPedidos'),
-      {
-        type: 'bar',
-        data: {
-          labels: ['Jan', 'Fev', 'Mar', 'Abr'],
-          datasets: [{
-            label: 'Pedidos',
-            data: [15, 20, 10, 25],
-            backgroundColor: '#03dac6',
-            borderRadius: 6
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: { legend: { labels: { color: '#fff' } } },
-          scales: {
-            x: { ticks: { color: '#fff' } },
-            y: { ticks: { color: '#fff' } }
-          }
+    // Dados fictícios para as peças
+    const dadosPecas = {
+      todas: [30, 45, 22, 38],
+      processador: [5, 8, 3, 7],
+      memoria: [8, 12, 5, 10],
+      placa_mae: [4, 6, 3, 5],
+      hd: [7, 10, 6, 8],
+      fonte: [3, 5, 2, 4],
+      gabinete: [3, 4, 3, 4]
+    };
+
+    const chartPedidos = new Chart(document.getElementById('graficoPedidos'), {
+      type: 'bar',
+      data: {
+        labels: ['Jan', 'Fev', 'Mar', 'Abr'],
+        datasets: [{
+          label: 'Pedidos',
+          data: [15, 20, 10, 25],
+          backgroundColor: '#03dac6',
+          borderRadius: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { labels: { color: '#fff' } } },
+        scales: {
+          x: { ticks: { color: '#fff' } },
+          y: { ticks: { color: '#fff' } }
         }
       }
-    );
+    });
 
-    const chartFinancas = new Chart(
-      document.getElementById('graficoFinancas'),
-      {
-        type: 'line',
-        data: {
-          labels: ['Jan', 'Fev', 'Mar', 'Abr'],
-          datasets: [{
-            label: 'R$ Faturado',
-            data: [1500, 2300, 1100, 2800],
-            backgroundColor: '#bb86fc',
-            borderColor: '#854ec2', // mesma cor da legenda, mas visível
-            borderWidth: 3,         // aumenta a espessura da linha
-            tension: 0.4,
-            fill: false
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: { legend: { labels: { color: '#fff' } } },
-          scales: {
-            x: { ticks: { color: '#fff' } },
-            y: {
-              ticks: {
-                color: '#fff',
-                callback: function(value) {
-                  return 'R$ ' + value.toLocaleString('pt-BR');
-                }
+    const chartFinancas = new Chart(document.getElementById('graficoFinancas'), {
+      type: 'line',
+      data: {
+        labels: ['Jan', 'Fev', 'Mar', 'Abr'],
+        datasets: [{
+          label: 'R$ Faturado',
+          data: [1500, 2300, 1100, 2800],
+          backgroundColor: '#bb86fc',
+          borderColor: '#854ec2',
+          borderWidth: 3,
+          tension: 0.4,
+          fill: false
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { labels: { color: '#fff' } } },
+        scales: {
+          x: { ticks: { color: '#fff' } },
+          y: {
+            ticks: {
+              color: '#fff',
+              callback: function(value) {
+                return 'R$ ' + value.toLocaleString('pt-BR');
               }
             }
           }
         }
       }
-    );
-
-    function filtrarRelatorio() {
-  const dataInicio = document.getElementById('dataInicio').value;
-  const dataFim = document.getElementById('dataFim').value;
-  const mes = document.getElementById('mes').value;
-  const ano = document.getElementById('ano').value;
-
-  // Filtro por intervalo de datas
-  if (dataInicio && dataFim && !mes) {
-    if (dataInicio > dataFim) {
-      alert('⚠️ A data de início não pode ser maior que a data de fim.');
-      return;
-    }
-
-    const dias = gerarDiasEntreDatas(dataInicio, dataFim);
-    const pedidos = dias.map(() => Math.floor(Math.random() * 10 + 1));
-    const faturamento = dias.map(() => Math.floor(Math.random() * 1500 + 500));
-
-    alert(`📌 Filtro aplicado de ${dataInicio} até ${dataFim}`);
-    atualizarGraficos(dias, pedidos, faturamento);
-  
-  // Filtro por mês e ano específicos
-  } else if (mes && ano) {
-    const mesInt = parseInt(mes);
-    const diasNoMes = new Date(ano, mesInt, 0).getDate();
-    const nomeMes = document.querySelector(`#mes option[value="${mes}"]`).textContent;
-
-    const diasDoMes = Array.from({ length: diasNoMes }, (_, i) => {
-      const dia = (i + 1).toString().padStart(2, '0');
-      return `${dia}/${mes.padStart(2, '0')}`;
     });
 
-    const pedidos = diasDoMes.map(() => Math.floor(Math.random() * 10 + 1));
-    const faturamento = diasDoMes.map(() => Math.floor(Math.random() * 1500 + 500));
+    const chartSaidaPecas = new Chart(document.getElementById('graficoSaidaPecas'), {
+      type: 'bar',
+      data: {
+        labels: ['Jan', 'Fev', 'Mar', 'Abr'],
+        datasets: [{
+          label: 'Peças Saídas',
+          data: dadosPecas.todas,
+          backgroundColor: '#ff9800',
+          borderRadius: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { labels: { color: '#fff' } } },
+        scales: {
+          x: { ticks: { color: '#fff' } },
+          y: { ticks: { color: '#fff' } }
+        }
+      }
+    });
 
-    alert(`📌 Filtro aplicado para ${nomeMes}/${ano}`);
-    atualizarGraficos(diasDoMes, pedidos, faturamento);
+    function filtrarPorPeca() {
+      const valorDigitado = document.getElementById('pecaSelecionada').value.toLowerCase().replace(/\s/g, '_');
+      const nomeExibido = document.getElementById('pecaSelecionada').value;
 
-  // Filtro por ano inteiro (quando mês = "")
-  } else if (!mes && ano) {
-    const nomesMeses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+      const chavePeca = Object.keys(dadosPecas).includes(valorDigitado) ? valorDigitado : 'todas';
 
-    const pedidosPorMes = Array.from({ length: 12 }, () => Math.floor(Math.random() * 100 + 50));
-    const faturamentoPorMes = Array.from({ length: 12 }, () => Math.floor(Math.random() * 15000 + 5000));
+      // Atualiza os dados do gráfico de saída de peças com base na peça selecionada
+      const dias = chartSaidaPecas.data.labels; // Obtém os dias filtrados
+      const saidaPecas = dias.map(() => Math.floor(Math.random() * 15 + 5)); // Gera novos dados para cada dia
+      dadosPecas.todas = saidaPecas; // Atualiza os dados de saída de peças
 
-    alert(`📌 Filtro aplicado para o ano de ${ano}`);
-    atualizarGraficos(nomesMeses, pedidosPorMes, faturamentoPorMes);
+      chartSaidaPecas.data.datasets[0].data = dadosPecas[chavePeca]; // Atualiza os dados do gráfico
+      chartSaidaPecas.data.datasets[0].label = chavePeca === 'todas' ? 'Peças Saídas' : `Saída de ${nomeExibido}`;
+      chartSaidaPecas.update(); // Atualiza o gráfico
+    }
 
-  } else {
-    alert('⚠️ Preencha intervalo de datas ou selecione mês e/ou ano.');
-  }
-}
+    function confirmarBuscaPeca() {
+      const valorDigitado = document.getElementById('pecaSelecionada').value.toLowerCase().replace(/\s/g, '_');
+      const datalist = Array.from(document.querySelectorAll('#listaPecas option')).map(opt => opt.value.toLowerCase().replace(/\s/g, '_'));
 
+      if (!datalist.includes(valorDigitado)) {
+        alert('⚠️ Peça inválida! Por favor selecione uma peça da lista.');
+        return;
+      }
+
+      document.getElementById('pecaSelecionada').value = document.querySelector(`#listaPecas option[value="${valorDigitado.replace(/_/g, ' ')}"]`)?.value || 'todas';
+      
+      filtrarPorPeca();
+    }
+
+    function filtrarRelatorio() {
+      const dataInicio = document.getElementById('dataInicio').value;
+      const dataFim = document.getElementById('dataFim').value;
+      const mes = document.getElementById('mes').value;
+      const ano = document.getElementById('ano').value;
+
+      let dias = [];
+      let pedidos = [];
+      let faturamento = [];
+      let saidaPecas = [];
+
+      if (dataInicio && dataFim) {
+        if (dataInicio > dataFim) {
+          alert('⚠️ A data de início não pode ser maior que a data de fim.');
+          return;
+        }
+
+        dias = gerarDiasEntreDatas(dataInicio, dataFim);
+        pedidos = dias.map(() => Math.floor(Math.random() * 10 + 1));
+        faturamento = dias.map(() => Math.floor(Math.random() * 1500 + 500));
+        saidaPecas = dias.map(() => Math.floor(Math.random() * 15 + 5));
+        dadosPecas.todas = saidaPecas;
+
+        alert(`📌 Filtro aplicado de ${dataInicio} até ${dataFim}`);
+      } else if (mes && ano) {
+        const mesInt = parseInt(mes);
+        const diasNoMes = new Date(ano, mesInt, 0).getDate();
+        const nomeMes = document.querySelector(`#mes option[value="${mes}"]`).textContent;
+
+        dias = Array.from({ length: diasNoMes }, (_, i) => {
+          const dia = (i + 1).toString().padStart(2, '0');
+          return `${dia}/${mes.padStart(2, '0')}`;
+        });
+
+        pedidos = dias.map(() => Math.floor(Math.random() * 10 + 1));
+        faturamento = dias.map(() => Math.floor(Math.random() * 1500 + 500));
+        saidaPecas = dias.map(() => Math.floor(Math.random() * 15 + 5));
+        dadosPecas.todas = saidaPecas;
+
+        alert(`📌 Filtro aplicado para ${nomeMes}/${ano}`);
+      } else if (!mes && ano) {
+        const nomesMeses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+
+        pedidos = Array.from({ length: 12 }, () => Math.floor(Math.random() * 100 + 50));
+        faturamento = Array.from({ length: 12 }, () => Math.floor(Math.random() * 15000 + 5000));
+        saidaPecas = Array.from({ length: 12 }, () => Math.floor(Math.random() * 150 + 30));
+        dadosPecas.todas = saidaPecas;
+
+        alert(`📌 Filtro aplicado para o ano de ${ano}`);
+        dias = nomesMeses;
+      } else {
+        alert('⚠️ Preencha intervalo de datas ou selecione mês e/ou ano.');
+        return;
+      }
+
+      atualizarGraficos(dias, pedidos, faturamento);
+      filtrarPorPeca();
+    }
 
     function limparFiltros() {
       document.getElementById('dataInicio').value = '';
       document.getElementById('dataFim').value = '';
       document.getElementById('mes').value = '';
       document.getElementById('ano').value = '2025';
+      document.getElementById('pecaSelecionada').value = 'todas';
 
-      atualizarGraficos(['Jan', 'Fev', 'Mar', 'Abr'],
-                        [15, 20, 10, 25],
-                        [1500, 2300, 1100, 2800]);
+      dadosPecas.todas = [30, 45, 22, 38];
+      
+      atualizarGraficos(
+        ['Jan', 'Fev', 'Mar', 'Abr'],
+        [15, 20, 10, 25],
+        [1500, 2300, 1100, 2800]
+      );
+      
+      filtrarPorPeca();
     }
 
     function atualizarGraficos(labels, dadosPedidos, dadosFinancas) {
@@ -208,6 +295,11 @@
       chartFinancas.data.labels = labels;
       chartFinancas.data.datasets[0].data = dadosFinancas;
       chartFinancas.update();
+
+      // Atualiza o gráfico de saída de peças com base nos dados filtrados
+      chartSaidaPecas.data.labels = labels;
+      chartSaidaPecas.data.datasets[0].data = dadosPecas.todas;
+      chartSaidaPecas.update();
     }
 
     function gerarDiasEntreDatas(inicio, fim) {
@@ -225,7 +317,7 @@
       return dias;
     }
   </script>
-  <!-- Script: ativa o menu da página atual -->
+
   <script>
     const links = document.querySelectorAll('.sidebar .menu li a');
     const currentPage = window.location.pathname.split('/').pop();
@@ -235,7 +327,6 @@
         link.classList.add('active');
       }
     });
-    
   </script>
 </body>
 </html>
