@@ -92,9 +92,13 @@ body {
   .cancelado { color: #e57373; }
   
   /* CORES DOS BOTÕES */
+
   .edit-btn { border-color: #03dac6; color: #03dac6; }
   .pdf-btn { border-color: #bb86fc; color: #bb86fc; }
   .status-btn { border-color: #ffca28; color: #ffca28; }
+  .action-btn.delete-btn {
+    border: 2px solid #ff4444 !important;
+  }
   
   .action-btn:hover {
     transform: scale(1.1) translateY(1px);
@@ -275,4 +279,18 @@ body {
 .action-btn:hover .tooltip-text {
   visibility: visible;
   opacity: 1;
+}
+/* Estilo adicional para o modal de confirmação */
+#modal-confirmacao .modal-content {
+  background-color: #2e1e1e; /* Vermelho escuro para destacar perigo */
+  border-top: 4px solid #ff4444;
+}
+
+#modal-confirmacao .btn-salvar {
+  background-color: #ff4444 !important;
+  color: white;
+}
+
+#modal-confirmacao .btn-salvar:hover {
+  background-color: #cc0000 !important;
 }

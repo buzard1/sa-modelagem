@@ -87,7 +87,10 @@
             <td>Marina@email.com</td>
             <td>Atendente</td>
             <td>(11) 91234-5678</td>
-            <td><button class="editar">✏️</button></td>
+            <td>
+              <button class="editar">✏️</button>
+              <button class="excluir">🗑️</button>
+            </td>
           </tr>
           <tr>
             <td>Sr Inácio</td>
@@ -95,7 +98,10 @@
             <td>inacio@email.com</td>
             <td>Administrador</td>
             <td>(21) 99876-5432</td>
-            <td><button class="editar">✏️</button></td>
+            <td>
+              <button class="editar">✏️</button>
+              <button class="excluir">🗑️</button>
+            </td>
           </tr>
           <tr>
             <td>Pedro</td>
@@ -103,7 +109,10 @@
             <td>pedro@email.com</td>
             <td>Cliente</td>
             <td>(19) 98765-4321</td>
-            <td><button class="editar">✏️</button></td>
+            <td>
+              <button class="editar">✏️</button>
+              <button class="excluir">🗑️</button>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -259,6 +268,62 @@
     Inputmask({"mask": "999.999.999-99"}).mask("#edit-cpf");
     Inputmask({"mask": "999.999.999-99"}).mask("#filtro-cpf");
   </script>
-</body>
 
+  <script>
+// Variável para armazenar a linha a ser excluída
+let linhaParaExcluir = null;
+
+// Adiciona eventos aos botões de excluir
+document.addEventListener('DOMContentLoaded', function() {
+  // Botões de excluir na tabela
+  document.querySelectorAll('.excluir').forEach(botao => {
+    botao.addEventListener('click', function(e) {
+      e.preventDefault();
+      linhaParaExcluir = this.closest('tr');
+      const nomeUsuario = linhaParaExcluir.querySelector('td:first-child').textContent;
+      
+      document.getElementById('usuario-excluir-nome').textContent = nomeUsuario;
+      document.getElementById('confirmacao-texto').value = '';
+      document.getElementById('confirmar-exclusao').disabled = true;
+      document.getElementById('modal-excluir').classList.remove('hidden');
+    });
+  });
+
+  // Validação do texto de confirmação
+  document.getElementById('confirmacao-texto').addEventListener('input', function(e) {
+    const textoConfirmacao = e.target.value.toUpperCase();
+    document.getElementById('confirmar-exclusao').disabled = textoConfirmacao !== 'DELETAR';
+  });
+
+  // Confirmação de exclusão
+  document.getElementById('confirmar-exclusao').addEventListener('click', function() {
+    if (linhaParaExcluir) {
+      linhaParaExcluir.remove();
+    }
+    document.getElementById('modal-excluir').classList.add('hidden');
+    linhaParaExcluir = null;
+  });
+
+  // Cancelar exclusão
+  document.getElementById('cancelar-exclusao').addEventListener('click', function() {
+    document.getElementById('modal-excluir').classList.add('hidden');
+    linhaParaExcluir = null;
+  });
+});
+  </script>
+
+<!-- Modal de confirmação para excluir -->
+<div id="modal-excluir" class="modal hidden">
+  <div class="modal-content">
+    <h2>Confirmar Exclusão</h2>
+    <p>Tem certeza que deseja excluir o usuário <strong id="usuario-excluir-nome"></strong>?</p>
+    <p>Para confirmar, digite <strong>DELETAR</strong> no campo abaixo:</p>
+    <input type="text" id="confirmacao-texto" placeholder="Digite DELETAR" class="filtro-input">
+    <div class="modal-buttons">
+      <button id="confirmar-exclusao" class="btn btn-cancel" disabled>🗑️ Excluir</button>
+      <button id="cancelar-exclusao" class="btn btn-save">↩️ Cancelar</button>
+    </div>
+  </div>
+</div>
+</body>
 </html>

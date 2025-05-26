@@ -238,6 +238,7 @@
           <td class="actions">
             <button class="action-btn edit-btn" onclick="abrirModalEdicao(this)">✏️<span class="tooltip-text">Editar</span></button>
             <button class="action-btn pdf-btn" onclick="gerarPDF(this)">📄<span class="tooltip-text">Gerar PDF</span></button>
+            <button class="action-btn delete-btn" onclick="deletarLinha(this)">🗑️<span class="tooltip-text">Deletar</span></button>
           </td>
         </tr>
         <tr data-pecas='[]'>
@@ -252,6 +253,7 @@
           <td class="actions">
             <button class="action-btn edit-btn" onclick="abrirModalEdicao(this)">✏️<span class="tooltip-text">Editar</span></button>
             <button class="action-btn pdf-btn" onclick="gerarPDF(this)">📄<span class="tooltip-text">Gerar PDF</span></button>
+            <button class="action-btn delete-btn" onclick="deletarLinha(this)">🗑️<span class="tooltip-text">Deletar</span></button>
           </td>
         </tr>
         <tr data-pecas='[]'>
@@ -266,6 +268,7 @@
           <td class="actions">
             <button class="action-btn edit-btn" onclick="abrirModalEdicao(this)">✏️<span class="tooltip-text">Editar</span></button>
             <button class="action-btn pdf-btn" onclick="gerarPDF(this)">📄<span class="tooltip-text">Gerar PDF</span></button>
+            <button class="action-btn delete-btn" onclick="deletarLinha(this)">🗑️<span class="tooltip-text">Deletar</span></button>
           </td>
         </tr>
       </tbody>
@@ -696,6 +699,66 @@
       link.classList.add('active');
     }
   });
+
+  let linhaParaDeletar = null;
+
+function deletarLinha(botao) {
+  linhaParaDeletar = botao.closest('tr');
+  const cliente = linhaParaDeletar.cells[0].textContent;
+  const aparelho = linhaParaDeletar.cells[1].textContent;
+  const servico = linhaParaDeletar.cells[2].textContent;
+  
+  document.getElementById('confirmacao-mensagem').textContent = 
+    'Tem certeza que deseja deletar esta ordem de serviço?';
+  
+  document.getElementById('confirmacao-detalhes').innerHTML = 
+    `<strong>Cliente:</strong> ${cliente}<br>
+     <strong>Aparelho:</strong> ${aparelho}<br>
+     <strong>Serviço:</strong> ${servico}`;
+  
+  // Mostrar o modal de confirmação
+  document.getElementById('modal-confirmacao').style.display = 'block';
+}
+
+function fecharModalConfirmacao() {
+  document.getElementById('modal-confirmacao').style.display = 'none';
+  linhaParaDeletar = null;
+}
+
+function confirmarExclusao() {
+  if (!linhaParaDeletar) return;
+  
+  // Segunda confirmação - mais rigorosa
+  const confirmacaoFinal = prompt('Digite "DELETAR" para confirmar a exclusão:');
+  
+  if (confirmacaoFinal === 'DELETAR') {
+    linhaParaDeletar.remove();
+    
+    // Aqui você pode adicionar a chamada AJAX para deletar do banco de dados
+    // fetch(...) como no exemplo anterior
+    
+    alert('Ordem de serviço deletada com sucesso!');
+  } else {
+    alert('Exclusão cancelada. A ordem de serviço não foi deletada.');
+  }
+  
+  fecharModalConfirmacao();
+}
 </script>
+
+<!-- Modal de Confirmação de Exclusão -->
+<div id="modal-confirmacao" class="modal">
+  <div class="modal-content" style="max-width: 400px;">
+    <span class="close-btn" onclick="fecharModalConfirmacao()">&times;</span>
+    <h2 style="color: #ff4444; margin-bottom: 1.5rem;">Confirmar Exclusão</h2>
+    <p id="confirmacao-mensagem">Tem certeza que deseja deletar esta ordem de serviço?</p>
+    <p id="confirmacao-detalhes" style="font-size: 0.9em; color: #aaa; margin-bottom: 20px;"></p>
+    
+    <div class="form-buttons">
+      <button type="button" class="btn-cancelar" onclick="fecharModalConfirmacao()">Cancelar</button>
+      <button type="button" class="btn-salvar" style="background-color: #ff4444;" onclick="confirmarExclusao()">Sim, Deletar</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
