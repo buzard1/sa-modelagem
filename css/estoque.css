@@ -91,3 +91,96 @@ table {
   text-decoration: none;
   cursor: pointer;
 }
+/* Estilos para o modal de exclusão */
+#modal-excluir {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#modal-excluir.hidden {
+  display: none;
+}
+
+#modal-excluir .modal-content {
+  background-color: #2b2b2b;
+  padding: 2rem;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 500px;
+  position: relative;
+}
+
+#modal-excluir .close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+/* Estilos para os botões do modal */
+.btn-excluir-modal {
+  background-color: #ff5252;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.btn-excluir-modal:hover:not(:disabled) {
+  background-color: #d32f2f;
+}
+
+.btn-excluir-modal:disabled {
+  background-color: #757575;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.btn-cancelar-modal {
+  background-color: #616161;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.btn-cancelar-modal:hover {
+  background-color: #424242;
+}
+/* Estilo para os botões de ação na tabela */
+.btn-editar, .btn-excluir {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 5px 8px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  margin: 0 2px;
+}
+
+/* Botão Editar */
+.btn-editar {
+  color: #03dac6; /* Azul esverdeado */
+}
+
+.btn-editar:hover {
+  background-color: rgba(3, 218, 198, 0.1); /* Fundo sutil ao passar o mouse */
+  transform: scale(1.2);
+}
+
+/* Botão Excluir */
+.btn-excluir {
+  color: #ff5252; /* Vermelho */
+}
+
+.btn-excluir:hover {
+  background-color: rgba(255, 82, 82, 0.1); /* Fundo sutil ao passar o mouse */
+  transform: scale(1.2);
+}

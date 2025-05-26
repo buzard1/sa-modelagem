@@ -68,14 +68,20 @@
           <td>5</td>
           <td>AppleTech</td>
           <td>150.00</td>
-          <td><button class="btn-editar">✏️ Editar</button></td>
+          <td>
+            <button class="btn-editar">✏️</button>
+            <button class="btn-excluir">🗑️</button>
+          </td>
         </tr>
         <tr>
           <td>Bateria Samsung A10</td>
           <td>12</td>
           <td>SmartParts</td>
           <td>50.00</td>
-          <td><button class="btn-editar">✏️ Editar</button></td>
+          <td>
+            <button class="btn-editar">✏️</button>
+            <button class="btn-excluir">🗑️</button>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -178,6 +184,77 @@
         };
       });
     });
+
+    // Variável para armazenar a linha a ser excluída
+let linhaParaExcluir = null;
+
+// Adiciona eventos quando o DOM estiver completamente carregado
+document.addEventListener('DOMContentLoaded', function() {
+  // Botões de excluir na tabela
+  document.querySelectorAll('.btn-excluir').forEach(botao => {
+    botao.addEventListener('click', function(e) {
+      e.preventDefault();
+      linhaParaExcluir = this.closest('tr');
+      const produtoNome = linhaParaExcluir.querySelector('td:first-child').textContent;
+      
+      document.getElementById('produto-excluir-nome').textContent = produtoNome;
+      document.getElementById('confirmacao-texto').value = '';
+      document.getElementById('confirmar-exclusao').disabled = true;
+      
+      // Mostra o modal de exclusão
+      document.getElementById('modal-excluir').classList.remove('hidden');
+    });
+  });
+
+  // Validação do texto de confirmação
+  document.getElementById('confirmacao-texto').addEventListener('input', function(e) {
+    const textoConfirmacao = e.target.value.toUpperCase();
+    document.getElementById('confirmar-exclusao').disabled = textoConfirmacao !== 'DELETAR';
+  });
+
+  // Confirmação de exclusão
+  document.getElementById('confirmar-exclusao').addEventListener('click', function() {
+    if (linhaParaExcluir) {
+      linhaParaExcluir.remove();
+    }
+    document.getElementById('modal-excluir').classList.add('hidden');
+    linhaParaExcluir = null;
+  });
+
+  // Cancelar exclusão
+  document.getElementById('cancelar-exclusao').addEventListener('click', function() {
+    document.getElementById('modal-excluir').classList.add('hidden');
+    linhaParaExcluir = null;
+  });
+
+  // Fechar modal ao clicar no X
+  document.querySelector('#modal-excluir .close').addEventListener('click', function() {
+    document.getElementById('modal-excluir').classList.add('hidden');
+    linhaParaExcluir = null;
+  });
+
+  // Fechar modal ao clicar fora
+  window.addEventListener('click', function(event) {
+    if (event.target === document.getElementById('modal-excluir')) {
+      document.getElementById('modal-excluir').classList.add('hidden');
+      linhaParaExcluir = null;
+    }
+  });
+});
   </script>
+  <!-- Modal de confirmação para excluir -->
+<div id="modal-excluir" class="modal hidden">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>Confirmar Exclusão</h2>
+    <p>Tem certeza que deseja excluir o produto <strong id="produto-excluir-nome"></strong>?</p>
+    <p>Para confirmar, digite <strong>DELETAR</strong> no campo abaixo:</p>
+    <input type="text" id="confirmacao-texto" placeholder="Digite DELETAR" class="search-input">
+    <div class="modal-buttons">
+      <button id="confirmar-exclusao" class="btn-excluir-modal" disabled>🗑️ Excluir</button>
+      <button id="cancelar-exclusao" class="btn-cancelar-modal">↩️ Cancelar</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
