@@ -1,0 +1,27 @@
+# Arquivos temporários do Microsoft Office
+~$*
+
+# Arquivos temporários do Windows
+*.tmp
+*.bak
+
+# Pastas do sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Arquivos temporários do PowerPoint
+*.pptx~
+*.ppt~
+
+# Arquivos temporários do Word
+*.docx~
+*.doc~
+
+# Arquivos temporários do Excel
+*.xlsx~
+*.xls~
+
+# Arquivos de backup comuns
+*.old
+*.swp
