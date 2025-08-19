@@ -1,3 +1,36 @@
+<?php 
+session_start();
+require_once 'conexao.php';
+
+// VERIFICA SE O USUARIO TEM PERMISSAO
+if (!isset($_SESSION['cargo']) || ($_SESSION['cargo'] != "Gerente" && $_SESSION['cargo'] != "Atendente")) {
+    echo "Acesso Negado!";
+    exit();
+}
+
+if($_SERVER["REQUEST_METHOD"]=="POST"){
+    $nome     = $_POST['nome'];
+    $telefone = $_POST['telefone'];
+    $email    = $_POST['email'];
+    $endereco = $_POST['endereco'];
+    $cpf      = $_POST['cpf'];
+
+    $sql="INSERT INTO cliente(nome, telefone, email, endereco, cpf) VALUES (:nome, :telefone, :email, :endereco, :cpf)";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':nome', $nome);
+    $stmt->bindParam(':telefone', $telefone);
+    $stmt->bindParam(':email', $email);
+    $stmt->bindParam(':endereco', $endereco);
+    $stmt->bindParam(':cpf', $cpf);
+
+    if($stmt->execute()){
+        echo "<script>alert('Cliente cadastrado com sucesso!');</script>";
+    }else{
+        echo "<script>alert('Erro ao cadastrar o cliente!');</script>";
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -25,9 +58,10 @@
       <li><a href="usuarios.html">👥 <span>Usuários</span></a></li>
       <li><a href="fornecedor.html">🔗 <span>Fornecedores</span></a></li>
       <li><a href="suporte.html">🆘 <span>Suporte</span></a></li>
-      <li><a href="login.html">🚪 <span>Sair</span></a></li>
+      <li><a href="logout.php">🚪 <span>Sair</span></a></li>
     </ul>
   </nav>
+
 
   <!-- Conteúdo principal -->
   <main class="content">
