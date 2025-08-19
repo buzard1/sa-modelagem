@@ -23,15 +23,13 @@ DROP TABLE IF EXISTS `cliente`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `cliente` (
-  `cpf_cliente` varchar(20) NOT NULL,
+  `cpf` varchar(20) NOT NULL, 
   `telefone` varchar(20) DEFAULT NULL,
-  `nome_completo` varchar(100) DEFAULT NULL,
+  `nome` varchar(100) DEFAULT NULL,
   `email` varchar(100) DEFAULT NULL,
-  `bairro` varchar(100) DEFAULT NULL,
-  `tipo` varchar(50) DEFAULT NULL,
-  `cidade` varchar(100) DEFAULT NULL,
-  `estado` varchar(50) DEFAULT NULL,
-  PRIMARY KEY (`cpf_cliente`)
+  `endereco` varchar(100) DEFAULT NULL,
+  
+  PRIMARY KEY (`cpf`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -41,7 +39,9 @@ CREATE TABLE `cliente` (
 
 LOCK TABLES `cliente` WRITE;
 /*!40000 ALTER TABLE `cliente` DISABLE KEYS */;
-INSERT INTO `cliente` VALUES ('03975482656','(084) 6833-9911','Ana Oliveira','mendesbryan@farias.com','Aeroporto Carvalho','Comercial','Moreira','AL'),('06483725108','+55 (041) 5379 3853','Lorenzo Rocha','da-rosaana-julia@martins.net','Núcleo Daniela Ramos','Residencial','Cardoso de Lopes','PB'),('07956183286','+55 84 4766-3212','Sra. Beatriz Moreira','vnogueira@alves.com','Estação da Cunha','Residencial','Cavalcanti das Flores','PE'),('08413567939','+55 61 9351 5965','Dr. João Lucas Fernandes','uda-conceicao@almeida.com','Morro Almeida','Comercial','Moura','AM'),('09378524141','84 4249 4680','Kaique Campos','xfernandes@fernandes.com','Favela de Cardoso','Comercial','Almeida de Goiás','PE'),('10459863720','+55 61 1421-6366','Bianca Costela','correiapedro@martins.org','Vila de Almeida','Comercial','Moreira','PA'),('12479856011','+55 41 3834 8547','Eduardo Cunha','cecilia20@bol.com.br','Passarela Davi da Rocha','Residencial','Porto de da Mota','PA'),('14506923707','61 8827-6874','Heloísa da Conceição','xcardoso@bol.com.br','Viaduto Vitor Aragão','Residencial','Vieira do Sul','GO'),('14573698264','+55 (081) 7010 6223','Leandro Duarte','vitorpinto@alves.org','Aeroporto Murilo Araújo','Residencial','Moura do Amparo','PR'),('15069273868','+55 31 6337-7982','Davi Lucas Vieira','joao-guilhermefogaca@das.com','Passarela de Lopes','Comercial','da Cruz de Almeida','AM'),('20439816505','+55 71 9384-1644','Danilo Dias','marcos-vinicius91@ig.com.br','Fazenda Bruno Almeida','Residencial','Ribeiro Grande','RR'),('20916547876','61 3471 3222','Davi Lucas Gomes','barroscatarina@vieira.br','Área Enzo Carvalho','Comercial','Ramos','RS'),('23047651906','+55 81 5354-1092','Elisa Vieira','castropietro@hotmail.com','Núcleo Mariana da Conceição','Residencial','Novaes de Cunha','RR'),('23175468071','+55 (084) 2464-5011','Ana Júlia da Mota','da-luzdaniela@santos.com','Colônia Campos','Residencial','das Neves do Norte','RJ'),('23478560144','+55 (031) 8054 3379','Luiz Fernando Melo','fbarbosa@nunes.net','Largo de Carvalho','Residencial','Gonçalves dos Dourados','MT'),('27890564120','+55 31 5287 3551','Isaac Lopes','joao-gabrielda-mata@hotmail.com','Vila Sarah Costa','Comercial','Barbosa de Minas','AC'),('28903647556','(031) 5462 4580','Ana Julia Caldeira','alicia07@da.com','Área de Melo','Comercial','Farias do Sul','SC'),('31542890624','(021) 9236-8108','Dra. Marina Nunes','zda-rosa@hotmail.com','Sítio Pietra Peixoto','Residencial','Dias Alegre','MT'),('32085649700','0900 932 9553','Clarice Porto','melobruna@uol.com.br','Quadra Cunha','Comercial','Moura','RJ'),('35460921716','+55 (071) 0932-6313','Calebe Carvalho','peixotobruno@santos.br','Rodovia Moraes','Residencial','Alves das Flores','SC'),('37109864510','+55 71 6601 9874','Emanuelly Nascimento','goncalvesrafael@ig.com.br','Estação de Viana','Comercial','Santos de da Cruz','RO'),('38125760903','41 5057-2681','Calebe Pereira','danilo65@bol.com.br','Recanto de Moura','Comercial','da Cruz','RO'),('39261874509','+55 41 3748-9340','Agatha Campos','benicio16@oliveira.org','Estrada Viana','Comercial','Lopes','PE'),('39765042116','31 9748 6726','Enrico Costela','luiza14@rezende.net','Setor Valentina Jesus','Residencial','Oliveira','SC'),('40367289547','+55 84 0410 8578','Amanda Santos','dmoreira@gmail.com','Conjunto de da Cruz','Comercial','da Rocha do Galho','RS'),('40796283150','+55 51 8244 7293','Davi Silva','vduarte@bol.com.br','Largo Santos','Comercial','Melo','SC'),('47183956237','+55 (021) 1084-8963','Dra. Alice Lopes','lorenzomelo@yahoo.com.br','Lagoa de Cavalcanti','Comercial','da Conceição de Ramos','PR'),('48352076965','0300-018-5541','Juan Peixoto','bruno22@gmail.com','Vereda de Souza','Comercial','Correia de Araújo','CE'),('49216583746','0300-155-6549','Sarah da Paz','benjaminmartins@uol.com.br','Campo Aragão','Comercial','Moreira de Silva','AM'),('50732496152','+55 (031) 9290 1760','Ana Laura Duarte','luiz-otaviosilva@uol.com.br','Parque Cunha','Residencial','Araújo','SP'),('56904728167','(051) 3062-9559','Luana da Conceição','joao-lucas72@viana.com','Ladeira Sales','Comercial','Pereira','RJ'),('57812064930','(051) 3370-1729','Isaac Costela','bruno09@da.com','Fazenda de Rocha','Residencial','Porto do Norte','GO'),('59784031205','+55 (011) 8815-1304','Marina Silva','camposrafaela@bol.com.br','Travessa de Correia','Comercial','Teixeira Grande','PA'),('62198754355','0500-159-0783','Diogo Viana','beatriz61@ig.com.br','Fazenda Rodrigues','Residencial','Rezende Alegre','GO'),('62594837164','+55 81 4208-8510','Srta. Brenda da Costa','maria-cecilia34@farias.com','Área de Correia','Residencial','Mendes','SP'),('64721053835','81 9884-0806','Breno Aragão','wlopes@uol.com.br','Viaduto Almeida','Residencial','Rodrigues','AL'),('64825379109','+55 51 9021 6454','Enzo Gabriel Novaes','da-rosacaue@monteiro.br','Trevo Silva','Residencial','Viana','BA'),('67012385995','+55 31 3136-2567','Luiz Miguel Barros','ian79@pereira.org','Condomínio da Rosa','Residencial','Fogaça do Amparo','AC'),('67582943074','(084) 8798-4168','Laura da Rosa','matheusmartins@hotmail.com','Área Pires','Residencial','Costela do Galho','SC'),('67894301213','+55 71 8691-8204','Valentina Nunes','jesusmilena@sales.br','Sítio Silva','Comercial','Novaes','RO'),('68097531410','21 4818 3897','Lara Cardoso','helena25@freitas.br','Vila Rodrigues','Comercial','Nogueira','AC'),('70216459885','(051) 8746 5840','Ana Lívia Cunha','das-nevesbreno@uol.com.br','Fazenda Barbosa','Comercial','Caldeira de Sales','RS'),('70529168430','+55 84 8222 3799','Diego Ribeiro','lavinia66@azevedo.com','Lagoa de das Neves','Residencial','Duarte das Pedras','SP'),('71820359603','21 0902 6040','Francisco Aragão','monteiropietra@uol.com.br','Passarela de Azevedo','Residencial','Moraes do Sul','MT'),('72359048104','0800 161 1206','João Gabriel Rodrigues','ana-livia53@yahoo.com.br','Campo de Oliveira','Residencial','Aragão das Pedras','PB'),('75189304639','31 3137-6779','Lavínia Gonçalves','uda-costa@yahoo.com.br','Colônia Lima','Residencial','Costela','AC'),('75194862067','0500 317 9814','Sophie Barbosa','fsilva@nunes.com','Alameda de Peixoto','Comercial','Peixoto','RR'),('76028451967','61 8474 1528','Marcos Vinicius da Mata','mcostela@yahoo.com.br','Vale de Silveira','Residencial','Oliveira Alegre','RS'),('80364275162','84 0526 9685','Manuela Pinto','nogueirabryan@pereira.br','Lago de Araújo','Residencial','Rodrigues','PE'),('80957642130','+55 (051) 4911 9846','Thiago Silveira','zda-mata@barbosa.br','Quadra Azevedo','Comercial','da Rocha das Flores','RR'),('82407651901','(084) 7267 0756','Davi da Mota','gnascimento@barros.com','Recanto da Mata','Comercial','Alves do Amparo','RJ'),('83127640544','(061) 6723-4653','Alana Souza','caueda-mota@uol.com.br','Alameda Isabel Viana','Residencial','Silva dos Dourados','BA'),('83154972005','(031) 2519-1348','Bruno da Luz','almeidamaria-julia@hotmail.com','Travessa Martins','Residencial','Pereira','MT'),('85417026344','+55 31 9618 2676','Ana Clara Duarte','da-rochamaria-eduarda@araujo.com','Feira Maria Ferreira','Residencial','Rodrigues','PE'),('85712304635','21 0430 3220','Benjamin Rodrigues','biancaporto@bol.com.br','Quadra Alves','Residencial','Sales Alegre','PE'),('86352407900','(061) 1334-3275','Júlia da Mota','maria-vitoria56@uol.com.br','Quadra Maria Eduarda da Rocha','Residencial','Nunes','MT'),('86542390189','+55 61 9652 2586','Sr. Raul Costela','yasminvieira@cunha.com','Aeroporto Esther Martins','Residencial','Barros','BA'),('86714093250','+55 71 3340-6597','Bruno Correia','egoncalves@bol.com.br','Viela Lucca da Costa','Residencial','Melo','RS'),('90731285441','(011) 5891 1668','Lorena Cardoso','crezende@ig.com.br','Condomínio Davi Lucca das Neves','Residencial','Moreira','AM'),('97042513606','61 1871-6668','Manuela Campos','nmoreira@da.com','Viela Nina Sales','Residencial','Silveira','RO');
+INSERT INTO `cliente` (cpf, telefone, nome, email, endereco)
+VALUES ('123.456.789-00', '(084) 6833-9911', 'Ana Oliveira', 'mendesbryan@farias.com', 'Aeroporto Carvalho');
+
 /*!40000 ALTER TABLE `cliente` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -77,8 +77,8 @@ DROP TABLE IF EXISTS `fornecedor`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `fornecedor` (
-  `id_fornecedor` int NOT NULL,
-  `nome_fornecedor` varchar(100) DEFAULT NULL,
+  `id_fornecedor` int NOT NULL AUTO_INCREMENT,
+  `nome` varchar(100) DEFAULT NULL,
   `telefone` varchar(20) DEFAULT NULL,
   `email` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id_fornecedor`)
@@ -103,7 +103,7 @@ DROP TABLE IF EXISTS `ordem_serv`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `ordem_serv` (
-  `id_ordem_serv` int NOT NULL,
+  `id_ordem_serv` int NOT NULL AUTO_INCREMENT,
   `Aparelho` varchar(100) DEFAULT NULL,
   `servico` varchar(255) DEFAULT NULL,
   `status` varchar(50) DEFAULT NULL,
@@ -140,7 +140,7 @@ DROP TABLE IF EXISTS `produto`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `produto` (
-  `id_produto` int NOT NULL,
+  `id_produto` int NOT NULL AUTO_INCREMENT,
   `nome_produto` varchar(100) DEFAULT NULL,
   `valor` decimal(10,2) DEFAULT NULL,
   `idfornecedor` int DEFAULT NULL,
