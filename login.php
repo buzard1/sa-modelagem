@@ -2,7 +2,7 @@
 session_start();
 require_once 'conexao.php';
 
-if ($_SERVER['REQUEST_METHOD']== "POST") {
+if ($_SERVER['REQUEST_METHOD'] == "POST") {
   $email = $_POST['email'];
   $senha = $_POST['senha'];
 
@@ -11,24 +11,21 @@ if ($_SERVER['REQUEST_METHOD']== "POST") {
   $stmt->bindParam(':email', $email);
   $stmt->execute();
   $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
-  if ($usuario && password_verify($senha, $usuario['senha'])){
-      // LOGIN BEM SUCEDIDO DEFINE AS VARIÁVEIS DE SESSÃO
-      $_SESSION['email'] = $usuario['email'];
-      $_SESSION['cargo'] = $usuario['cargo'];
-      $_SESSION['id_usuario'] = $usuario['id_usuario'];
 
-      // REDIRECIONA PARA A PÁGINA PRINCIPAL
-      header("location: ordem_serv.html");
-      exit();
+  if ($usuario && password_verify($senha, $usuario['senha'])) {
+    // LOGIN BEM SUCEDIDO DEFINE AS VARIÁVEIS DE SESSÃO
+    $_SESSION['email'] = $usuario['email'];
+    $_SESSION['cargo'] = $usuario['cargo'];
+    $_SESSION['id_usuario'] = $usuario['id_usuario'];
 
-  }else{
-      // LOGIN INVALIDO
-      echo "<script>alert('E-mail ou senha inválidos!');window.location.href = 'login.php';
-      </script>";
-  } 
+    // REDIRECIONA PARA A PÁGINA PRINCIPAL
+    header("location: ordem_serv.html");
+    exit();
+  } else {
+    // LOGIN INVALIDO
+    echo "<script>alert('E-mail ou senha inválidos!');window.location.href = 'login.php';</script>";
+  }
 }
-
-
 ?>
 
 <!DOCTYPE html>
@@ -48,10 +45,10 @@ if ($_SERVER['REQUEST_METHOD']== "POST") {
     </div>
   
     <h2 class="fade-in">Login</h2>
-    <form action action="login.php" method="POST">
+    <form action="login.php" method="POST">
       <div class="form-group fade-in delay-1">
         <label for="email">E-mail:</label>
-        <input type="text" id="email" name="email" required />
+        <input type="email" id="email" name="email" required />
       </div>
       <div class="form-group fade-in delay-2">
         <label for="senha">Senha:</label>
@@ -61,7 +58,6 @@ if ($_SERVER['REQUEST_METHOD']== "POST") {
       <a href="cadastro.html" class="btn-registrar fade-in delay-4">Registrar</a>
     </form>
     <a href="recuperar-email.html" class="link-redefinir fade-in delay-4">Esqueceu a senha?</a>
-  </div>
   </div>
 </body>
 </html>
