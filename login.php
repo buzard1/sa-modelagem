@@ -2,10 +2,17 @@
 session_start();
 require_once 'conexao.php';
 
+// Função para gerar senha hashada
+function gerarSenhaHashada($senha) {
+  return password_hash($senha, PASSWORD_DEFAULT);
+}
+
+// Verificar se o formulário foi enviado
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
   $email = $_POST['email'];
   $senha = $_POST['senha'];
 
+  // Verificar se o e-mail e a senha estão corretos
   $sql = "SELECT * FROM usuario WHERE email = :email";
   $stmt = $pdo->prepare($sql);
   $stmt->bindParam(':email', $email);
@@ -13,19 +20,41 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
   $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
 
   if ($usuario && password_verify($senha, $usuario['senha'])) {
-    // LOGIN BEM SUCEDIDO DEFINE AS VARIÁVEIS DE SESSÃO
+    // Login bem-sucedido
     $_SESSION['email'] = $usuario['email'];
     $_SESSION['cargo'] = $usuario['cargo'];
     $_SESSION['id_usuario'] = $usuario['id_usuario'];
 
-    // REDIRECIONA PARA A PÁGINA PRINCIPAL
     header("location: ordem_serv.html");
     exit();
   } else {
-    // LOGIN INVALIDO
+    // Login inválido
     echo "<script>alert('E-mail ou senha inválidos!');window.location.href = 'login.php';</script>";
   }
 }
+
+// Cadastrar novo usuário
+if (isset($_POST['cadastrar'])) {
+  $nome = $_POST['nome'];
+  $email = $_POST['email'];
+  $senha = $_POST['senha'];
+  $cargo = $_POST['cargo'];
+
+  // Gerar senha hashada
+  $senha_hashada = gerarSenhaHashada($senha);
+
+  // Inserir novo usuário no banco de dados
+  $sql = "INSERT INTO usuario (nome, email, senha, cargo) VALUES (:nome, :email, :senha, :cargo)";
+  $stmt = $pdo->prepare($sql);
+  $stmt->bindParam(':nome', $nome);
+  $stmt->bindParam(':email', $email);
+  $stmt->bindParam(':senha', $senha_hashada);
+  $stmt->bindParam(':cargo', $cargo);
+  $stmt->execute();
+
+  echo "<script>alert('Usuário cadastrado com sucesso!');window.location.href = 'login.php';</script>";
+}
+
 ?>
 
 <!DOCTYPE html>
