@@ -3,38 +3,31 @@ session_start();
 require_once 'conexao.php';
 
 if ($_SERVER['REQUEST_METHOD']== "POST") {
-    $email = $_POST['email'];
-    $senha = $_POST['senha'];
+  $email = $_POST['email'];
+  $senha = $_POST['senha'];
 
-    $sql = "SELECT * FROM usuario WHERE email = :email";
-    $stmt = $pdo->prepare($sql);
-    $stmt->bindParam(':email', $email);
-    $stmt->execute();
-    $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
-    if ($usuario && password_verify($senha, $usuario['senha'])){
-        // LOGIN BEM SUCEDIDO DEFINE AS VARIÁVEIS DE SESSÃO
-        $_SESSION['usuario'] = $usuario['nome'];
-        $_SESSION['perfil'] = $usuario['id_perfil'];
-        $_SESSION['id_usuario'] = $usuario['id_usuario'];
+  $sql = "SELECT * FROM usuario WHERE email = :email";
+  $stmt = $pdo->prepare($sql);
+  $stmt->bindParam(':email', $email);
+  $stmt->execute();
+  $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+  if ($usuario && password_verify($senha, $usuario['senha'])){
+      // LOGIN BEM SUCEDIDO DEFINE AS VARIÁVEIS DE SESSÃO
+      $_SESSION['email'] = $usuario['email'];
+      $_SESSION['cargo'] = $usuario['cargo'];
+      $_SESSION['id_usuario'] = $usuario['id_usuario'];
 
+      // REDIRECIONA PARA A PÁGINA PRINCIPAL
+      header("location: ordem_serv.html");
+      exit();
 
-        // VERIFICA SE A SENHA É TEMPORÁRIA
-        if ($usuario['senha_temporaria']){
-        // REDIRECIONA PARA A TROCA DE SENHA
-        header("location: alterar_senha.php");
-        exit();
-} else {
-        // REDIRECIONA PARA A PÁGINA PRINCIPAL
-        header("location: principal.php");
-        exit();
+  }else{
+      // LOGIN INVALIDO
+      echo "<script>alert('E-mail ou senha inválidos!');window.location.href = 'login.php';
+      </script>";
+  } 
 }
-    }else{
-        // LOGIN INVALIDO
-        echo "<script>alert('E-mail ou senha inválidos!');window.location.href = 'login.php';
-        </script>";
-    } 
 
-}
 
 ?>
 
@@ -55,16 +48,16 @@ if ($_SERVER['REQUEST_METHOD']== "POST") {
     </div>
   
     <h2 class="fade-in">Login</h2>
-    <form>
+    <form action action="login.php" method="POST">
       <div class="form-group fade-in delay-1">
-        <label for="usuario">Usuário:</label>
-        <input type="text" id="usuario" name="usuario" required />
+        <label for="email">E-mail:</label>
+        <input type="text" id="email" name="email" required />
       </div>
       <div class="form-group fade-in delay-2">
         <label for="senha">Senha:</label>
         <input type="password" id="senha" name="senha" required />
       </div>
-      <a href="cadastro-ordem_serv.html" class="btn-login fade-in delay-3">Entrar</a>
+      <button type="submit" class="btn-login fade-in delay-3">Entrar</button>
       <a href="cadastro.html" class="btn-registrar fade-in delay-4">Registrar</a>
     </form>
     <a href="recuperar-email.html" class="link-redefinir fade-in delay-4">Esqueceu a senha?</a>
