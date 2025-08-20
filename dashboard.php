@@ -39,11 +39,10 @@ $menus = [
         ['href' => 'suporte.php', 'icon' => '🆘', 'text' => 'Suporte'],
         ['href' => 'logout.php', 'icon' => '🚪', 'text' => 'Sair']
     ],
-  ];
+];
 
 // Obter o menu correspondente ao cargo do usuário
 $menuItems = isset($_SESSION['cargo']) && isset($menus[$_SESSION['cargo']]) ? $menus[$_SESSION['cargo']] : [];
-
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -78,11 +77,11 @@ $menuItems = isset($_SESSION['cargo']) && isset($menus[$_SESSION['cargo']]) ? $m
           <button class="change-photo-btn" onclick="document.getElementById('photo-input').click()">Alterar Foto</button>
         </div>
         <div class="profile-info">
-          <p><strong>Nome:</strong> <span id="nome"></span></p>
+          <p><strong>Nome:</strong> <span><?php echo htmlspecialchars($_SESSION['nome']); ?></span></p>
           
           <div class="email-container">
             <p><strong>Email:</strong> 
-              <span id="email" class="email-display"></span>
+              <span id="email" class="email-display"><?php echo htmlspecialchars($_SESSION['email']); ?></span>
               <input type="email" id="email-input" class="email-input" style="display: none;">
               <button id="edit-email-btn" class="edit-btn">✏️</button>
               <button id="save-email-btn" class="save-btn" style="display: none;">Salvar</button>
@@ -90,7 +89,7 @@ $menuItems = isset($_SESSION['cargo']) && isset($menus[$_SESSION['cargo']]) ? $m
             </p>
           </div>
           
-          <p><strong>Cargo:</strong> <span id="cargo"></span></p>
+          <p><strong>Cargo:</strong> <span><?php echo htmlspecialchars($_SESSION['cargo']); ?></span></p>
           <p><strong>Último login:</strong> <span id="ultimo-login"></span></p>
           
           <div class="change-password">
@@ -102,11 +101,12 @@ $menuItems = isset($_SESSION['cargo']) && isset($menus[$_SESSION['cargo']]) ? $m
   </main>
 
   <script>
-    // Preenche informações do perfil
-    document.getElementById('nome').textContent = localStorage.getItem('nomeFuncionario') || 'Funcionário';
-    document.getElementById('email').textContent = localStorage.getItem('emailFuncionario') || 'email@exemplo.com';
-    document.getElementById('email-input').value = localStorage.getItem('emailFuncionario') || 'email@exemplo.com';
-    document.getElementById('cargo').textContent = localStorage.getItem('cargoFuncionario') || 'Técnico';
+    // Preenche o campo de email editável com o valor atual
+    const emailDisplay = document.getElementById('email');
+    const emailInput = document.getElementById('email-input');
+    emailInput.value = emailDisplay.textContent;
+
+    // Último login (armazenado no navegador)
     document.getElementById('ultimo-login').textContent = localStorage.getItem('ultimoLogin') || new Date().toLocaleString();
 
     // Manipulação da foto de perfil
@@ -132,8 +132,6 @@ $menuItems = isset($_SESSION['cargo']) && isset($menus[$_SESSION['cargo']]) ? $m
     });
 
     // Controle do email editável
-    const emailDisplay = document.getElementById('email');
-    const emailInput = document.getElementById('email-input');
     const editEmailBtn = document.getElementById('edit-email-btn');
     const saveEmailBtn = document.getElementById('save-email-btn');
     const cancelEmailBtn = document.getElementById('cancel-email-btn');

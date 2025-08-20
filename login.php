@@ -44,6 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($autenticado) {
             // Salva sessão
+            $_SESSION['nome'] = $usuario['nome_completo']; // ✅ corrige aqui
             $_SESSION['usuario_id'] = $usuario['id_usuario'];
             $_SESSION['email'] = $usuario['email'];
             $_SESSION['cargo'] = $usuario['cargo'] ?? null;
