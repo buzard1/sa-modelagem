@@ -88,11 +88,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <label for="senha">Senha:</label>
         <input type="password" id="senha" name="senha" required />
       </div>
+
       <button type="submit" class="btn-login fade-in delay-3">Entrar</button>
       <a href="cadastro.html" class="btn-registrar fade-in delay-4">Registrar</a>
-      <br><br>
-      <!-- Link para redefinir senha -->
-      <a href="redefinir-senha.php" class="fade-in delay-5">Esqueci minha senha</a>
+      
+      <!-- Botão de redefinir senha -->
+      <a href="redefinir-senha.php" class="btn-registrar fade-in delay-5">Esqueci minha senha</a>
     </form>
   </div>
 </body>

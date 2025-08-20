@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
         $stmt->bindParam(':id', $_SESSION['usuario_id']);
         $stmt->execute();
 
-        echo "<script>alert('Senha alterada com sucesso!');window.location.href='dashboard.php';</script>";
+        echo "<script>alert('Senha alterada com sucesso!');window.location.href='login.php';</script>";
         exit();
     } else {
         echo "<script>alert('As senhas não coincidem!');</script>";
