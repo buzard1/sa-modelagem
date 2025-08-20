@@ -4,7 +4,7 @@ require_once 'conexao.php';
 
 
 // VERIFICA SE O USUARIO TEM PERMISSAO
-if (!isset($_SESSION['cargo']) || ($_SESSION['cargo'] != "Gerente")) {
+if (!isset($_SESSION['cargo']) || ($_SESSION['cargo'] != "Gerente" && $_SESSION['cargo'] != "Atendente")) {
     echo "Acesso Negado!";
     header("Location: dashboard.php");
     exit();
@@ -42,6 +42,24 @@ $menus = [
 // Obter o menu correspondente ao cargo do usuário
 $menuItems = isset($_SESSION['cargo']) && isset($menus[$_SESSION['cargo']]) ? $menus[$_SESSION['cargo']] : [];
 
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $nome = $_POST['nome_fornecedor'];
+    $telefone = $_POST['telefone']; 
+    $email = $_POST['email'];
+
+    $sql = "INSERT INTO fornecedor(nome_fornecedor, telefone, email) VALUES (:nome_fornecedor, :telefone, :email)";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':nome_fornecedor', $nome);
+    $stmt->bindParam(':telefone', $telefone);
+    $stmt->bindParam(':email', $email);
+
+
+    if ($stmt->execute()) {
+        echo "<script>alert('Fornecedor cadastrado com sucesso!');</script>";
+    } else {
+        echo "<script>alert('Erro ao cadastrar o Fornecedor!');</script>";
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -49,12 +67,13 @@ $menuItems = isset($_SESSION['cargo']) && isset($menus[$_SESSION['cargo']]) ? $m
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Cadastro de Fornecedor</title>
+  <title>Cadastro de Cliente</title>
   <link rel="stylesheet" href="css/sidebar.css" />
-  <link rel="stylesheet" href="css/fornecedor.css" />
-  <link rel="icon" href="img/logo.png" type="image/png">
+  <link rel="stylesheet" href="css/form.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
+
   <!-- Sidebar fixa -->
   <nav class="sidebar">
     <div class="logo">
@@ -66,28 +85,31 @@ $menuItems = isset($_SESSION['cargo']) && isset($menus[$_SESSION['cargo']]) ? $m
       <?php endforeach; ?>
     </ul>
   </nav>
-  <div class="form-container">
-    <h2> Cadastro de Fornecedor</h2>
-    <form action="cadastro_fornecedor.php" method="POST">
-      <div class="form-group">
-        <label for="nome_fornecedor">Nome da Empresa:</label>
+
+  <!-- Conteúdo principal -->
+  <main class="content">
+    <div class="form-container">
+      <h2>Cadastro de Fornecedor</h2>
+      <form action="fornecedor.php" method="POST">
+        <label for="nome_fornecedor">Nome completo:</label>
         <input type="text" id="nome_fornecedor" name="nome_fornecedor" required />
-      </div>
-      <div class="form-group">
+
         <label for="telefone">Telefone:</label>
         <input type="tel" id="telefone" name="telefone" required />
-      </div>
-      <div class="form-group">
+
         <label for="email">E-mail:</label>
         <input type="email" id="email" name="email" required />
-      </div>
-      
 
-      <button type="submit" class="btn-submit">Cadastrar</button>
-    </form>
 
-   
-  </div>
+
+        <div class="form-buttons">
+          <button type="submit"> Cadastrar </button>
+          <button type="button" id="cancelar">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </main>
+
   <!-- Script: ativa o menu da página atual -->
   <script>
     const links = document.querySelectorAll('.sidebar .menu li a');
@@ -98,13 +120,41 @@ $menuItems = isset($_SESSION['cargo']) && isset($menus[$_SESSION['cargo']]) ? $m
         link.classList.add('active');
       }
     });
-    
   </script>
+
   <!-- Máscaras de entrada -->
-  <script src="[https://cdn.jsdelivr.net/npm/inputmask/dist/inputmask.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/inputmask/dist/inputmask.min.js"></script>
   <script>
     Inputmask({ mask: "(99) 99999-9999" }).mask("#telefone");
-    Inputmask({ mask: "999.999.999-99" }).mask("#cpf");
+  </script>
+
+  <!-- Script do botão cancelar -->
+  <script>
+    document.getElementById("cancelar").addEventListener("click", () => {
+      const form = document.querySelector("form");
+      form.reset(); // limpa todos os campos
+    });
+  </script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+
+  <script>
+    const input = document.getElementById('cpf');
+    input.addEventListener('input', function () {
+      let value = input.value.replace(/\D/g, '');
+      value = value.slice(0, 14);
+      if (value.length <= 11) {
+        value = value.replace(/(\d{3})(\d)/, '$1.$2');
+        value = value.replace(/(\d{3})(\d)/, '$1.$2');
+        value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+      } else {
+        value = value.replace(/^(\d{2})(\d)/, '$1.$2');
+        value = value.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
+        value = value.replace(/\.(\d{3})(\d)/, '.$1/$2');
+        value = value.replace(/(\d{4})(\d)/, '$1-$2');
+      }
+      input.value = value;
+    });
   </script>
 </body>
 </html>
