@@ -1,4 +1,4 @@
-<?php
+<?php 
 session_start();
 require_once 'conexao.php';
 
@@ -6,24 +6,61 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $_POST['email'] ?? '';
     $senha = $_POST['senha'] ?? '';
 
-    $sql = "SELECT * FROM usuario WHERE email = :email AND senha = :senha LIMIT 1";
+    // Busca usuário pelo e-mail
+    $sql = "SELECT * FROM usuario WHERE email = :email LIMIT 1";
     $stmt = $pdo->prepare($sql);
     $stmt->bindParam(':email', $email);
-    $stmt->bindParam(':senha', $senha);
     $stmt->execute();
     $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($usuario) {
-        // LOGIN OK
-        $_SESSION['email'] = $usuario['email'];
-        $_SESSION['cargo'] = $usuario['cargo'];
-        $_SESSION['id_usuario'] = $usuario['id_usuario'];
+        $hashNoBanco = $usuario['senha'];
+        $autenticado = false;
 
-        header("Location: cadastro-cliente.php");
-        exit();
-    } else {
-        echo "<script>alert('E-mail ou senha inválidos!');window.location.href='login.php';</script>";
+        // 1) Tenta verificar com hash (senhas novas / temporárias)
+        if (password_verify($senha, $hashNoBanco)) {
+            $autenticado = true;
+
+            // Se necessário, rehash
+            if (password_needs_rehash($hashNoBanco, PASSWORD_DEFAULT)) {
+                $novoHash = password_hash($senha, PASSWORD_DEFAULT);
+                $up = $pdo->prepare("UPDATE usuario SET senha = :senha WHERE id_usuario = :id");
+                $up->bindParam(':senha', $novoHash);
+                $up->bindParam(':id', $usuario['id_usuario']);
+                $up->execute();
+            }
+        } 
+        // 2) Compatibilidade com senhas antigas salvas em texto puro
+        elseif (hash_equals($hashNoBanco, $senha)) {
+            $autenticado = true;
+
+            // Migra senha antiga para hash
+            $novoHash = password_hash($senha, PASSWORD_DEFAULT);
+            $up = $pdo->prepare("UPDATE usuario SET senha = :senha WHERE id_usuario = :id");
+            $up->bindParam(':senha', $novoHash);
+            $up->bindParam(':id', $usuario['id_usuario']);
+            $up->execute();
+        }
+
+        if ($autenticado) {
+            // Salva sessão
+            $_SESSION['usuario_id'] = $usuario['id_usuario'];
+            $_SESSION['email'] = $usuario['email'];
+            $_SESSION['cargo'] = $usuario['cargo'] ?? null;
+
+            // 🔑 Se senha for temporária → forçar troca
+            if (!empty($usuario['senha_temporaria']) && $usuario['senha_temporaria'] == 1) {
+                header("Location: trocar-senha.php");
+            } else {
+                header("Location: dashboard.php");
+            }
+            exit();
+        }
     }
+
+    // Falha no login
+    echo "<script>alert('E-mail ou senha inválidos!');window.location.href='login.php';</script>";
+    exit();
 }
 ?>
 <!DOCTYPE html>
@@ -53,6 +90,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </div>
       <button type="submit" class="btn-login fade-in delay-3">Entrar</button>
       <a href="cadastro.html" class="btn-registrar fade-in delay-4">Registrar</a>
+      <br><br>
+      <!-- Link para redefinir senha -->
+      <a href="redefinir-senha.php" class="fade-in delay-5">Esqueci minha senha</a>
     </form>
   </div>
 </body>
