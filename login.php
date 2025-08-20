@@ -92,9 +92,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
       <button type="submit" class="btn-login fade-in delay-3">Entrar</button>
       <a href="cadastro.html" class="btn-registrar fade-in delay-4">Registrar</a>
+<<<<<<< Updated upstream
       
       <!-- Botão de redefinir senha -->
       <a href="redefinir-senha.php" class="btn-registrar fade-in delay-5">Esqueci minha senha</a>
+=======
+      <br><br>
+      <a href="redefinir-senha.php" class="link-redefinir fade-in delay-4">Esqueci minha senha</a>
+     
+   
+>>>>>>> Stashed changes
     </form>
   </div>
 </body>

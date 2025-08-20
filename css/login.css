@@ -1,3 +1,4 @@
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -56,6 +57,8 @@
   .delay-2 { animation-delay: 0.4s; }
   .delay-3 { animation-delay: 0.6s; }
   .delay-4 { animation-delay: 0.8s; }
+
+  
   
   h2 {
     text-align: center;
@@ -133,16 +136,16 @@
     display: block;
     text-align: center;
     margin-top: 1rem;
-    color: #03dac6;
+    color: #ffffff;  /* <-- branco */
     text-decoration: none;
     font-size: 0.9rem;
     transition: color 0.3s ease;
-  }
-  
-  .link-redefinir:hover {
-    color: #00bfa5;
+}
+
+.link-redefinir:hover {
+    color: #cccccc;  /* branco mais claro no hover */
     text-decoration: underline;
-  }
+}
   .logo-login {
     text-align: center;
     margin-bottom: 1rem;
@@ -166,6 +169,8 @@
       transform: translateY(0);
     }
   }
+
+  
   
 
   
