@@ -28,7 +28,7 @@
         <input type="password" id="senha" name="senha" required />
       </div>
       <button type="submit" class="btn-register fade-in delay-4">Registrar</button>
-      <a href="login.html" class="back-link fade-in delay-5">Já tem uma conta? Entrar</a>
+      <a href="login.php" class="back-link fade-in delay-5">Já tem uma conta? Entrar</a>
     </form>
   </div>
 </body>

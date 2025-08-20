@@ -1,3 +1,48 @@
+<?php 
+session_start();
+require_once 'conexao.php';
+
+
+// VERIFICA SE O USUARIO TEM PERMISSAO
+if (!isset($_SESSION['cargo']) || ($_SESSION['cargo'] != "Gerente")) {
+    echo "Acesso Negado!";
+    header("Location: dashboard.php");
+    exit();
+}
+$menus = [
+    'Gerente' => [
+        ['href' => 'dashboard.php', 'icon' => '👤', 'text' => 'Perfil'],
+        ['href' => 'cadastro-cliente.php', 'icon' => '📋', 'text' => 'Cadastro Cliente'],
+        ['href' => 'cadastro-ordem_serv.php', 'icon' => '🛠️', 'text' => 'Cadastro de<br>Ordem de Serviço'],
+        ['href' => 'ordem_serv.php', 'icon' => '💼', 'text' => 'Ordem de serviço'],
+        ['href' => 'relatorio.php', 'icon' => '📊', 'text' => 'Relatórios'],
+        ['href' => 'estoque.php', 'icon' => '📦', 'text' => 'Estoque'],
+        ['href' => 'usuarios.php', 'icon' => '👥', 'text' => 'Usuários'],
+        ['href' => 'fornecedor.php', 'icon' => '🔗', 'text' => 'Fornecedores'],
+        ['href' => 'suporte.php', 'icon' => '🆘', 'text' => 'Suporte'],
+        ['href' => 'logout.php', 'icon' => '🚪', 'text' => 'Sair']
+    ],
+    'Atendente' => [
+        ['href' => 'dashboard.php', 'icon' => '👤', 'text' => 'Perfil'],
+        ['href' => 'cadastro-cliente.php', 'icon' => '📋', 'text' => 'Cadastro Cliente'],
+        ['href' => 'cadastro-ordem_serv.php', 'icon' => '🛠️', 'text' => 'Cadastro de<br>Ordem de Serviço'],
+        ['href' => 'ordem_serv.php', 'icon' => '💼', 'text' => 'Ordem de serviço'],
+        ['href' => 'estoque.php', 'icon' => '📦', 'text' => 'Estoque'],
+        ['href' => 'fornecedor.php', 'icon' => '🔗', 'text' => 'Fornecedores'],
+        ['href' => 'suporte.php', 'icon' => '🆘', 'text' => 'Suporte'],
+        ['href' => 'logout.php', 'icon' => '🚪', 'text' => 'Sair']
+    ],
+    'Tecnico' => [    
+        ['href' => 'dashboard.php', 'icon' => '👤', 'text' => 'Perfil'],
+        ['href' => 'ordem_serv.php', 'icon' => '💼', 'text' => 'Ordem de serviço'],
+        ['href' => 'suporte.php', 'icon' => '🆘', 'text' => 'Suporte'],
+        ['href' => 'logout.php', 'icon' => '🚪', 'text' => 'Sair']
+    ],
+  ];
+// Obter o menu correspondente ao cargo do usuário
+$menuItems = isset($_SESSION['cargo']) && isset($menus[$_SESSION['cargo']]) ? $menus[$_SESSION['cargo']] : [];
+
+?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -11,21 +56,14 @@
 </head>
 <body>
   <!-- Sidebar fixa -->
-  <nav class="sidebar">
+<nav class="sidebar">
     <div class="logo">
       <img src="img/logo.png" alt="Logo do sistema">
     </div>
     <ul class="menu">
-      <li><a href="dashboard.html">👤 <span>Perfil</span></a></li>
-      <li><a href="cadastro-cliente.html">📋 <span>Cadastro Cliente</span></a></li>
-      <li><a href="cadastro-ordem_serv.html">🛠️ <span>Cadastro de <br>Ordem de Serviço</span></a></li>
-      <li><a href="ordem_serv.html">💼 <span>Ordem de serviço</span></a></li>
-      <li><a href="relatorio.html">📊 <span>Relatórios</span></a></li>
-      <li><a href="estoque.html">📦 <span>Estoque</span></a></li>
-      <li><a href="usuarios.html">👥 <span>Usuários</span></a></li>
-      <li><a href="fornecedor.html">🔗 <span>Fornecedores</span></a></li>
-      <li><a href="suporte.html">🆘 <span>Suporte</span></a></li>
-      <li><a href="login.html">🚪 <span>Sair</span></a></li>
+      <?php foreach ($menuItems as $item): ?>
+        <li><a href="<?php echo $item['href']; ?>"><?php echo $item['icon']; ?> <span><?php echo $item['text']; ?></span></a></li>
+      <?php endforeach; ?>
     </ul>
   </nav>
 
