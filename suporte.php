@@ -2,13 +2,13 @@
 session_start();
 require_once 'conexao.php';
 
-
 // VERIFICA SE O USUARIO TEM PERMISSAO
 if (!isset($_SESSION['cargo']) || ($_SESSION['cargo'] != "Gerente" && $_SESSION['cargo'] != "Atendente" && $_SESSION['cargo'] != "Tecnico")) {
     echo "Acesso Negado!";
     header("Location: dashboard.php");
     exit();
 }
+
 $menus = [
     'Gerente' => [
         ['href' => 'dashboard.php', 'icon' => '👤', 'text' => 'Perfil'],
@@ -38,9 +38,26 @@ $menus = [
         ['href' => 'suporte.php', 'icon' => '🆘', 'text' => 'Suporte'],
         ['href' => 'logout.php', 'icon' => '🚪', 'text' => 'Sair']
     ],
-  ];
+];
+
 // Obter o menu correspondente ao cargo do usuário
 $menuItems = isset($_SESSION['cargo']) && isset($menus[$_SESSION['cargo']]) ? $menus[$_SESSION['cargo']] : [];
+
+// PROCESSA O FORMULÁRIO
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $nome = urlencode($_POST['nome']);
+    $email = urlencode($_POST['email']);
+    $problema = urlencode($_POST['problema']);
+    $urgencia = urlencode($_POST['urgencia']);
+
+    $destinatario = "tropadoingui@gmail.com"; 
+    $assunto = "Chamado de Suporte - Urgência: $urgencia";
+    $corpo = "Nome: $nome%0AEmail: $email%0AUrgência: $urgencia%0AProblema:%0A$problema";
+
+    // Abre o cliente de email do usuário
+    header("Location: mailto:$destinatario?subject=$assunto&body=$corpo");
+    exit();
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -71,7 +88,7 @@ $menuItems = isset($_SESSION['cargo']) && isset($menus[$_SESSION['cargo']]) ? $m
       Está com problemas? Preencha o formulário abaixo e nossa equipe entrará em contato.
     </p>
 
-    <form>
+    <form method="POST" action="">
       <label for="nome">Nome:</label>
       <input type="text" id="nome" name="nome" required />
 
@@ -91,10 +108,7 @@ $menuItems = isset($_SESSION['cargo']) && isset($menus[$_SESSION['cargo']]) ? $m
       <button type="submit">Enviar</button>
     </form>
 
-    <p class="contato">📧 Ou envie um e-mail diretamente para <strong>tropadoingui$a@gmail.com</strong></p>
-
-  
-
+    <p class="contato">📧 Ou envie um e-mail diretamente para <strong>tropadoingui@gmail.com</strong></p>
   </div>
   <!-- Script: ativa o menu da página atual -->
   <script>
@@ -106,7 +120,6 @@ $menuItems = isset($_SESSION['cargo']) && isset($menus[$_SESSION['cargo']]) ? $m
         link.classList.add('active');
       }
     });
-    
   </script>
 </body>
 </html>
