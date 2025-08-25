@@ -217,17 +217,16 @@ $menuItems = $_SESSION['cargo'] && isset($menus[$_SESSION['cargo']]) ? $menus[$_
   </script>
 </head>
 <body>
-  <nav class="sidebar">
+<nav class="sidebar">
     <div class="logo">
-      <img src="img/logo.png" alt="Logo do sistema" />
+      <img src="img/logo.png" alt="Logo do sistema">
     </div>
     <ul class="menu">
       <?php foreach ($menuItems as $item): ?>
-        <li><a href="<?= htmlspecialchars($item['href']) ?>"><?= $item['icon'] ?> <span><?= htmlspecialchars($item['text']) ?></span></a></li>
+        <li><a href="<?php echo $item['href']; ?>"><?php echo $item['icon']; ?> <span><?php echo $item['text']; ?></span></a></li>
       <?php endforeach; ?>
     </ul>
   </nav>
-
   <div class="form-container">
     <h2><?= $modoEdicao ? "✏️ Editar Produto" : "➕ Cadastrar Produto" ?></h2>
 
@@ -301,6 +300,5 @@ $menuItems = $_SESSION['cargo'] && isset($menus[$_SESSION['cargo']]) ? $menus[$_
       </tbody>
     </table>
   </div>
-
 </body>
 </html>

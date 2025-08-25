@@ -214,7 +214,7 @@ $menuItems = isset($_SESSION['cargo']) && isset($menus[$_SESSION['cargo']]) ? $m
 </head>
 <body>
   <!-- Sidebar fixa -->
-<nav class="sidebar">
+  <nav class="sidebar">
     <div class="logo">
       <img src="img/logo.png" alt="Logo do sistema">
     </div>
