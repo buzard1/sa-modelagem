@@ -2,13 +2,56 @@
 session_start();
 require_once 'conexao.php';
 
-
 // VERIFICA SE O USUARIO TEM PERMISSAO
 if (!isset($_SESSION['cargo']) || ($_SESSION['cargo'] != "Gerente")) {
     echo "Acesso Negado!";
     header("Location: dashboard.php");
     exit();
 }
+
+// =================== CADASTRAR NOVO USUÁRIO ===================
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['acao']) && $_POST['acao'] === 'adicionar') {
+    $nome  = $_POST['nome'] ?? '';
+    $email = $_POST['email'] ?? '';
+    $senha = $_POST['senha'] ?? '';
+    $cargo = $_POST['cargo'] ?? '';
+    $ativo = isset($_POST['ativo']) ? 1 : 0;
+
+    if (!empty($nome) && !empty($email) && !empty($senha) && !empty($cargo)) {
+        $senhaHash = password_hash($senha, PASSWORD_DEFAULT);
+
+        $sql = "INSERT INTO usuario (nome_completo, email, senha, cargo, ativo) 
+                VALUES (:nome, :email, :senha, :cargo, :ativo)";
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindParam(':nome', $nome);
+        $stmt->bindParam(':email', $email);
+        $stmt->bindParam(':senha', $senhaHash);
+        $stmt->bindParam(':cargo', $cargo);
+        $stmt->bindParam(':ativo', $ativo);
+
+        if ($stmt->execute()) {
+            echo "<script>alert('Usuário cadastrado com sucesso!'); window.location.href='usuarios.php';</script>";
+            exit;
+        } else {
+            echo "<script>alert('Erro ao cadastrar usuário!');</script>";
+        }
+    } else {
+        echo "<script>alert('Preencha todos os campos!');</script>";
+    }
+}
+
+// =================== BUSCAR USUÁRIOS OU CLIENTES ===================
+$filtroCargo = isset($_GET['filtro_cargo']) ? $_GET['filtro_cargo'] : '';
+if ($filtroCargo === 'Cliente') {
+    $sqlUsuarios = "SELECT cpf AS id_usuario, nome AS nome_completo, email, 'Cliente' AS cargo, 1 AS ativo, telefone, endereco 
+                    FROM cliente ORDER BY cpf DESC";
+} else {
+    $sqlUsuarios = "SELECT id_usuario, nome_completo, email, cargo, ativo FROM usuario ORDER BY id_usuario DESC";
+}
+$stmtUsuarios = $pdo->query($sqlUsuarios);
+$usuarios = $stmtUsuarios->fetchAll(PDO::FETCH_ASSOC);
+
+// =================== MENU ===================
 $menus = [
     'Gerente' => [
         ['href' => 'dashboard.php', 'icon' => '👤', 'text' => 'Perfil'],
@@ -22,26 +65,8 @@ $menus = [
         ['href' => 'suporte.php', 'icon' => '🆘', 'text' => 'Suporte'],
         ['href' => 'logout.php', 'icon' => '🚪', 'text' => 'Sair']
     ],
-    'Atendente' => [
-        ['href' => 'dashboard.php', 'icon' => '👤', 'text' => 'Perfil'],
-        ['href' => 'cadastro-cliente.php', 'icon' => '📋', 'text' => 'Cadastro Cliente'],
-        ['href' => 'cadastro-ordem_serv.php', 'icon' => '🛠️', 'text' => 'Cadastro de<br>Ordem de Serviço'],
-        ['href' => 'ordem_serv.php', 'icon' => '💼', 'text' => 'Ordem de serviço'],
-        ['href' => 'estoque.php', 'icon' => '📦', 'text' => 'Estoque'],
-        ['href' => 'fornecedor.php', 'icon' => '🔗', 'text' => 'Fornecedores'],
-        ['href' => 'suporte.php', 'icon' => '🆘', 'text' => 'Suporte'],
-        ['href' => 'logout.php', 'icon' => '🚪', 'text' => 'Sair']
-    ],
-    'Tecnico' => [    
-        ['href' => 'dashboard.php', 'icon' => '👤', 'text' => 'Perfil'],
-        ['href' => 'ordem_serv.php', 'icon' => '💼', 'text' => 'Ordem de serviço'],
-        ['href' => 'suporte.php', 'icon' => '🆘', 'text' => 'Suporte'],
-        ['href' => 'logout.php', 'icon' => '🚪', 'text' => 'Sair']
-    ],
-  ];
-// Obter o menu correspondente ao cargo do usuário
+];
 $menuItems = isset($_SESSION['cargo']) && isset($menus[$_SESSION['cargo']]) ? $menus[$_SESSION['cargo']] : [];
-
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -74,34 +99,36 @@ $menuItems = isset($_SESSION['cargo']) && isset($menus[$_SESSION['cargo']]) ? $m
       <h2>🔍 Buscar Usuários</h2>
       <div class="filtro">
         <input type="text" id="filtro-nome" placeholder="Nome" class="filtro-input">
-        <input type="text" id="filtro-telefone" placeholder="Telefone" class="filtro-input">
-        <select id="filtro-cargo" class="filtro-input">
+        <input type="text" id="filtro-email" placeholder="Email" class="filtro-input">
+        <select id="filtro-cargo" class="filtro-input" onchange="window.location.href='usuarios.php?filtro_cargo='+this.value">
           <option value="">Todos os Cargos</option>
-          <option value="administrador">Administrador</option>
-          <option value="atendente">Atendente</option>
-          <option value="técnico">Técnico</option>
-          <option value="cliente">Cliente</option>
+          <option value="Gerente">Gerente</option>
+          <option value="Atendente">Atendente</option>
+          <option value="Tecnico">Técnico</option>
+          <option value="Cliente">Cliente</option>
         </select>
-        
       </div>
     </div>
 
     <!-- Adicionar Usuário -->
     <div class="add-usuario">
       <h2>➕ Adicionar Novo Usuário</h2>
-      <div class="form-adicionar">
-        <input type="text" placeholder="Nome do usuário" />
-        <input type="text" id="cpf-input" placeholder="CPF" />
-        <input type="email" placeholder="Email" />
-        <input type="tel" id="telefone-input" placeholder="Telefone" />
-        <select>
-          <option value="admin">Administrador</option>
-          <option value="funcionario">Atendente</option>
-          <option value="cliente">Técnico</option>
-          <option value="cliente">Cliente</option>
+      <form class="form-adicionar" method="POST" action="">
+        <input type="hidden" name="acao" value="adicionar">
+        <input type="text" name="nome" placeholder="Nome do usuário" required />
+        <input type="email" name="email" placeholder="Email" required />
+        <input type="password" name="senha" placeholder="Senha" required />
+        <select name="cargo" required>
+          <option value="Gerente">Gerente</option>
+          <option value="Atendente">Atendente</option>
+          <option value="Tecnico">Técnico</option>
+          <option value="Cliente">Cliente</option>
         </select>
-        <button>➕ Adicionar</button>
-      </div>
+        <label>
+          <input type="checkbox" name="ativo" checked> Ativo
+        </label>
+        <button type="submit">➕ Adicionar</button>
+      </form>
     </div>
 
     <!-- Tabela de Usuários -->
@@ -111,163 +138,61 @@ $menuItems = isset($_SESSION['cargo']) && isset($menus[$_SESSION['cargo']]) ? $m
         <thead>
           <tr>
             <th>Nome</th>
-            <th>CPF</th>
             <th>Email</th>
             <th>Cargo</th>
-            <th>Telefone</th>
+            <th>Status</th>
             <th>Ações</th>
+            <?php if ($filtroCargo === 'Cliente'): ?>
+              <th>Telefone</th>
+              <th>Endereço</th>
+            <?php endif; ?>
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>Marina</td>
-            <td>123.456.789-00</td>
-            <td>Marina@email.com</td>
-            <td>Atendente</td>
-            <td>(11) 91234-5678</td>
-            <td>
-              <button class="editar">✏️</button>
-              <button class="excluir">🗑️</button>
-            </td>
-          </tr>
-          <tr>
-            <td>Sr Inácio</td>
-            <td>987.654.321-00</td>
-            <td>inacio@email.com</td>
-            <td>Administrador</td>
-            <td>(21) 99876-5432</td>
-            <td>
-              <button class="editar">✏️</button>
-              <button class="excluir">🗑️</button>
-            </td>
-          </tr>
-          <tr>
-            <td>Pedro</td>
-            <td>321.789.654-00</td>
-            <td>pedro@email.com</td>
-            <td>Cliente</td>
-            <td>(19) 98765-4321</td>
-            <td>
-              <button class="editar">✏️</button>
-              <button class="excluir">🗑️</button>
-            </td>
-          </tr>
+          <?php if (count($usuarios) > 0): ?>
+            <?php foreach ($usuarios as $u): ?>
+              <tr class="<?php echo $u['ativo'] ? '' : 'inativo'; ?>">
+                <td><?php echo htmlspecialchars($u['nome_completo']); ?></td>
+                <td><?php echo htmlspecialchars($u['email']); ?></td>
+                <td><?php echo htmlspecialchars($u['cargo']); ?></td>
+                <td><?php echo $u['ativo'] ? 'Ativo' : 'Inativo'; ?></td>
+                <td>
+                  <button class="editar">✏️</button>
+                  <button class="excluir">🗑️</button>
+                </td>
+                <?php if ($filtroCargo === 'Cliente'): ?>
+                  <td><?php echo htmlspecialchars($u['telefone']); ?></td>
+                  <td><?php echo htmlspecialchars($u['endereco']); ?></td>
+                <?php endif; ?>
+              </tr>
+            <?php endforeach; ?>
+          <?php else: ?>
+            <tr><td colspan="5">Nenhum usuário cadastrado.</td></tr>
+          <?php endif; ?>
         </tbody>
       </table>
     </div>
   </div>
 
-  <!-- Modal de edição -->
-  <div id="modal-editar" class="modal hidden">
-    <div class="modal-content">
-      <h2>Editar Usuário</h2>
-      <label>Nome: <input type="text" id="edit-nome" /></label>
-      <label>CPF: <input type="text" id="edit-cpf" /></label>
-      <label>Email: <input type="email" id="edit-email" /></label>
-      <label>Telefone: <input type="tel" id="edit-telefone" /></label>
-      <label>Cargo:
-        <select id="edit-cargo">
-          <option>Administrador</option>
-          <option>Atendente</option>
-          <option>Técnico</option>
-          <option>Cliente</option>
-        </select>
-      </label>
-      <label>Status:
-        <input type="checkbox" id="edit-status" checked /> Ativo
-      </label>
-      </label>
-      <div class="modal-buttons">
-        <button id="salvar-edicao" class="btn btn-save">📏 Salvar</button>
-        <button id="cancelar-edicao" class="btn btn-cancel">❌ Cancelar</button>
-        
-      </div>
-    </div>
-  </div>
-  
-
-  <!-- Script de máscara -->
-  <script src="https://cdn.jsdelivr.net/npm/inputmask/dist/inputmask.min.js"></script>
+  <!-- Script do filtro -->
   <script>
-    Inputmask({"mask": "(99) 99999-9999"}).mask("#telefone-input");
-    Inputmask({"mask": "(99) 99999-9999"}).mask("#edit-telefone");
-    Inputmask({"mask": "(99) 99999-9999"}).mask("#filtro-telefone");
-  </script>
-
-  <script>
-    let usuarioEditando = null;
-
-    document.querySelectorAll('.editar').forEach(botao => {
-      botao.addEventListener('click', () => {
-        usuarioEditando = botao.closest('tr');
-        const colunas = usuarioEditando.querySelectorAll('td');
-
-        document.getElementById('edit-nome').value = colunas[0].textContent;
-        document.getElementById('edit-cpf').value = colunas[1].textContent;
-        document.getElementById('edit-email').value = colunas[2].textContent;
-        document.getElementById('edit-cargo').value = colunas[3].textContent;
-        document.getElementById('edit-telefone').value = colunas[4].textContent;
-
-        // Status: considera ativo por padrão
-        document.getElementById('edit-status').checked = !usuarioEditando.classList.contains('inativo');
-
-        document.getElementById('modal-editar').classList.remove('hidden');
-      });
-    });
-
-    document.getElementById('cancelar-edicao').addEventListener('click', () => {
-      document.getElementById('modal-editar').classList.add('hidden');
-    });
-
-    document.getElementById('salvar-edicao').addEventListener('click', () => {
-      const inputs = {
-        nome: document.getElementById('edit-nome').value,
-        cpf: document.getElementById('edit-cpf').value,
-        email: document.getElementById('edit-email').value,
-        cargo: document.getElementById('edit-cargo').value,
-        telefone: document.getElementById('edit-telefone').value,
-        ativo: document.getElementById('edit-status').checked
-      };
-
-      const colunas = usuarioEditando.querySelectorAll('td');
-      colunas[0].textContent = inputs.nome;
-      colunas[1].textContent = inputs.cpf;
-      colunas[2].textContent = inputs.email;
-      colunas[3].textContent = inputs.cargo;
-      colunas[4].textContent = inputs.telefone;
-
-      usuarioEditando.classList.toggle('inativo', !inputs.ativo);
-
-      document.getElementById('modal-editar').classList.add('hidden');
-    });
-
-    // Ativa menu atual na sidebar
-    const links = document.querySelectorAll('.sidebar .menu li a');
-    const currentPage = window.location.pathname.split('/').pop();
-    links.forEach(link => {
-      if (link.getAttribute('href') === currentPage) {
-        link.classList.add('active');
-      }
-    });
-
-    // Filtro avançado
     document.querySelectorAll('.filtro-input').forEach(filtro => {
       filtro.addEventListener('input', function () {
         const nomeFiltro = document.getElementById('filtro-nome').value.toLowerCase();
+        const emailFiltro = document.getElementById('filtro-email').value.toLowerCase();
         const cargoFiltro = document.getElementById('filtro-cargo').value.toLowerCase();
-        const telefoneFiltro = document.getElementById('filtro-telefone').value.replace(/\D/g, '');
 
         const linhas = document.querySelectorAll('.usuarios-table tbody tr');
 
         linhas.forEach(linha => {
           const colunas = linha.querySelectorAll('td');
           const nome = colunas[0].textContent.toLowerCase();
-          const cargo = colunas[3].textContent.toLowerCase();
-          const telefone = colunas[4].textContent.replace(/\D/g, '');
+          const email = colunas[1].textContent.toLowerCase();
+          const cargo = colunas[2].textContent.toLowerCase();
 
           const corresponde = nome.includes(nomeFiltro) &&
-                              cargo.includes(cargoFiltro) &&
-                              telefone.includes(telefoneFiltro);
+                              email.includes(emailFiltro) &&
+                              (cargoFiltro === '' || cargo.includes(cargoFiltro));
 
           linha.style.display = corresponde ? '' : 'none';
         });
@@ -281,87 +206,18 @@ $menuItems = isset($_SESSION['cargo']) && isset($menus[$_SESSION['cargo']]) ? $m
       text-decoration: line-through;
     }
     .filtro {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.filtro input,
-.filtro select {
-  padding: 10px;
-  font-size: 14px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  
-}
-
-  </style>
-  
-  <script>
-    Inputmask({"mask": "(99) 99999-9999"}).mask("#telefone-input");
-    Inputmask({"mask": "(99) 99999-9999"}).mask("#edit-telefone");
-    Inputmask({"mask": "(99) 99999-9999"}).mask("#filtro-telefone");
-  
-    Inputmask({"mask": "999.999.999-99"}).mask("#cpf-input");
-    Inputmask({"mask": "999.999.999-99"}).mask("#edit-cpf");
-    Inputmask({"mask": "999.999.999-99"}).mask("#filtro-cpf");
-  </script>
-
-  <script>
-// Variável para armazenar a linha a ser excluída
-let linhaParaExcluir = null;
-
-// Adiciona eventos aos botões de excluir
-document.addEventListener('DOMContentLoaded', function() {
-  // Botões de excluir na tabela
-  document.querySelectorAll('.excluir').forEach(botao => {
-    botao.addEventListener('click', function(e) {
-      e.preventDefault();
-      linhaParaExcluir = this.closest('tr');
-      const nomeUsuario = linhaParaExcluir.querySelector('td:first-child').textContent;
-      
-      document.getElementById('usuario-excluir-nome').textContent = nomeUsuario;
-      document.getElementById('confirmacao-texto').value = '';
-      document.getElementById('confirmar-exclusao').disabled = true;
-      document.getElementById('modal-excluir').classList.remove('hidden');
-    });
-  });
-
-  // Validação do texto de confirmação
-  document.getElementById('confirmacao-texto').addEventListener('input', function(e) {
-    const textoConfirmacao = e.target.value.toUpperCase();
-    document.getElementById('confirmar-exclusao').disabled = textoConfirmacao !== 'DELETAR';
-  });
-
-  // Confirmação de exclusão
-  document.getElementById('confirmar-exclusao').addEventListener('click', function() {
-    if (linhaParaExcluir) {
-      linhaParaExcluir.remove();
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 15px;
     }
-    document.getElementById('modal-excluir').classList.add('hidden');
-    linhaParaExcluir = null;
-  });
-
-  // Cancelar exclusão
-  document.getElementById('cancelar-exclusao').addEventListener('click', function() {
-    document.getElementById('modal-excluir').classList.add('hidden');
-    linhaParaExcluir = null;
-  });
-});
-  </script>
-
-<!-- Modal de confirmação para excluir -->
-<div id="modal-excluir" class="modal hidden">
-  <div class="modal-content">
-    <h2>Confirmar Exclusão</h2>
-    <p>Tem certeza que deseja excluir o usuário <strong id="usuario-excluir-nome"></strong>?</p>
-    <p>Para confirmar, digite <strong>DELETAR</strong> no campo abaixo:</p>
-    <input type="text" id="confirmacao-texto" placeholder="Digite DELETAR" class="filtro-input">
-    <div class="modal-buttons">
-      <button id="confirmar-exclusao" class="btn btn-cancel" disabled>🗑️ Excluir</button>
-      <button id="cancelar-exclusao" class="btn btn-save">↩️ Cancelar</button>
-    </div>
-  </div>
-</div>
+    .filtro input,
+    .filtro select {
+      padding: 8px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+  </style>
 </body>
 </html>
