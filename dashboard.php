@@ -93,7 +93,7 @@ $menuItems = isset($_SESSION['cargo']) && isset($menus[$_SESSION['cargo']]) ? $m
           <p><strong>Último login:</strong> <span id="ultimo-login"></span></p>
           
           <div class="change-password">
-            <button onclick="window.location.href='alterar-senha.html'" class="change-password-btn">Alterar Senha</button>
+            <button onclick="window.location.href='redefinir-senha.php'" class="change-password-btn">Alterar Senha</button>
           </div>
         </div>
       </div>
