@@ -50,7 +50,7 @@ $menuItems = isset($_SESSION['cargo']) && isset($menus[$_SESSION['cargo']]) ? $m
  * - Se existir `usuario` OU `usuarios` com id_usuario,nome,telefone,email, faz JOIN.
  */
 function detectaTabelaCliente(PDO $pdo): ?array {
-    $candidatas = ['usuario','usuarios'];
+    $candidatas = ['usuario','usuario'];
     foreach ($candidatas as $tbl) {
         // existe tabela?
         $st = $pdo->prepare("SHOW TABLES LIKE :t");
@@ -156,7 +156,7 @@ $ordens = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <?php if (!$temCliente): ?>
       <div class="alert-info">
-        Pesquisa por <b>Nome/Telefone/E-mail</b> desativada (sem tabela de clientes detectada).
+        Pesquisa por <b>Nome/Telefone/E-mail</b> desativada (sem tabela de cliente detectada).
         Filtro por <b>CPF/CNPJ</b> funcionando normalmente.
         Se desejar habilitar, crie a tabela <code>usuario</code> ou <code>usuarios</code> com colunas:
         <code>id_usuario, nome, telefone, email</code> e relacione por <code>ordem_serv.id_usuario</code>.
@@ -213,8 +213,8 @@ $ordens = $stmt->fetchAll(PDO::FETCH_ASSOC);
             >
               <td><?php echo htmlspecialchars($o['nome_cliente']); ?></td>
               <td><?php echo htmlspecialchars($o['cpf']); ?></td>
-              <td><?php echo htmlspecialchars($o['telefone_cliente']); ?></td>
-              <td><?php echo htmlspecialchars($o['email_cliente']); ?></td>
+              <td><?php echo htmlspecialchars($o['telefone']); ?></td>
+              <td><?php echo htmlspecialchars($o['email']); ?></td>
               <td><?php echo htmlspecialchars($o['Aparelho']); ?></td>
               <td><?php echo htmlspecialchars($o['servico']); ?></td>
               <td><?php echo $o['data_entrada'] ? date('d/m/Y', strtotime($o['data_entrada'])) : '-'; ?></td>
