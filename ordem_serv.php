@@ -46,11 +46,10 @@ $menus = [
 $menuItems = isset($_SESSION['cargo']) && isset($menus[$_SESSION['cargo']]) ? $menus[$_SESSION['cargo']] : [];
 
 /**
- * DETECÇÃO OPCIONAL DE TABELA DE CLIENTE
- * - Verifica se existe `usuario` ou `usuarios` com as colunas necessárias.
+ * DETECÇÃO DA TABELA DE CLIENTE
  */
 function detectaTabelaCliente(PDO $pdo): ?array {
-    $candidatas = ['usuario', 'usuarios', 'cliente', 'clientes'];
+    $candidatas = ['cliente', 'clientes', 'usuario', 'usuarios'];
     foreach ($candidatas as $tbl) {
         $st = $pdo->prepare("SHOW TABLES LIKE :t");
         $t = $tbl;
@@ -58,10 +57,13 @@ function detectaTabelaCliente(PDO $pdo): ?array {
         $st->execute();
         if (!$st->fetchColumn()) continue;
 
+        // Verificar se a tabela tem as colunas necessárias
         $cols = [];
         $q = $pdo->query("SHOW COLUMNS FROM `$tbl`");
         foreach ($q as $r) $cols[] = $r['Field'];
-        $necessarias = ['id_usuario', 'nome', 'telefone', 'email', 'cpf', 'endereco'];
+        
+        // Colunas necessárias para exibir informações do cliente
+        $necessarias = ['nome', 'telefone', 'email', 'cpf', 'endereco'];
         $ok = !array_diff($necessarias, $cols);
         if ($ok) return ['nome' => $tbl, 'colunas' => $cols];
     }
@@ -81,16 +83,16 @@ $email     = trim($_GET['email'] ?? '');
 
 // Construir a query SQL
 $sql = "SELECT os.*";
+
 if ($temCliente) {
+    // Buscar dados do cliente da tabela de clientes
     $sql .= ", c.nome AS nome_cliente, c.telefone AS telefone_cliente, c.email AS email_cliente, c.cpf AS cpf_cliente, c.endereco AS endereco_cliente";
+    $sql .= " FROM ordem_serv os";
+    $sql .= " LEFT JOIN `{$tblCliente['nome']}` c ON c.cpf = os.cpf";
 } else {
-    $sql .= ", os.nome_cliente, os.telefone AS telefone_cliente, os.email AS email_cliente, os.cpf AS cpf_cliente, os.endereco AS endereco_cliente";
-}
-
-$sql .= " FROM ordem_serv os";
-
-if ($temCliente) {
-    $sql .= " LEFT JOIN `{$tblCliente['nome']}` c ON c.id_usuario = os.id_usuario";
+    // Se não houver tabela de cliente, usar dados básicos da ordem_serv
+    $sql .= ", os.nome AS nome_cliente, os.telefone AS telefone_cliente, os.email AS email_cliente, os.cpf AS cpf_cliente, os.endereco AS endereco_cliente";
+    $sql .= " FROM ordem_serv os";
 }
 
 $sql .= " WHERE 1=1";
@@ -102,7 +104,7 @@ if ($nome !== '') {
     if ($temCliente) {
         $sql .= " AND c.nome LIKE :nome";
     } else {
-        $sql .= " AND os.nome_cliente LIKE :nome";
+        $sql .= " AND os.nome LIKE :nome";
     }
     $params[':nome'] = "%".$nome."%";
 }
@@ -136,9 +138,13 @@ if ($email !== '') {
 
 $sql .= " ORDER BY os.data_entrada DESC, os.id_ordem_serv DESC";
 
-$stmt = $pdo->prepare($sql);
-$stmt->execute($params);
-$ordens = $stmt->fetchAll(PDO::FETCH_ASSOC);
+try {
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
+    $ordens = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    die("Erro na consulta SQL: " . $e->getMessage() . "<br>SQL: " . $sql);
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -262,6 +268,10 @@ $ordens = $stmt->fetchAll(PDO::FETCH_ASSOC);
         Filtro por <b>CPF/CNPJ</b> funcionando normalmente (usando campo de ordem_serv).
         Se desejar habilitar, crie a tabela <code>usuario</code> ou <code>usuarios</code> com colunas:
         <code>id_usuario, nome, telefone, email, cpf, endereco</code> e relacione por <code>ordem_serv.id_usuario</code>.
+      </div>
+    <?php else: ?>
+      <div class="alert-info">
+        <b>Informação:</b> Dados do cliente sendo buscados da tabela <b><?php echo $tblCliente['nome']; ?></b>.
       </div>
     <?php endif; ?>
 
