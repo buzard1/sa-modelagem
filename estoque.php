@@ -9,8 +9,6 @@ if (!isset($_SESSION['cargo']) || !in_array($_SESSION['cargo'], ['Gerente', 'Ate
 }
 
 $mensagem = "";
-$modoEdicao = false;
-$editarProduto = null;
 
 // Função para buscar produtos para listar na página
 function buscarProdutos($pdo) {
@@ -69,23 +67,6 @@ if (isset($_GET['excluir'])) {
     }
 }
 
-// ======= TRATAMENTO DE INÍCIO DA EDIÇÃO =======
-if (isset($_GET['editar'])) {
-    $idEditar = intval($_GET['editar']);
-    $stmt = $pdo->prepare("SELECT p.id_produto, p.nome_produto, p.valor, p.idfornecedor, e.quantidade, p.idestoque
-                           FROM produto p
-                           LEFT JOIN estoque e ON p.idestoque = e.id_estoque
-                           WHERE p.id_produto = ?");
-    $stmt->execute([$idEditar]);
-    $editarProduto = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if ($editarProduto) {
-        $modoEdicao = true;
-    } else {
-        $mensagem = "Produto para edição não encontrado.";
-    }
-}
-
 // ======= TRATAMENTO DE INSERÇÃO OU ATUALIZAÇÃO =======
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $produto = trim($_POST['produto'] ?? '');
@@ -124,7 +105,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $pdo->commit();
 
                     $mensagem = "Produto atualizado com sucesso!";
-                    $modoEdicao = false; // sai do modo edição
                 } else {
                     // INSERÇÃO NOVA
                     $pdo->beginTransaction();
@@ -204,31 +184,173 @@ $menuItems = $_SESSION['cargo'] && isset($menus[$_SESSION['cargo']]) ? $menus[$_
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Controle de Estoque</title>
   <link rel="stylesheet" href="css/sidebar.css" />
-  <link rel="stylesheet" href="css/estoque.css" />
   <link rel="stylesheet" href="css/form.css" />
+  <link rel="stylesheet" href="css/estoque.css" />
   <link rel="icon" href="img/logo.png" type="image/png" />
-  
+ 
   <script>
-    function confirmarExclusao(id, nome) {
-      if (confirm('Tem certeza que deseja excluir o produto "' + nome + '"?')) {
-        window.location.href = 'estoque.php?excluir=' + id;
+    let linhaEditando = null;
+
+    function abrirModalEdicao(botao) {
+      linhaEditando = botao.closest('tr');
+      const modal = document.getElementById('modal-edicao');
+
+      // Preencher o modal com os dados da linha
+      document.getElementById('edit-produto').value = linhaEditando.cells[0].textContent;
+      document.getElementById('edit-quantidade').value = linhaEditando.cells[1].textContent;
+      document.getElementById('edit-valor').value = linhaEditando.cells[2].textContent.replace('R$ ', '').replace(',', '.');
+      const fornecedorNome = linhaEditando.cells[3].textContent;
+      const selectFornecedor = document.getElementById('edit-fornecedor');
+      for (let option of selectFornecedor.options) {
+        if (option.text === fornecedorNome) {
+          selectFornecedor.value = option.value;
+          break;
+        }
       }
+      document.getElementById('edit-id-produto').value = linhaEditando.getAttribute('data-id-produto');
+      document.getElementById('edit-idestoque').value = linhaEditando.getAttribute('data-idestoque');
+
+      // Mostrar o modal
+      modal.style.display = 'block';
+    }
+
+    function fecharModal() {
+      document.getElementById('modal-edicao').style.display = 'none';
+      linhaEditando = null;
+    }
+
+    function salvarEdicao() {
+      if (!linhaEditando) return;
+
+      // Obter os valores do formulário
+      const produto = document.getElementById('edit-produto').value;
+      const quantidade = document.getElementById('edit-quantidade').value;
+      const valor = document.getElementById('edit-valor').value;
+      const id_fornecedor = document.getElementById('edit-fornecedor').value;
+      const id_produto = document.getElementById('edit-id-produto').value;
+      const idestoque = document.getElementById('edit-idestoque').value;
+
+      // Validações client-side
+      if (!produto) {
+        alert('Informe o nome do produto.');
+        return;
+      }
+      if (quantidade < 0) {
+        alert('Quantidade não pode ser negativa.');
+        return;
+      }
+      if (valor < 0) {
+        alert('Valor unitário não pode ser negativo.');
+        return;
+      }
+      if (!id_fornecedor) {
+        alert('Selecione um fornecedor.');
+        return;
+      }
+
+      // Enviar dados via AJAX
+      fetch('estoque.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `produto=${encodeURIComponent(produto)}&quantidade=${quantidade}&valor=${valor}&fornecedor=${id_fornecedor}&id_produto=${id_produto}&idestoque=${idestoque}`
+      })
+      .then(response => response.text())
+      .then(data => {
+        // Atualizar a linha na tabela
+        linhaEditando.cells[0].textContent = produto;
+        linhaEditando.cells[1].textContent = parseInt(quantidade);
+        linhaEditando.cells[2].textContent = 'R$ ' + parseFloat(valor).toFixed(2).replace('.', ',');
+        const selectFornecedor = document.getElementById('edit-fornecedor');
+        linhaEditando.cells[3].textContent = selectFornecedor.options[selectFornecedor.selectedIndex].text;
+
+        alert('Produto atualizado com sucesso!');
+        fecharModal();
+      })
+      .catch(error => {
+        alert('Erro ao salvar produto: ' + error);
+      });
+    }
+
+    let linhaParaDeletar = null;
+
+    function deletarLinha(botao) {
+      linhaParaDeletar = botao.closest('tr');
+      const produto = linhaParaDeletar.cells[0].textContent;
+
+      document.getElementById('confirmacao-mensagem').textContent = 'Tem certeza que deseja deletar este produto?';
+      document.getElementById('confirmacao-detalhes').innerHTML = `<strong>Produto:</strong> ${produto}`;
+
+      // Mostrar o modal de confirmação
+      document.getElementById('modal-confirmacao').style.display = 'block';
+    }
+
+    function fecharModalConfirmacao() {
+      document.getElementById('modal-confirmacao').style.display = 'none';
+      linhaParaDeletar = null;
+    }
+
+    function confirmarExclusao() {
+      if (!linhaParaDeletar) return;
+
+      const confirmacaoFinal = prompt('Digite "DELETAR" para confirmar a exclusão:');
+      if (confirmacaoFinal === 'DELETAR') {
+        const id_produto = linhaParaDeletar.getAttribute('data-id-produto');
+        window.location.href = 'estoque.php?excluir=' + id_produto;
+      } else {
+        alert('Exclusão cancelada. O produto não foi deletado.');
+        fecharModalConfirmacao();
+      }
+    }
+
+    // Fechar o modal se clicar fora dele
+    window.onclick = function(event) {
+      const modalEdicao = document.getElementById('modal-edicao');
+      const modalConfirmacao = document.getElementById('modal-confirmacao');
+      if (event.target == modalEdicao) {
+        fecharModal();
+      }
+      if (event.target == modalConfirmacao) {
+        fecharModalConfirmacao();
+      }
+    };
+
+    // Função para filtrar produtos na tabela
+    function filtrarProdutos() {
+      const input = document.getElementById('busca-produto').value.toLowerCase();
+      const linhas = document.querySelectorAll('.pedidos-table tbody tr');
+
+      linhas.forEach(linha => {
+        const nomeProduto = linha.cells[0].textContent.toLowerCase();
+        if (nomeProduto.includes(input)) {
+          linha.style.display = '';
+        } else {
+          linha.style.display = 'none';
+        }
+      });
+    }
+
+    // Função para limpar o filtro
+    function limparFiltro() {
+      document.getElementById('busca-produto').value = '';
+      filtrarProdutos();
     }
   </script>
 </head>
 <body>
-<nav class="sidebar">
+  <nav class="sidebar">
     <div class="logo">
       <img src="img/logo.png" alt="Logo do sistema">
     </div>
     <ul class="menu">
       <?php foreach ($menuItems as $item): ?>
-        <li><a href="<?php echo $item['href']; ?>"><?php echo $item['icon']; ?> <span><?php echo $item['text']; ?></span></a></li>
+        <li><a href="<?php echo $item['href']; ?>" <?php echo $item['href'] === 'estoque.php' ? 'class="active"' : ''; ?>><?php echo $item['icon']; ?> <span><?php echo $item['text']; ?></span></a></li>
       <?php endforeach; ?>
     </ul>
   </nav>
   <div class="form-container">
-    <h2><?= $modoEdicao ? "✏️ Editar Produto" : "➕ Cadastrar Produto" ?></h2>
+    <h2>➕ Cadastrar Produto</h2>
 
     <?php if ($mensagem): ?>
       <p class="<?= (strpos($mensagem, 'sucesso') !== false) ? 'mensagem-sucesso' : 'mensagem-erro' ?>">
@@ -237,40 +359,45 @@ $menuItems = $_SESSION['cargo'] && isset($menus[$_SESSION['cargo']]) ? $menus[$_
     <?php endif; ?>
 
     <form method="POST" action="estoque.php">
-      <input type="hidden" name="id_produto" value="<?= $modoEdicao ? htmlspecialchars($editarProduto['id_produto']) : '' ?>" />
-      <input type="hidden" name="idestoque" value="<?= $modoEdicao ? htmlspecialchars($editarProduto['idestoque']) : '' ?>" />
+      <div class="form-group">
+        <label for="produto">Nome do Produto</label>
+        <input type="text" id="produto" name="produto" class="form-input" placeholder="Ex: Tela Samsung A10" required />
+      </div>
+      <div class="form-group">
+        <label for="quantidade">Quantidade</label>
+        <input type="number" id="quantidade" name="quantidade" class="form-input" min="0" required />
+      </div>
+      <div class="form-group">
+        <label for="valor">Valor Unitário (R$)</label>
+        <input type="text" id="valor" name="valor" class="form-input" placeholder="Ex: 120.50" required />
+      </div>
+      <div class="form-group">
+        <label for="fornecedor">Fornecedor</label>
+        <select id="fornecedor" name="fornecedor" class="form-input" required>
+          <option value="">Selecione o fornecedor</option>
+          <?php foreach ($fornecedores as $forn): ?>
+            <option value="<?= $forn['id_fornecedor'] ?>"><?= htmlspecialchars($forn['nome_fornecedor']) ?></option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+      <div class="form-buttons">
+        <button type="submit" class="btn-salvar">Cadastrar Produto</button>
+      </div>
+    </form>
 
-      <label for="produto">Nome do Produto</label>
-      <input type="text" id="produto" name="produto" placeholder="Ex: Tela Samsung A10" required
-        value="<?= $modoEdicao ? htmlspecialchars($editarProduto['nome_produto']) : '' ?>" />
-
-      <label for="quantidade">Quantidade</label>
-      <input type="number" id="quantidade" name="quantidade" min="0" required
-        value="<?= $modoEdicao ? htmlspecialchars($editarProduto['quantidade']) : '' ?>" />
-
-      <label for="valor">Valor Unitário (R$)</label>
-      <input type="text" id="valor" name="valor" placeholder="Ex: 120.50" required
-        value="<?= $modoEdicao ? htmlspecialchars(number_format($editarProduto['valor'], 2, ',', '.')) : '' ?>" />
-
-      <label for="fornecedor">Fornecedor</label>
-      <select id="fornecedor" name="fornecedor" required>
-        <option value="">Selecione o fornecedor</option>
-        <?php foreach ($fornecedores as $forn): ?>
-          <option value="<?= $forn['id_fornecedor'] ?>"
-            <?= ($modoEdicao && $forn['id_fornecedor'] == $editarProduto['idfornecedor']) ? 'selected' : '' ?>>
-            <?= htmlspecialchars($forn['nome_fornecedor']) ?>
-          </option>
-        <?php endforeach; ?>
-      </select>
-
-      <button type="submit"><?= $modoEdicao ? "Atualizar Produto" : "Cadastrar Produto" ?></button>
-      <?php if ($modoEdicao): ?>
-        <a href="estoque.php" style="margin-left: 15px; color: #555; text-decoration:none;">Cancelar edição</a>
-      <?php endif; ?>
+    <!-- Filtro de Busca -->
+    <form id="filtro-form" style="margin-bottom: 2rem;">
+      <div class="form-group">
+        <label for="busca-produto">Buscar Produto</label>
+        <input type="text" id="busca-produto" class="form-input" placeholder="Digite o nome do produto" oninput="filtrarProdutos()" />
+      </div>
+      <div class="form-buttons">
+        <button type="button" class="btn-limpar" onclick="limparFiltro()">Limpar</button>
+      </div>
     </form>
 
     <!-- Tabela de produtos -->
-    <table>
+    <table class="pedidos-table">
       <thead>
         <tr>
           <th>Nome do Produto</th>
@@ -285,20 +412,71 @@ $menuItems = $_SESSION['cargo'] && isset($menus[$_SESSION['cargo']]) ? $menus[$_
           <tr><td colspan="5">Nenhum produto cadastrado.</td></tr>
         <?php else: ?>
           <?php foreach ($produtos as $prod): ?>
-            <tr>
+            <tr data-id-produto="<?= $prod['id_produto'] ?>" data-idestoque="<?= $prod['idestoque'] ?>">
               <td><?= htmlspecialchars($prod['nome_produto']) ?></td>
               <td><?= intval($prod['quantidade']) ?></td>
               <td><?= number_format($prod['valor'], 2, ',', '.') ?></td>
               <td><?= htmlspecialchars($prod['nome_fornecedor'] ?? '-') ?></td>
-              <td>
-                <a href="estoque.php?editar=<?= $prod['id_produto'] ?>" class="acao-btn editar">✏️ Editar</a>
-                <a href="javascript:void(0)" class="acao-btn excluir" onclick="confirmarExclusao(<?= $prod['id_produto'] ?>, '<?= addslashes($prod['nome_produto']) ?>')">🗑️ Excluir</a>
+              <td class="actions">
+                <button class="action-btn edit-btn" onclick="abrirModalEdicao(this)">✏️<span class="tooltip-text">Editar</span></button>
+                <button class="action-btn delete-btn" onclick="deletarLinha(this)">🗑️<span class="tooltip-text">Deletar</span></button>
               </td>
             </tr>
           <?php endforeach; ?>
         <?php endif; ?>
       </tbody>
     </table>
+  </div>
+
+  <!-- Modal de Edição -->
+  <div id="modal-edicao" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="fecharModal()">&times;</span>
+      <h2 style="color: #03dac6;">Editar Produto</h2>
+      <form id="form-edicao">
+        <div class="form-group">
+          <label for="edit-produto">Nome do Produto</label>
+          <input type="text" id="edit-produto" class="form-input" required />
+        </div>
+        <div class="form-group">
+          <label for="edit-quantidade">Quantidade</label>
+          <input type="number" id="edit-quantidade" class="form-input" min="0" required />
+        </div>
+        <div class="form-group">
+          <label for="edit-valor">Valor Unitário (R$)</label>
+          <input type="text" id="edit-valor" class="form-input" required />
+        </div>
+        <div class="form-group">
+          <label for="edit-fornecedor">Fornecedor</label>
+          <select id="edit-fornecedor" class="form-input" required>
+            <option value="">Selecione o fornecedor</option>
+            <?php foreach ($fornecedores as $forn): ?>
+              <option value="<?= $forn['id_fornecedor'] ?>"><?= htmlspecialchars($forn['nome_fornecedor']) ?></option>
+            <?php endforeach; ?>
+          </select>
+        </div>
+        <input type="hidden" id="edit-id-produto" name="id_produto" />
+        <input type="hidden" id="edit-idestoque" name="idestoque" />
+        <div class="form-buttons">
+          <button type="button" class="btn-cancelar" onclick="fecharModal()">Cancelar</button>
+          <button type="button" class="btn-salvar" onclick="salvarEdicao()">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal de Confirmação de Exclusão -->
+  <div id="modal-confirmacao" class="modal">
+    <div class="modal-content" style="max-width: 400px;">
+      <span class="close-btn" onclick="fecharModalConfirmacao()">&times;</span>
+      <h2 style="color: #ff4444; margin-bottom: 1.5rem;">Confirmar Exclusão</h2>
+      <p id="confirmacao-mensagem">Tem certeza que deseja deletar este produto?</p>
+      <p id="confirmacao-detalhes" style="font-size: 0.9em; color: #aaa; margin-bottom: 20px;"></p>
+      <div class="form-buttons">
+        <button type="button" class="btn-cancelar" onclick="fecharModalConfirmacao()">Cancelar</button>
+        <button type="button" class="btn-salvar" onclick="confirmarExclusao()">Sim, Deletar</button>
+      </div>
+    </div>
   </div>
 </body>
 </html>

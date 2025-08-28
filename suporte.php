@@ -108,7 +108,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       <button type="submit">Enviar</button>
     </form>
 
-    <p class="contato">📧 Ou envie um e-mail diretamente para <strong>tropadoingui@gmail.com</strong></p>
+    <p class="contato">📧 Ou envie um e-mail diretamente para <strong>saolonguinho@gmail.com</strong></p>
   </div>
   <!-- Script: ativa o menu da página atual -->
   <script>
