@@ -1,6 +1,6 @@
 <?php
 // Conexão com o banco
-$dsn = "mysql:host=localhost;dbname=sa-mobilerepair;charset=utf8";
+$dsn = "mysql:host=localhost;dbname=sa_mobilerepair;charset=utf8";
 $user = "root";
 $pass = "";
 
