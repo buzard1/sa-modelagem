@@ -3,13 +3,14 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 20/08/2025 às 19:18
+-- Tempo de geração: 29/08/2025 às 21:21
 -- Versão do servidor: 10.4.32-MariaDB
 -- Versão do PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
+
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -96,12 +97,10 @@ INSERT INTO `cliente` (`cpf`, `telefone`, `nome`, `email`, `endereco`) VALUES
 ('831.276.405-44', '(061) 6723-4653', 'Alana Souza', 'caueda-mota@uol.com.br', 'Alameda Isabel Viana'),
 ('831.549.720-05', '(031) 2519-1348', 'Bruno da Luz', 'almeidamaria-julia@hotmail.com', 'Travessa Martins'),
 ('854.170.263-44', '+55 31 9618 2676', 'Ana Clara Duarte', 'da-rochamaria-eduarda@araujo.com', 'Feira Maria Ferreira'),
-('857.123.046-35', '21 0430 3220', 'Benjamin Rodrigues', 'biancaporto@bol.com.br', 'Quadra Alves'),
-('863.524.079-00', '(061) 1334-3275', 'Júlia da Mota', 'maria-vitoria56@uol.com.br', 'Quadra Maria Eduarda da Rocha'),
-('865.423.901-89', '+55 61 9652 2586', 'Sr. Raul Costela', 'yasminvieira@cunha.com', 'Aeroporto Esther Martins'),
-('867.140.932-50', '+55 71 3340-6597', 'Bruno Correia', 'egoncalves@bol.com.br', 'Viela Lucca da Costa'),
-('907.312.854-41', '(011) 5891 1668', 'Lorena Cardoso', 'crezende@ig.com.br', 'Condomínio Davi Lucca das Neves'),
-('970.425.136-06', '61 1871-6668', 'Manuela Campos', 'nmoreira@da.com', 'Viela Nina Sales');
+('1', 'a', 'a', 'a@a', '1'),
+('123.123.123-12', '(12) 31231-2312', 'teste', 'teste@email', 'teste'),
+('151123124124', '21312312', 'testecliente', 'omoura@uol.com.br', 'peidooo'),
+('123.123.123-12', '(12) 31231-2312', 'teste', 'teste@clientee', 'rua dos peidos');
 
 -- --------------------------------------------------------
 
@@ -110,9 +109,8 @@ INSERT INTO `cliente` (`cpf`, `telefone`, `nome`, `email`, `endereco`) VALUES
 --
 
 CREATE TABLE `estoque` (
-  `id_estoque` int(11) NOT NULL AUTO_INCREMENT,
-  `quantidade` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id_estoque`)
+  `id_estoque` int(11) NOT NULL,
+  `quantidade` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -267,7 +265,7 @@ INSERT INTO `fornecedor` (`id_fornecedor`, `nome_fornecedor`, `telefone`, `email
 --
 
 CREATE TABLE `ordem_serv` (
-  `id_ordem_serv` int(11) NOT NULL AUTO_INCREMENT,
+  `id_ordem_serv` int(11) NOT NULL,
   `Aparelho` varchar(100) DEFAULT NULL,
   `servico` varchar(255) DEFAULT NULL,
   `status` varchar(50) DEFAULT NULL,
@@ -277,8 +275,7 @@ CREATE TABLE `ordem_serv` (
   `cpf` varchar(20) DEFAULT NULL,
   `idusuario` int(11) DEFAULT NULL,
   `data_entrada` date DEFAULT NULL,
-  `data_saida` date DEFAULT NULL,
-  PRIMARY KEY (`id_ordem_serv`)
+  `data_saida` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -639,5 +636,54 @@ CREATE TABLE `usuario` (
 --
 
 INSERT INTO `usuario` (`id_usuario`, `email`, `senha`, `cargo`, `nome_completo`, `ativo`, `senha_temporaria`) VALUES
-(1, 'omoura@uol.com.br', '$2y$10$Zvagyg9mQK5xrJ1tRYfpyeI4RGBglYnwv2x3bP5EULmWvujmf5.iW', 'Atendente', 'Ana Sophia Barbosa', 1, 0),
-(2, 'anthony06@ribeiro.net', '$2y$10$nWDOiJwZNXJps30n6JnWz.JE.KJY9u046jeHUAIc3iKRrvR5BBfY2', 'Técnico', 'Natália Cardoso', 1, 1)
+(1, 'omoura@uol.com.br', '$2y$10$GN9lV5jSfZcRzTKnYsVbFOOZ0Oilne1tP7qcwhD5mfU4EwEFFhPaS', 'Gerente', '123', 1, 0),
+(666, 'admin@admin', '$2y$10$rG6ZPww5vL9nhzYxacQ4zO6sXosHNuQfMnH3a.ZnoEwNaB.WT6Iny', 'Gerente', 'admin', 1, 0);
+
+--
+-- Índices para tabelas despejadas
+--
+
+--
+-- Índices de tabela `estoque`
+--
+ALTER TABLE `estoque`
+  ADD PRIMARY KEY (`id_estoque`);
+
+--
+-- Índices de tabela `ordem_serv`
+--
+ALTER TABLE `ordem_serv`
+  ADD PRIMARY KEY (`id_ordem_serv`);
+
+--
+-- Índices de tabela `usuario`
+--
+ALTER TABLE `usuario`
+  ADD PRIMARY KEY (`id_usuario`);
+
+--
+-- AUTO_INCREMENT para tabelas despejadas
+--
+
+--
+-- AUTO_INCREMENT de tabela `estoque`
+--
+ALTER TABLE `estoque`
+  MODIFY `id_estoque` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
+
+--
+-- AUTO_INCREMENT de tabela `ordem_serv`
+--
+ALTER TABLE `ordem_serv`
+  MODIFY `id_ordem_serv` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
+
+--
+-- AUTO_INCREMENT de tabela `usuario`
+--
+ALTER TABLE `usuario`
+  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=667;
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
