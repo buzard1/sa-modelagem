@@ -103,6 +103,122 @@ $menuItems = isset($_SESSION['cargo']) && isset($menus[$_SESSION['cargo']]) ? $m
   <link rel="stylesheet" href="css/sidebar.css" />
   <link rel="icon" href="img/logo.png" type="image/png">
 </head>
+<style>
+  /* Estilo do fundo do modal (overlay) */
+.modal {
+  display: none; /* começa oculto */
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto; 
+  background-color: rgba(0, 0, 0, 0.75); /* fundo escuro transparente */
+}
+
+/* Conteúdo do modal */
+.modal-content {
+  background-color: #1e1e1e; /* fundo dark */
+  color: #f1f1f1; /* texto claro */
+  margin: 8% auto;
+  padding: 20px 25px;
+  border-radius: 12px;
+  width: 400px;
+  max-width: 90%;
+  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.8);
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Animação de entrada */
+@keyframes fadeIn {
+  from {opacity: 0; transform: scale(0.95);}
+  to {opacity: 1; transform: scale(1);}
+}
+
+/* Botão fechar (X) */
+.close {
+  color: #bbb;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.close:hover {
+  color: #ff4d4d;
+}
+
+/* Inputs e selects */
+.modal-content input[type="text"],
+.modal-content input[type="email"],
+.modal-content input[type="password"],
+.modal-content select {
+  width: 100%; /* garante mesma largura */
+  padding: 10px;
+  margin: 8px 0 15px 0;
+  border: 1px solid #444;
+  border-radius: 8px;
+  background: #2a2a2a;
+  color: #f1f1f1;
+  font-size: 14px;
+  outline: none;
+  transition: border 0.2s;
+  box-sizing: border-box; /* corrige diferença de largura */
+  appearance: none;       /* remove estilo padrão do navegador */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+
+.modal-content input:focus,
+.modal-content select:focus {
+  border: 1px solid #02b5a3; /* roxo de destaque */
+}
+
+/* Checkbox */
+#ativo-container {
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
+  font-size: 14px;
+  color: #ddd;
+}
+
+#edit-ativo {
+  margin-right: 8px;
+  accent-color: #02b5a3; /* cor personalizada do check */
+}
+
+/* Botão salvar */
+.modal-content button {
+  width: 100%;
+  padding: 12px;
+  background: #03dac6;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 15px;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.modal-content button:hover {
+  background: #02b5a3;
+  transform: scale(1.02);
+}
+.modal-content select {
+  background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 18px;
+  padding-right: 35px; /* espaço pra setinha */
+}
+
+
+</style>
 <!-- Modal for Editing User/Client -->
 <div id="editModal" class="modal" style="display:none;">
   <div class="modal-content">
