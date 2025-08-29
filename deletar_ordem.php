@@ -2,13 +2,27 @@
 session_start();
 require_once 'conexao.php';
 
-if (!isset($_SESSION['cargo'])) { echo "Acesso negado"; exit(); }
+// Verifica se o usuário tem permissão
+if (!isset($_SESSION['cargo']) || !in_array($_SESSION['cargo'], ["Gerente","Atendente"])) {
+    header("Location: ordem_serv.php?erro=permissao");
+    exit();
+}
 
-if ($_SERVER['REQUEST_METHOD']==='POST' && isset($_POST['id'])) {
-  $id = (int)$_POST['id'];
-  $stmt = $pdo->prepare("DELETE FROM ordem_serv WHERE id_ordem_serv = :id");
-  $stmt->bindParam(':id',$id,PDO::PARAM_INT);
-  if ($stmt->execute()) echo "sucesso"; else echo "erro";
-} else {
-  echo "requisicao invalida";
+// Verifica se recebeu o ID
+if (!isset($_GET['id']) || empty($_GET['id'])) {
+    header("Location: ordem_serv.php?erro=id_invalido");
+    exit();
+}
+
+$id = (int) $_GET['id'];
+
+try {
+    $stmt = $pdo->prepare("DELETE FROM ordem_serv WHERE id_ordem_serv = :id");
+    $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+    $stmt->execute();
+
+    header("Location: ordem_serv.php?sucesso=excluido");
+    exit();
+} catch (PDOException $e) {
+    die("Erro ao excluir ordem: " . $e->getMessage());
 }
