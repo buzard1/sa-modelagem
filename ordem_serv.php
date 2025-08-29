@@ -148,10 +148,7 @@ try {
     <h2>📦 Lista de Ordens de Serviço</h2>
 
     <?php if (!$temCliente): ?>
-      <div class="alert-info">
-        Pesquisa por <b>Nome/Telefone/E-mail/CPF/Endereço</b> desativada (sem tabela de cliente detectada).  
-        Filtro por <b>CPF/CNPJ</b> funcionando normalmente (usando campo de ordem_serv).
-      </div>
+      
     <?php else: ?>
     <?php endif; ?>
 
