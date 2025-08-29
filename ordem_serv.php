@@ -157,6 +157,7 @@ try {
   <link rel="stylesheet" href="css/pedidos.css" />
   <link rel="icon" href="img/logo.png" type="image/png">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
   <style>
     .pedidos-table {
       width: 100%;
@@ -218,6 +219,12 @@ try {
       cursor: pointer;
       font-size: 16px;
       position: relative;
+      padding: 5px;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+    .action-btn:hover {
+      background-color: rgba(255, 255, 255, 0.1);
     }
     .tooltip-text {
       visibility: hidden;
@@ -234,6 +241,7 @@ try {
       margin-left: -30px;
       opacity: 0;
       transition: opacity 0.3s;
+      font-size: 12px;
     }
     .action-btn:hover .tooltip-text {
       visibility: visible;
@@ -245,6 +253,35 @@ try {
       padding: 12px;
       border-radius: 8px;
       margin-bottom: 1rem;
+    }
+    /* Modal de edição */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+    .modal-content {
+      background-color: #2c2c2c;
+      margin: 5% auto;
+      padding: 20px;
+      border-radius: 8px;
+      width: 80%;
+      max-width: 600px;
+    }
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .close:hover {
+      color: #fff;
     }
   </style>
 </head>
@@ -337,9 +374,9 @@ try {
               <td><?php echo htmlspecialchars($o['tipo_pagamento'] ?? '-'); ?></td>
               <td class="status <?php echo $statusClass; ?>"><?php echo htmlspecialchars($statusTxt); ?></td>
               <td class="actions">
-                <button class="action-btn edit-btn" onclick="abrirModalEdicao(this)">✏️<span class="tooltip-text">Editar</span></button>
-                <button class="action-btn pdf-btn" onclick="gerarPDF(this)">📄<span class="tooltip-text">Gerar PDF</span></button>
-                <button class="action-btn delete-btn" onclick="deletarLinha(this)">🗑️<span class="tooltip-text">Deletar</span></button>
+                <button class="action-btn edit-btn" onclick="abrirModalEdicao(<?php echo (int)$o['id_ordem_serv']; ?>)">✏️<span class="tooltip-text">Editar</span></button>
+                <button class="action-btn pdf-btn" onclick="gerarPDF(<?php echo (int)$o['id_ordem_serv']; ?>)">📄<span class="tooltip-text">Gerar PDF</span></button>
+                <button class="action-btn delete-btn" onclick="deletarLinha(<?php echo (int)$o['id_ordem_serv']; ?>)">🗑️<span class="tooltip-text">Deletar</span></button>
               </td>
             </tr>
           <?php endforeach; ?>
@@ -350,28 +387,199 @@ try {
     </table>
   </div>
 
+  <!-- Modal de Edição -->
+  <div id="modalEdicao" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Editar Ordem de Serviço</h2>
+      <form id="formEdicao">
+        <input type="hidden" id="id_ordem_serv" name="id_ordem_serv">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+          <div>
+            <label for="Aparelho">Aparelho:</label>
+            <input type="text" id="Aparelho" name="Aparelho" required>
+          </div>
+          <div>
+            <label for="servico">Serviço:</label>
+            <input type="text" id="servico" name="servico" required>
+          </div>
+          <div>
+            <label for="valor">Valor:</label>
+            <input type="number" id="valor" name="valor" step="0.01" required>
+          </div>
+          <div>
+            <label for="tipo_pagamento">Pagamento:</label>
+            <select id="tipo_pagamento" name="tipo_pagamento" required>
+              <option value="Dinheiro">Dinheiro</option>
+              <option value="Cartão">Cartão</option>
+              <option value="PIX">PIX</option>
+              <option value="Transferência">Transferência</option>
+            </select>
+          </div>
+          <div>
+            <label for="status">Status:</label>
+            <select id="status" name="status" required>
+              <option value="Pendente">Pendente</option>
+              <option value="Em andamento">Em andamento</option>
+              <option value="Concluído">Concluído</option>
+              <option value="Cancelado">Cancelado</option>
+            </select>
+          </div>
+          <div>
+            <label for="data_entrada">Data Entrada:</label>
+            <input type="date" id="data_entrada" name="data_entrada" required>
+          </div>
+          <div>
+            <label for="data_saida">Data Saída:</label>
+            <input type="date" id="data_saida" name="data_saida">
+          </div>
+        </div>
+        <div style="margin-top:1rem;">
+          <button type="submit" style="padding:0.6rem 1.2rem;background-color:#03dac6;border:none;border-radius:8px;color:#000;cursor:pointer;">Salvar</button>
+          <button type="button" onclick="fecharModal()" style="padding:0.6rem 1.2rem;background-color:#444;border:none;border-radius:8px;color:#fff;cursor:pointer;">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script>
-    // Funções JavaScript para manipulação da tabela
-    function abrirModalEdicao(btn) {
-      const row = btn.closest('tr');
-      const id = row.getAttribute('data-id');
-      alert('Editar ordem ID: ' + id);
-      // Implementar a lógica de edição aqui
+    // Inicializar o jsPDF
+    const { jsPDF } = window.jspdf;
+
+    // Modal de edição
+    const modal = document.getElementById("modalEdicao");
+    const span = document.getElementsByClassName("close")[0];
+    
+    span.onclick = function() {
+      modal.style.display = "none";
+    }
+    
+    window.onclick = function(event) {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    }
+    
+    function fecharModal() {
+      modal.style.display = "none";
     }
 
-    function gerarPDF(btn) {
-      const row = btn.closest('tr');
-      const id = row.getAttribute('data-id');
-      alert('Gerar PDF para ordem ID: ' + id);
-      // Implementar a geração de PDF aqui
+    // Função para abrir modal de edição
+    function abrirModalEdicao(id) {
+      // Buscar dados da ordem via AJAX
+      fetch('buscar_ordem.php?id=' + id)
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            // Preencher o formulário com os dados
+            document.getElementById('id_ordem_serv').value = data.ordem.id_ordem_serv;
+            document.getElementById('Aparelho').value = data.ordem.Aparelho || '';
+            document.getElementById('servico').value = data.ordem.servico || '';
+            document.getElementById('valor').value = data.ordem.valor || '';
+            document.getElementById('tipo_pagamento').value = data.ordem.tipo_pagamento || '';
+            document.getElementById('status').value = data.ordem.status || '';
+            document.getElementById('data_entrada').value = data.ordem.data_entrada || '';
+            document.getElementById('data_saida').value = data.ordem.data_saida || '';
+            
+            // Exibir o modal
+            modal.style.display = "block";
+          } else {
+            alert('Erro ao carregar dados da ordem: ' + data.message);
+          }
+        })
+        .catch(error => {
+          console.error('Erro:', error);
+          alert('Erro ao carregar dados da ordem.');
+        });
     }
 
-    function deletarLinha(btn) {
+    // Formulário de edição
+    document.getElementById('formEdicao').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const formData = new FormData(this);
+      
+      fetch('editar_ordem.php', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert('Ordem atualizada com sucesso!');
+          modal.style.display = "none";
+          location.reload(); // Recarregar a página para ver as alterações
+        } else {
+          alert('Erro ao atualizar ordem: ' + data.message);
+        }
+      })
+      .catch(error => {
+        console.error('Erro:', error);
+        alert('Erro ao atualizar ordem.');
+      });
+    });
+
+    // Função para gerar PDF
+    function gerarPDF(id) {
+      // Buscar dados da ordem via AJAX
+      fetch('buscar_ordem.php?id=' + id)
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            const ordem = data.ordem;
+            
+            // Criar PDF
+            const doc = new jsPDF();
+            
+            // Adicionar logo (se disponível)
+            // doc.addImage('img/logo.png', 'PNG', 10, 10, 30, 30);
+            
+            // Título
+            doc.setFontSize(20);
+            doc.text('Ordem de Serviço', 105, 20, { align: 'center' });
+            
+            // Linha divisória
+            doc.setLineWidth(0.5);
+            doc.line(10, 25, 200, 25);
+            
+            // Dados da ordem
+            doc.setFontSize(12);
+            let y = 40;
+            
+            doc.text(`Nº da Ordem: ${ordem.id_ordem_serv}`, 20, y);
+            doc.text(`Data Entrada: ${ordem.data_entrada ? new Date(ordem.data_entrada).toLocaleDateString('pt-BR') : '-'}`, 20, y + 10);
+            doc.text(`Data Saída: ${ordem.data_saida ? new Date(ordem.data_saida).toLocaleDateString('pt-BR') : '-'}`, 20, y + 20);
+            
+            doc.text(`Cliente: ${ordem.nome_cliente || ordem.nome || '-'}`, 110, y);
+            doc.text(`CPF: ${ordem.cpf_cliente || ordem.cpf || '-'}`, 110, y + 10);
+            doc.text(`Telefone: ${ordem.telefone_cliente || ordem.telefone || '-'}`, 110, y + 20);
+            
+            y += 40;
+            doc.text(`Endereço: ${ordem.endereco_cliente || ordem.endereco || '-'}`, 20, y);
+            doc.text(`Email: ${ordem.email_cliente || ordem.email || '-'}`, 20, y + 10);
+            
+            y += 30;
+            doc.text(`Aparelho: ${ordem.Aparelho || '-'}`, 20, y);
+            doc.text(`Serviço: ${ordem.servico || '-'}`, 20, y + 10);
+            doc.text(`Valor: R$ ${ordem.valor ? Number(ordem.valor).toFixed(2).replace('.', ',') : '0,00'}`, 20, y + 20);
+            doc.text(`Pagamento: ${ordem.tipo_pagamento || '-'}`, 20, y + 30);
+            doc.text(`Status: ${ordem.status || '-'}`, 20, y + 40);
+            
+            // Salvar PDF
+            doc.save(`ordem_servico_${ordem.id_ordem_serv}.pdf`);
+          } else {
+            alert('Erro ao gerar PDF: ' + data.message);
+          }
+        })
+        .catch(error => {
+          console.error('Erro:', error);
+          alert('Erro ao gerar PDF.');
+        });
+    }
+
+    // Função para deletar linha
+    function deletarLinha(id) {
       if (confirm('Tem certeza que deseja excluir esta ordem de serviço?')) {
-        const row = btn.closest('tr');
-        const id = row.getAttribute('data-id');
-        
-        // Simular uma requisição AJAX para excluir
         fetch('excluir_ordem.php', {
           method: 'POST',
           headers: {
@@ -382,8 +590,8 @@ try {
         .then(response => response.json())
         .then(data => {
           if (data.success) {
-            row.remove();
             alert('Ordem excluída com sucesso!');
+            location.reload(); // Recarregar a página para ver as alterações
           } else {
             alert('Erro ao excluir ordem: ' + data.message);
           }
