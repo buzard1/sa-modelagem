@@ -91,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </div>
 
       <button type="submit" class="btn-login fade-in delay-3">Entrar</button>
-      <a href="cadastro.html" class="btn-registrar fade-in delay-4">Registrar</a>
+
       <br>
       <a href="redefinir-senha.php" class="link-redefinir fade-in delay-4">Esqueci minha senha</a>
    
