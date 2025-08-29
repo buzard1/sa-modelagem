@@ -391,9 +391,6 @@ $menuItems = $_SESSION['cargo'] && isset($menus[$_SESSION['cargo']]) ? $menus[$_
         <label for="busca-produto">Buscar Produto</label>
         <input type="text" id="busca-produto" class="form-input" placeholder="Digite o nome do produto" oninput="filtrarProdutos()" />
       </div>
-      <div class="form-buttons">
-        <button type="button" class="btn-limpar" onclick="limparFiltro()">Limpar</button>
-      </div>
     </form>
 
     <!-- Tabela de produtos -->
