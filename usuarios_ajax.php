@@ -91,11 +91,12 @@ try {
     $cargo = $input['cargo'] ?? null;
 
     // 🚨 SE id não for número válido e cargo não for definido, não executa NADA
-    if (empty($id) || empty($cargo)) {
-        throw new Exception('ID ou cargo não fornecido.');
-    }
-
-    if ($cargo === 'Cliente') {
+// Verifique se o ID foi fornecido
+if (empty($id)) {
+    echo json_encode(['error' => 'ID não fornecido.'], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+    if ($cargo === 'Cliente' || $cargo === null) {
         $sql = "DELETE FROM cliente WHERE cpf = :id";
     } else {
         $sql = "DELETE FROM usuario WHERE id_usuario = :id";

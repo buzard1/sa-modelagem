@@ -146,7 +146,7 @@ $menuItems = isset($_SESSION['cargo']) && isset($menus[$_SESSION['cargo']]) ? $m
     </div>
     <ul class="menu">
       <?php foreach ($menuItems as $item): ?>
-        <li><a href="<?php echo $item['href']; ?>"><?php echo $item['icon']; ?> <span><?php echo $item['text']; ?></span></a></li>
+        <li><a href="<?php echo $item['href']; ?>" <?php echo $item['href'] === 'usuarios.php' ? 'class="active"' : ''; ?>><?php echo $item['icon']; ?> <span><?php echo $item['text']; ?></span></a></li>
       <?php endforeach; ?>
     </ul>
   </nav>
