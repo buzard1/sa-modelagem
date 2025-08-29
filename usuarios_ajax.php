@@ -35,75 +35,74 @@ try {
         $acao = $input['acao'] ?? '';
 
         if ($acao === 'editar') {
-    $id = $input['id'] ?? '';
-    $nome = $input['nome'] ?? '';
-    $email = $input['email'] ?? '';
-    $cargo = $input['cargo'] ?? '';
-    $ativo = isset($input['ativo']) ? 1 : 0;
-    $senha = $input['senha'] ?? '';
+            $id = $input['id'] ?? '';
+            $nome = $input['nome'] ?? '';
+            $email = $input['email'] ?? '';
+            $cargo = $input['cargo'] ?? '';
+            $ativo = isset($input['ativo']) ? 1 : 0;
+            $senha = $input['senha'] ?? '';
 
-    // ✅ validação apenas de campos obrigatórios
-    if ($id === '' || $nome === '' || $email === '' || $cargo === '') {
-        throw new Exception('Campos obrigatórios não preenchidos.');
-    }
+            // ✅ validação apenas de campos obrigatórios
+            if ($id === '' || $nome === '' || $email === '' || $cargo === '') {
+                throw new Exception('Campos obrigatórios não preenchidos.');
+            }
 
-    if ($cargo === 'Cliente') {
-        $cpf = $input['cpf'] ?? '';
-        $telefone = $input['telefone'] ?? '';
-        $endereco = $input['endereco'] ?? '';
-    
-        $sql = "UPDATE cliente 
-                SET nome = :nome, email = :email, telefone = :telefone, endereco = :endereco, cpf = :novoCpf
-                WHERE cpf = :cpf";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([
-            ':nome' => $nome,
-            ':email' => $email,
-            ':telefone' => $telefone,
-            ':endereco' => $endereco,
-            ':novoCpf' => $cpf,
-            ':cpf' => $id
-        ]);
-    } else {
-        $sql = "UPDATE usuario 
-                SET nome_completo = :nome, email = :email, cargo = :cargo, ativo = :ativo";
-        $params = [
-            ':nome' => $nome,
-            ':email' => $email,
-            ':cargo' => $cargo,
-            ':ativo' => $ativo,
-            ':id' => $id
-        ];
+            if ($cargo === 'Cliente') {
+                $cpf = $input['cpf'] ?? '';
+                $telefone = $input['telefone'] ?? '';
+                $endereco = $input['endereco'] ?? '';
+            
+                $sql = "UPDATE cliente 
+                        SET nome = :nome, email = :email, telefone = :telefone, endereco = :endereco, cpf = :novoCpf
+                        WHERE cpf = :cpf";
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute([
+                    ':nome' => $nome,
+                    ':email' => $email,
+                    ':telefone' => $telefone,
+                    ':endereco' => $endereco,
+                    ':novoCpf' => $cpf,
+                    ':cpf' => $id
+                ]);
+            } else {
+                $sql = "UPDATE usuario 
+                        SET nome_completo = :nome, email = :email, cargo = :cargo, ativo = :ativo";
+                $params = [
+                    ':nome' => $nome,
+                    ':email' => $email,
+                    ':cargo' => $cargo,
+                    ':ativo' => $ativo,
+                    ':id' => $id
+                ];
 
-        if (!empty($senha)) {
-            $sql .= ", senha = :senha";
-            $params[':senha'] = password_hash($senha, PASSWORD_DEFAULT);
-        }
+                if (!empty($senha)) {
+                    $sql .= ", senha = :senha";
+                    $params[':senha'] = password_hash($senha, PASSWORD_DEFAULT);
+                }
 
-        $sql .= " WHERE id_usuario = :id";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute($params);
-    }
+                $sql .= " WHERE id_usuario = :id";
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute($params);
+            }
 
-    echo json_encode(['success' => true], JSON_UNESCAPED_UNICODE);
-}elseif ($acao === 'excluir') {
-    $id = $input['id'] ?? null;
-    $cargo = $input['cargo'] ?? null;
+            echo json_encode(['success' => true], JSON_UNESCAPED_UNICODE);
+        } elseif ($acao === 'excluir') {
+            $id = $input['id'] ?? null;
+            $cargo = $input['cargo'] ?? null;
 
-    // 🚨 SE id não for número válido e cargo não for definido, não executa NADA
-// Verifique se o ID foi fornecido
-if (empty($id)) {
-    echo json_encode(['error' => 'ID não fornecido.'], JSON_UNESCAPED_UNICODE);
-    exit;
-}
-    if ($cargo === 'Cliente' || $cargo === null) {
-        $sql = "DELETE FROM cliente WHERE cpf = :id";
-    } else {
-        $sql = "DELETE FROM usuario WHERE id_usuario = :id";
-    }
+            // Restaura a verificação completa para ID e cargo
+            if (empty($id)) {
+                throw new Exception('ID ou cargo não fornecido.');
+            }
 
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([':id' => $id]);
+            if ($cargo === 'Cliente') {
+                $sql = "DELETE FROM cliente WHERE cpf = :id";
+            } else {
+                $sql = "DELETE FROM usuario WHERE id_usuario = :id";
+            }
+
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([':id' => $id]);
 
             echo json_encode(['success' => true], JSON_UNESCAPED_UNICODE);
         } else {
