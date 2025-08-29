@@ -110,6 +110,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <div style="margin-top:1rem;">
             <button type="submit">Salvar Alterações</button>
+            <br>
+            <br>
             <a href="ordem_serv.php"><button type="button">Cancelar</button></a>
         </div>
     </form>

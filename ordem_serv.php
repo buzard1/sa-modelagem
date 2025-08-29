@@ -153,9 +153,6 @@ try {
         Filtro por <b>CPF/CNPJ</b> funcionando normalmente (usando campo de ordem_serv).
       </div>
     <?php else: ?>
-      <div class="alert-info">
-        <b>Informação:</b> Dados do cliente sendo buscados da tabela <b><?php echo $tblCliente['nome']; ?></b>.
-      </div>
     <?php endif; ?>
 
     <!-- Filtro de Busca -->
