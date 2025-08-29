@@ -173,7 +173,8 @@ try {
     </form>
 
     <!-- Tabela -->
-    <table class="pedidos-table">
+      <div style="overflow-x:auto;">
+      <table class="pedidos-table">
       <thead>
         <tr>
           <th>Cliente</th>
