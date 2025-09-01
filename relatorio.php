@@ -323,7 +323,7 @@ $menuItems = $menus[$_SESSION['cargo']] ?? [];
     </div>
     <ul class="menu">
       <?php foreach ($menuItems as $item): ?>
-        <li><a href="<?php echo $item['href']; ?>"><span class="icon"><?php echo $item['icon']; ?></span> <span><?php echo $item['text']; ?></span></a></li>
+        <li><a href="<?php echo $item['href']; ?>" <?php echo $item['href'] === 'relatorio.php' ? 'class="active"' : ''; ?>><?php echo $item['icon']; ?> <span><?php echo $item['text']; ?></span></a></li>
       <?php endforeach; ?>
     </ul>
   </nav>
