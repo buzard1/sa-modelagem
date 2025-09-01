@@ -79,6 +79,17 @@ $cpf_cnpj  = trim($_GET['cpf_cnpj'] ?? '');
 $telefone  = trim($_GET['telefone'] ?? '');
 $email     = trim($_GET['email'] ?? '');
 
+/**
+ * PAGINAÇÃO
+ */
+$limite = 10; // registros por página
+$pagina = isset($_GET['pagina']) && is_numeric($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
+if ($pagina < 1) $pagina = 1;
+$offset = ($pagina - 1) * $limite;
+
+/**
+ * QUERY PRINCIPAL
+ */
 $sql = "SELECT os.*";
 
 if ($temCliente) {
@@ -110,12 +121,57 @@ if ($email !== '') {
     $params[':email'] = "%".$email."%";
 }
 
-$sql .= " ORDER BY os.data_entrada DESC, os.id_ordem_serv DESC";
+$sql .= " ORDER BY os.data_entrada DESC, os.id_ordem_serv DESC LIMIT :limite OFFSET :offset";
 
 try {
     $stmt = $pdo->prepare($sql);
-    $stmt->execute($params);
+
+    // Bind dos filtros
+    foreach ($params as $k => $v) {
+        $stmt->bindValue($k, $v, PDO::PARAM_STR);
+    }
+
+    // Bind da paginação
+    $stmt->bindValue(':limite', $limite, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+
+    $stmt->execute();
     $ordens = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Consulta total de registros (sem LIMIT/OFFSET)
+    $sqlCount = "SELECT COUNT(*) FROM ordem_serv os";
+    if ($temCliente) {
+        $sqlCount .= " LEFT JOIN `{$tblCliente['nome']}` c ON c.cpf = os.cpf WHERE 1=1";
+    } else {
+        $sqlCount .= " WHERE 1=1";
+    }
+
+    if ($nome !== '') {
+        $sqlCount .= $temCliente ? " AND c.nome LIKE :nome" : " AND os.nome LIKE :nome";
+    }
+    if ($cpf_cnpj !== '') {
+        $sqlCount .= $temCliente ? " AND c.cpf LIKE :cpf" : " AND os.cpf LIKE :cpf";
+    }
+    if ($telefone !== '') {
+        $sqlCount .= $temCliente ? " AND c.telefone LIKE :tel" : " AND os.telefone LIKE :tel";
+    }
+    if ($email !== '') {
+        $sqlCount .= $temCliente ? " AND c.email LIKE :email" : " AND os.email LIKE :email";
+    }
+
+    $countStmt = $pdo->prepare($sqlCount);
+
+    // Bind dos filtros também na contagem
+    foreach ($params as $k => $v) {
+        if ($k !== ':limite' && $k !== ':offset') {
+            $countStmt->bindValue($k, $v, PDO::PARAM_STR);
+        }
+    }
+
+    $countStmt->execute();
+    $totalRegistros = $countStmt->fetchColumn();
+    $totalPaginas = ceil($totalRegistros / $limite);
+
 } catch (PDOException $e) {
     die("Erro na consulta SQL: " . $e->getMessage() . "<br>SQL: " . $sql);
 }
@@ -147,11 +203,6 @@ try {
   <div class="form-container">
     <h2>📦 Lista de Ordens de Serviço</h2>
 
-    <?php if (!$temCliente): ?>
-      
-    <?php else: ?>
-    <?php endif; ?>
-
     <!-- Filtro de Busca -->
     <form id="filtro-form" method="get" style="margin-bottom: 2rem;">
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;">
@@ -167,7 +218,7 @@ try {
     </form>
 
     <!-- Tabela -->
-      <div style="overflow-x:auto;">
+    <div style="overflow-x:auto;">
       <table class="pedidos-table">
       <thead>
         <tr>
@@ -210,7 +261,6 @@ try {
               <td><?php echo htmlspecialchars($o['tipo_pagamento'] ?? '-'); ?></td>
               <td class="status <?php echo $statusClass; ?>"><?php echo htmlspecialchars($statusTxt); ?></td>
               <td class="actions">
-                <!-- Botões -->
                 <button onclick="window.location.href='editar_ordem.php?id=<?php echo (int)$o['id_ordem_serv']; ?>'">✏️</button>
                 <button onclick="gerarPDF(<?php echo (int)$o['id_ordem_serv']; ?>)">📄</button>
                 <button onclick="if(confirm('Tem certeza que deseja excluir esta ordem?')) { window.location.href='deletar_ordem.php?id=<?php echo (int)$o['id_ordem_serv']; ?>'; }">🗑️</button>
@@ -222,6 +272,26 @@ try {
         <?php endif; ?>
       </tbody>
     </table>
+  </div>
+
+  <!-- Paginação -->
+  <?php if ($totalPaginas > 1): ?>
+  <div style="margin-top:20px; text-align:center;">
+    <?php for ($i=1; $i <= $totalPaginas; $i++): ?>
+      <a href="?pagina=<?php echo $i; ?>
+        <?php echo $nome ? "&nome=".urlencode($nome) : ""; ?>
+        <?php echo $cpf_cnpj ? "&cpf_cnpj=".urlencode($cpf_cnpj) : ""; ?>
+        <?php echo $telefone ? "&telefone=".urlencode($telefone) : ""; ?>
+        <?php echo $email ? "&email=".urlencode($email) : ""; ?>
+      " 
+      style="margin:0 5px; padding:5px 10px; border:1px solid #ccc; text-decoration:none; 
+      <?php echo $i == $pagina ? 'background:#333;color:#fff;' : ''; ?>">
+        <?php echo $i; ?>
+      </a>
+    <?php endfor; ?>
+  </div>
+  <?php endif; ?>
+
   </div>
 
   <!-- jsPDF para gerar PDF via JS -->
@@ -252,31 +322,25 @@ function gerarPDF(id_ordem) {
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.getWidth();
 
-  // Título
   doc.setFontSize(18);
   doc.setFont("helvetica", "bold");
   doc.text("Ordem de Serviço", pageWidth / 2, 20, { align: "center" });
 
-  // Linha horizontal abaixo do título
   doc.setLineWidth(0.5);
   doc.line(20, 25, pageWidth - 20, 25);
 
-  // Conteúdo
   doc.setFontSize(12);
   doc.setFont("helvetica", "normal");
   let y = 35;
 
   Object.entries(dados).forEach(([key, value]) => {
-    // Nome do campo em negrito
     doc.setFont("helvetica", "bold");
     doc.text(`${key}: `, 20, y);
-    // Valor normal
     doc.setFont("helvetica", "normal");
     doc.text(`${value}`, 55, y);
     y += 8;
   });
 
-  // Linha final
   doc.setLineWidth(0.3);
   doc.line(20, y, pageWidth - 20, y);
 
