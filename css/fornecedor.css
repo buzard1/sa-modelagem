@@ -74,4 +74,30 @@ body {
     background-color: #03dac6;
     color: #000;
   }
+/* Tabela de Usuários */
+.tabela-fornecedor h2 {
+  color: #03dac6;
+  margin-bottom: 1rem;
+}
+
+.fornecedor-table {
+  width: 80%;
+  border-collapse: collapse;
+  background-color: #1e1e1e;
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 0 auto;
+}
+
+.fornecedor-table th,
+.fornecedor-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #333;
+}
+
+.fornecedor-table th {
+  background-color: #2c2c2c;
+}
+
   
