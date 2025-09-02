@@ -141,31 +141,8 @@ $menuItems = $menus[$_SESSION['cargo']] ?? [];
       min-height: 100vh;
     }
     
-    /* Sidebar corrigida - Ícones sempre visíveis */
-    .sidebar {
-      width: 220px;
-      background-color: #2c2c3f;
-      padding: 15px;
-      height: 100vh;
-      position: fixed;
-      left: 0;
-      top: 0;
-      z-index: 100;
-      display: flex;
-      flex-direction: column;
-    }
-    
-    .logo {
-      text-align: center;
-      margin-bottom: 20px;
-      padding-bottom: 15px;
-      border-bottom: 1px solid #444;
-      flex-shrink: 0;
-    }
-    
-    .logo img {
-      max-width: 80px;
-    }
+
+
     
     .menu-container {
       flex: 1;
@@ -297,56 +274,6 @@ $menuItems = $menus[$_SESSION['cargo']] ?? [];
       height: 250px !important;
     }
     
-    /* Sidebar responsiva */
-    @media (max-width: 1024px) {
-      .sidebar {
-        width: 70px;
-      }
-      
-      .sidebar .logo img {
-        max-width: 40px;
-      }
-      
-      .menu span {
-        display: none;
-      }
-      
-      .menu .icon {
-        margin-right: 0;
-        font-size: 24px;
-      }
-      
-      .container {
-        margin-left: 70px;
-        width: calc(100% - 70px);
-      }
-    }
-    
-    @media (max-width: 768px) {
-      .sidebar {
-        width: 60px;
-        padding: 10px;
-      }
-      
-      .container {
-        margin-left: 60px;
-        width: calc(100% - 60px);
-        padding: 15px;
-      }
-      
-      .filtros {
-        flex-direction: column;
-        align-items: stretch;
-      }
-      
-      .graficos {
-        grid-template-columns: 1fr;
-      }
-      
-      .menu .icon {
-        font-size: 22px;
-      }
-    }
   </style>
 </head>
 <body>
