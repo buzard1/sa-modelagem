@@ -135,7 +135,7 @@ $menuItems = $menus[$_SESSION['cargo']] ?? [];
     }
     
     body {
-      background-color: #1e1e2e;
+      background-color: #121212;
       color: #fff;
       display: flex;
       min-height: 100vh;
@@ -205,7 +205,7 @@ $menuItems = $menus[$_SESSION['cargo']] ?? [];
     
     /* Filtros */
     .filtros {
-      background-color: #2c2c3f;
+      background-color: #1f1f1f;
       padding: 20px;
       border-radius: 10px;
       margin-bottom: 30px;
@@ -258,7 +258,7 @@ $menuItems = $menus[$_SESSION['cargo']] ?? [];
     }
     
     .grafico-box {
-      background-color: #2c2c3f;
+      background-color: #1f1f1f;
       padding: 20px;
       border-radius: 10px;
     }
