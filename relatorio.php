@@ -141,32 +141,45 @@ $menuItems = $menus[$_SESSION['cargo']] ?? [];
       min-height: 100vh;
     }
     
-    /* Sidebar */
+    /* Sidebar corrigida - Ícones sempre visíveis */
     .sidebar {
-      width: 250px;
+      width: 220px;
       background-color: #2c2c3f;
-      padding: 20px;
+      padding: 15px;
       height: 100vh;
       position: fixed;
       left: 0;
       top: 0;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
     }
     
     .logo {
       text-align: center;
-      margin-bottom: 30px;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #444;
+      flex-shrink: 0;
     }
     
     .logo img {
-      max-width: 100px;
+      max-width: 80px;
+    }
+    
+    .menu-container {
+      flex: 1;
+      overflow-y: visible;
     }
     
     .menu {
       list-style: none;
+      height: auto;
+      overflow: visible;
     }
     
     .menu li {
-      margin-bottom: 10px;
+      margin-bottom: 5px;
     }
     
     .menu a {
@@ -174,9 +187,9 @@ $menuItems = $menus[$_SESSION['cargo']] ?? [];
       text-decoration: none;
       display: flex;
       align-items: center;
-      padding: 12px;
+      padding: 12px 15px;
       border-radius: 8px;
-      transition: background-color 0.3s;
+      transition: all 0.3s;
     }
     
     .menu a:hover {
@@ -189,15 +202,22 @@ $menuItems = $menus[$_SESSION['cargo']] ?? [];
     }
     
     .menu .icon {
-      margin-right: 10px;
+      margin-right: 15px;
       font-size: 20px;
+      min-width: 24px;
+      text-align: center;
+    }
+    
+    .menu span {
+      display: inline-block;
+      white-space: nowrap;
     }
     
     /* Container principal */
     .container {
-      margin-left: 250px;
-      padding: 30px;
-      width: calc(100% - 250px);
+      margin-left: 220px;
+      padding: 25px;
+      width: calc(100% - 220px);
     }
     
     h1 {
@@ -277,34 +297,40 @@ $menuItems = $menus[$_SESSION['cargo']] ?? [];
       height: 250px !important;
     }
     
+    /* Sidebar responsiva */
     @media (max-width: 1024px) {
       .sidebar {
-        width: 200px;
-      }
-      
-      .container {
-        margin-left: 200px;
-        width: calc(100% - 200px);
-      }
-      
-      .graficos {
-        grid-template-columns: 1fr;
-      }
-    }
-    
-    @media (max-width: 768px) {
-      .sidebar {
         width: 70px;
-        padding: 10px;
       }
       
-      .sidebar span {
+      .sidebar .logo img {
+        max-width: 40px;
+      }
+      
+      .menu span {
         display: none;
+      }
+      
+      .menu .icon {
+        margin-right: 0;
+        font-size: 24px;
       }
       
       .container {
         margin-left: 70px;
         width: calc(100% - 70px);
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 60px;
+        padding: 10px;
+      }
+      
+      .container {
+        margin-left: 60px;
+        width: calc(100% - 60px);
         padding: 15px;
       }
       
@@ -312,11 +338,19 @@ $menuItems = $menus[$_SESSION['cargo']] ?? [];
         flex-direction: column;
         align-items: stretch;
       }
+      
+      .graficos {
+        grid-template-columns: 1fr;
+      }
+      
+      .menu .icon {
+        font-size: 22px;
+      }
     }
   </style>
 </head>
 <body>
-  <!-- Sidebar fixa -->
+  <!-- Sidebar fixa com ícones sempre visíveis -->
   <nav class="sidebar">
     <div class="logo">
       <img src="img/logo.png" alt="Logo do sistema">
