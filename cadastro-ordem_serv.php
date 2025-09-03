@@ -81,7 +81,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       $stmt->bindParam(':valor', $valor);
       $stmt->bindParam(':tipo_pagamento', $pagamento);
       $stmt->bindParam(':problema', $problema);
-      $stmt->bindParam(':cpf', $idcliente); // Corrigido: de :cpf para :idcliente
+      $stmt->bindParam(':cpf', $idcliente); 
       $stmt->bindParam(':idusuario', $idusuario);
 
       if ($stmt->execute()) {
