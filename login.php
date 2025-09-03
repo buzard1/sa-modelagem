@@ -53,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!empty($usuario['senha_temporaria']) && $usuario['senha_temporaria'] == 1) {
                 header("Location: trocar-senha.php");
             } else {
-                header("Location: dashboard.php");
+                header("Location: cadastro-cliente.php");
             }
             exit();
         }
