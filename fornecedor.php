@@ -129,7 +129,7 @@ $fornecedores = $stmt->fetchAll(PDO::FETCH_ASSOC);
       background-color: rgba(0,0,0,0.4);
     }
     .modal-content {
-      background-color: #fefefe;
+      background-color: #333;
       margin: 15% auto;
       padding: 20px;
       border: 1px solid #888;
@@ -212,6 +212,7 @@ $fornecedores = $stmt->fetchAll(PDO::FETCH_ASSOC);
               <td><?php echo htmlspecialchars($fornecedor['email']); ?></td>
               <td class="action-buttons">
                 <button onclick="openEditModal(<?php echo $fornecedor['id_fornecedor']; ?>, '<?php echo htmlspecialchars($fornecedor['nome_fornecedor']); ?>', '<?php echo htmlspecialchars($fornecedor['telefone']); ?>', '<?php echo htmlspecialchars($fornecedor['email']); ?>')">Editar</button>
+                <br><br>
                 <form action="fornecedor.php" method="POST" style="display:inline;">
                   <input type="hidden" name="action" value="excluir">
                   <input type="hidden" name="id_fornecedor" value="<?php echo $fornecedor['id_fornecedor']; ?>">
