@@ -1,20 +1,23 @@
 <?php
+// Inicia a sessão para manter o estado do usuário entre páginas
 session_start();
+// Inclui o arquivo de conexão com o banco de dados
 require_once 'conexao.php';
 
-// Verificação de permissão
+// Verificação de permissão - permite Gerente, Atendente e Tecnico
 if (!isset($_SESSION['cargo']) || !in_array($_SESSION['cargo'], ["Gerente","Atendente","Tecnico"])) {
+    // Redireciona para o dashboard se não tiver permissão
     header("Location: dashboard.php");
     exit();
 }
 
-// Receber o ID da ordem
+// Receber o ID da ordem a ser editada a partir da URL
 $id_ordem = (int)($_GET['id'] ?? 0);
 if ($id_ordem <= 0) {
     die("ID da ordem inválido.");
 }
 
-// Buscar dados da ordem
+// Buscar dados da ordem no banco de dados
 try {
     $stmt = $pdo->prepare("SELECT * FROM ordem_serv WHERE id_ordem_serv = :id");
     $stmt->execute([':id' => $id_ordem]);
@@ -27,7 +30,7 @@ try {
     die("Erro ao buscar ordem: " . $e->getMessage());
 }
 
-// Buscar peças atribuídas a esta ordem
+// Buscar peças atribuídas a esta ordem (join entre várias tabelas)
 try {
     $sql = "SELECT sp.quantidade, p.id_produto, p.nome_produto, p.valor, e.id_estoque 
             FROM servico_produto sp
@@ -41,9 +44,9 @@ try {
     die("Erro ao buscar peças da ordem: " . $e->getMessage());
 }
 
-
-// Processar formulário de edição
+// Processar formulário de edição quando enviado via POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Obter dados do formulário
     $aparelho = $_POST['Aparelho'] ?? '';
     $servico = $_POST['servico'] ?? '';
     $data_entrada = $_POST['data_entrada'] ?? '';
@@ -53,6 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $status = $_POST['status'] ?? '';
 
     try {
+        // Preparar e executar query de atualização
         $stmt = $pdo->prepare("
             UPDATE ordem_serv SET
                 Aparelho = :aparelho,
@@ -75,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ':id' => $id_ordem
         ]);
 
-        // Redirecionar de volta para a lista
+        // Redirecionar de volta para a lista de ordens após atualização
         header("Location: ordem_serv.php");
         exit();
 
@@ -93,19 +97,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <title>Editar Ordem de Serviço</title>
 <link rel="stylesheet" href="css/form.css">
 </head>
+
+<!-- Modal para adicionar peças (inicialmente oculto) -->
 <div id="modalPeca" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
   <div style="background:#333; margin:10% auto; padding:20px; width:400px; border-radius:5px;">
     <h3>Atribuir Peça</h3>
+    <!-- Formulário para adicionar peças à ordem -->
     <form id="formPeca" method="post" action="atribuir_peca.php">
       <input type="hidden" name="id_ordem_serv" id="id_ordem_serv">
       <label>Peça:</label>
       <select name="id_produto" required>
         <?php
+          // Buscar produtos disponíveis em estoque
           $produtos = $pdo->query("SELECT p.id_produto, p.nome_produto, e.quantidade 
                                    FROM produto p
                                    JOIN estoque e ON e.id_estoque = p.idestoque
                                    WHERE e.quantidade > 0
                                    ORDER BY p.nome_produto")->fetchAll();
+          // Gerar opções para cada produto disponível
           foreach ($produtos as $p) {
               echo "<option value='{$p['id_produto']}'>" . 
                    htmlspecialchars($p['nome_produto']) . " (Qtd: {$p['quantidade']})</option>";
@@ -124,10 +133,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </div>
 
 <script>
+// Função para abrir o modal de adição de peças
 function abrirModalPeca(idOS) {
   document.getElementById('id_ordem_serv').value = idOS;
   document.getElementById('modalPeca').style.display = 'block';
 }
+
+// Função para fechar o modal
 function fecharModal() {
   document.getElementById('modalPeca').style.display = 'none';
 }
@@ -136,6 +148,7 @@ function fecharModal() {
 <body>
 <div class="form-container">
     <h2>✏️ Editar Ordem de Serviço</h2>
+    <!-- Formulário principal de edição da ordem -->
     <form method="post">
         <label>Aparelho:</label>
         <input type="text" name="Aparelho" value="<?php echo htmlspecialchars($ordem['Aparelho']); ?>" required>
@@ -149,7 +162,7 @@ function fecharModal() {
         <label>Data de Saída:</label>
         <input type="date" name="data_saida" value="<?php echo htmlspecialchars($ordem['data_saida']); ?>">
 
-<!-- Estilizção da tabela de peças-->
+<!-- Estilização da tabela de peças -->
 <style>
 .ordem-table {
   width: 80%;
@@ -171,7 +184,8 @@ function fecharModal() {
   background-color: #2c2c2c;
 }
 </style>
-<!-- peças atruibuidas a ordem de servico-->
+
+<!-- Seção de peças atribuídas à ordem de serviço -->
 <h3>🔧 Peças Atribuídas</h3>
 <table class="ordem-table">
   <thead>
@@ -192,6 +206,7 @@ function fecharModal() {
           <td>R$ <?php echo number_format($p['valor'], 2, ',', '.'); ?></td>
           <td>R$ <?php echo number_format($p['valor'] * $p['quantidade'], 2, ',', '.'); ?></td>
           <td>
+            <!-- Link para remover peça com confirmação -->
             <a href="remover_peca.php?id_ordem=<?php echo $id_ordem; ?>&id_produto=<?php echo $p['id_produto']; ?>" 
                onclick="return confirm('Tem certeza que deseja remover esta peça da ordem?');">🗑️</a>
           </td>
@@ -203,9 +218,11 @@ function fecharModal() {
   </tbody>
 </table>
 <br>
+<!-- Botão para abrir modal de adição de peças -->
 <button type="button" onclick="abrirModalPeca(<?php echo (int)$ordem['id_ordem_serv']; ?>)">
   ➕ Adicionar Peça
 </button>
+
         <label>Valor:</label>
         <input type="number" step="0.01" name="valor" value="<?php echo htmlspecialchars($ordem['valor']); ?>">
 
@@ -227,9 +244,6 @@ function fecharModal() {
         </div>
     </form>
 </div>
-<style>
-    
-    
-</style>
+
 </body>
 </html>

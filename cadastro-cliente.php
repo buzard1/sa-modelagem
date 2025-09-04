@@ -1,14 +1,16 @@
 <?php 
-session_start();
-require_once 'conexao.php';
+session_start(); // Inicia a sessão
+require_once 'conexao.php'; // Importa conexão com o banco
 
-
-// VERIFICA SE O USUARIO TEM PERMISSAO
+// VERIFICA SE O USUÁRIO TEM PERMISSÃO
+// Apenas Gerente e Atendente podem acessar
 if (!isset($_SESSION['cargo']) || ($_SESSION['cargo'] != "Gerente" && $_SESSION['cargo'] != "Atendente")) {
     echo "Acesso Negado!";
     header("Location: dashboard.php");
     exit();
 }
+
+// Menus diferentes para cada cargo
 $menus = [
     'Gerente' => [
         ['href' => 'dashboard.php', 'icon' => '👤', 'text' => 'Perfil'],
@@ -31,136 +33,99 @@ $menus = [
         ['href' => 'fornecedor.php', 'icon' => '🔗', 'text' => 'Fornecedores'],
         ['href' => 'suporte.php', 'icon' => '🆘', 'text' => 'Suporte'],
         ['href' => 'logout.php', 'icon' => '🚪', 'text' => 'Sair']
-    ],
-    'Tecnico' => [    
-        ['href' => 'dashboard.php', 'icon' => '👤', 'text' => 'Perfil'],
-        ['href' => 'ordem_serv.php', 'icon' => '💼', 'text' => 'Ordem de serviço'],
-        ['href' => 'suporte.php', 'icon' => '🆘', 'text' => 'Suporte'],
-        ['href' => 'logout.php', 'icon' => '🚪', 'text' => 'Sair']
-    ],
-  ];
-// Obter o menu correspondente ao cargo do usuário
+    ]
+];
+
+// Pega o menu de acordo com o cargo logado
 $menuItems = isset($_SESSION['cargo']) && isset($menus[$_SESSION['cargo']]) ? $menus[$_SESSION['cargo']] : [];
 
+// PROCESSAMENTO DO FORMULÁRIO
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $nome     = $_POST['nome'];
-    $telefone = $_POST['telefone'];
-    $email    = $_POST['email'];
-    $endereco = $_POST['endereco'];
-    $cpf      = $_POST['cpf'];
+    // Captura dados enviados
+    $nome     = $_POST["nome"];
+    $telefone = $_POST["telefone"];
+    $email    = $_POST["email"];
+    $cpf      = $_POST["cpf"];
+    $endereco = $_POST["endereco"];
 
-    $sql = "INSERT INTO cliente(nome, telefone, email, endereco, cpf) VALUES (:nome, :telefone, :email, :endereco, :cpf)";
-    $stmt = $pdo->prepare($sql);
-    $stmt->bindParam(':nome', $nome);
-    $stmt->bindParam(':telefone', $telefone);
-    $stmt->bindParam(':email', $email);
-    $stmt->bindParam(':endereco', $endereco);
-    $stmt->bindParam(':cpf', $cpf);
+    try {
+        // Conecta ao banco
+        $pdo = new PDO("mysql:host=localhost;dbname=sa_mobilerepair", "root", "");
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    if ($stmt->execute()) {
-        echo "<script>alert('Cliente cadastrado com sucesso!');</script>";
-    } else {
-        echo "<script>alert('Erro ao cadastrar o cliente!');</script>";
+        // Prepara insert no banco
+        $stmt = $pdo->prepare("INSERT INTO cliente (nome, telefone, email, cpf, endereco) VALUES (:nome, :telefone, :email, :cpf, :endereco)");
+        $stmt->bindParam(':nome', $nome);
+        $stmt->bindParam(':telefone', $telefone);
+        $stmt->bindParam(':email', $email);
+        $stmt->bindParam(':cpf', $cpf);
+        $stmt->bindParam(':endereco', $endereco);
+
+        if ($stmt->execute()) {
+            echo "<script>alert('✅ Cliente cadastrado com sucesso!'); window.location='cadastro-cliente.php';</script>";
+        } else {
+            echo "<script>alert('❌ Erro ao cadastrar cliente!');</script>";
+        }
+    } catch (PDOException $e) {
+        echo "<script>alert('Erro: " . $e->getMessage() . "');</script>";
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
   <title>Cadastro de Cliente</title>
-  <link rel="stylesheet" href="css/sidebar.css" />
-  <link rel="stylesheet" href="css/form.css" />
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="css/sidebar.css">
+  <link rel="stylesheet" href="css/form.css">
 </head>
 <body>
-
-  <!-- Sidebar fixa -->
+  <!-- Sidebar -->
   <nav class="sidebar">
     <div class="logo">
-      <img src="img/logo.png" alt="Logo do sistema">
+      <img src="img/logo.png" alt="Logo">
     </div>
     <ul class="menu">
       <?php foreach ($menuItems as $item): ?>
-        <li><a href="<?php echo $item['href']; ?>"><?php echo $item['icon']; ?> <span><?php echo $item['text']; ?></span></a></li>
+        <li><a href="<?= $item['href'] ?>"><?= $item['icon'] ?> <span><?= $item['text'] ?></span></a></li>
       <?php endforeach; ?>
     </ul>
   </nav>
 
-  <!-- Conteúdo principal -->
-  <main class="content">
-    <div class="form-container">
-      <h2>Cadastro de Cliente</h2>
-      <form action="cadastro-cliente.php" method="POST">
-        <label for="nome">Nome completo:</label>
-        <input type="text" id="nome" name="nome" required />
+  <!-- Formulário de cadastro -->
+  <div class="form-container">
+    <h2>📋 Cadastro de Cliente</h2>
+    <form method="POST">
+      <label for="nome">Nome:</label>
+      <input type="text" id="nome" name="nome" required>
 
-        <label for="telefone">Telefone:</label>
-        <input type="tel" id="telefone" name="telefone" required />
+      <label for="telefone">Telefone:</label>
+      <input type="text" id="telefone" name="telefone" required>
 
-        <label for="email">E-mail:</label>
-        <input type="email" id="email" name="email" required />
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required>
 
-        <label for="endereco">Endereço:</label>
-        <input type="text" id="endereco" name="endereco" required />
+      <label for="cpf">CPF:</label>
+      <input type="text" id="cpf" name="cpf" maxlength="14" required>
 
-        <label for="cpf">CPF/CNPJ:</label>
-        <input type="text" id="cpf" name="cpf" required />
+      <label for="endereco">Endereço:</label>
+      <input type="text" id="endereco" name="endereco" required>
 
-        <div class="form-buttons">
-          <button type="submit">Cadastrar Cliente</button>
-          <button type="button" id="cancelar">Cancelar</button>
-        </div>
-      </form>
-    </div>
-  </main>
+      <button type="submit">Salvar Cliente</button>
+    </form>
+  </div>
 
-  <!-- Script: ativa o menu da página atual -->
+  <!-- Máscara para CPF -->
   <script>
-    const links = document.querySelectorAll('.sidebar .menu li a');
-    const currentPage = window.location.pathname.split('/').pop();
+    document.getElementById('cpf').addEventListener('input', function (e) {
+      let value = e.target.value.replace(/\D/g, "");
+      if (value.length > 11) value = value.slice(0, 11);
 
-    links.forEach(link => {
-      if (link.getAttribute('href') === currentPage) {
-        link.classList.add('active');
-      }
-    });
-  </script>
+      value = value.replace(/(\d{3})(\d)/, "$1.$2");
+      value = value.replace(/(\d{3})(\d)/, "$1.$2");
+      value = value.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
 
-  <!-- Máscaras de entrada -->
-  <script src="https://cdn.jsdelivr.net/npm/inputmask/dist/inputmask.min.js"></script>
-  <script>
-    Inputmask({ mask: "(99) 99999-9999" }).mask("#telefone");
-  </script>
-
-  <!-- Script do botão cancelar -->
-  <script>
-    document.getElementById("cancelar").addEventListener("click", () => {
-      const form = document.querySelector("form");
-      form.reset(); // limpa todos os campos
-    });
-  </script>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
-
-  <script>
-    const input = document.getElementById('cpf');
-    input.addEventListener('input', function () {
-      let value = input.value.replace(/\D/g, '');
-      value = value.slice(0, 14);
-      if (value.length <= 11) {
-        value = value.replace(/(\d{3})(\d)/, '$1.$2');
-        value = value.replace(/(\d{3})(\d)/, '$1.$2');
-        value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-      } else {
-        value = value.replace(/^(\d{2})(\d)/, '$1.$2');
-        value = value.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
-        value = value.replace(/\.(\d{3})(\d)/, '.$1/$2');
-        value = value.replace(/(\d{4})(\d)/, '$1-$2');
-      }
-      input.value = value;
+      e.target.value = value;
     });
   </script>
 </body>

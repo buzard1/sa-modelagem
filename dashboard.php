@@ -10,12 +10,12 @@ if (!isset($_SESSION['cargo']) || ($_SESSION['cargo'] != "Gerente" && $_SESSION[
     exit(); // Encerra o script
 }
 
-// Definir os menus com base no cargo
+// Definição dos menus para cada cargo
 $menus = [
     'Gerente' => [ // Opções de menu para o cargo Gerente
         ['href' => 'dashboard.php', 'icon' => '👤', 'text' => 'Perfil'],
         ['href' => 'cadastro-cliente.php', 'icon' => '📋', 'text' => 'Cadastro Cliente'],
-        ['href' => 'cadastro-ordem_serv.php', 'icon' => '🛠️', 'text' => 'Cadastro de<br>Ordem de Serviço'],
+        ['href' => 'cadastro-ordem_serv.php', 'icon' => '🛠️', 'text' => 'Cadastro Ordem de Serviço'],
         ['href' => 'ordem_serv.php', 'icon' => '💼', 'text' => 'Ordem de serviço'],
         ['href' => 'relatorio.php', 'icon' => '📊', 'text' => 'Relatórios'],
         ['href' => 'estoque.php', 'icon' => '📦', 'text' => 'Estoque'],
@@ -27,7 +27,7 @@ $menus = [
     'Atendente' => [ // Opções de menu para o cargo Atendente
         ['href' => 'dashboard.php', 'icon' => '👤', 'text' => 'Perfil'],
         ['href' => 'cadastro-cliente.php', 'icon' => '📋', 'text' => 'Cadastro Cliente'],
-        ['href' => 'cadastro-ordem_serv.php', 'icon' => '🛠️', 'text' => 'Cadastro de<br>Ordem de Serviço'],
+        ['href' => 'cadastro-ordem_serv.php', 'icon' => '🛠️', 'text' => 'Cadastro Ordem de Serviço'],
         ['href' => 'ordem_serv.php', 'icon' => '💼', 'text' => 'Ordem de serviço'],
         ['href' => 'estoque.php', 'icon' => '📦', 'text' => 'Estoque'],
         ['href' => 'fornecedor.php', 'icon' => '🔗', 'text' => 'Fornecedores'],
