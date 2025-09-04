@@ -1,34 +1,59 @@
+<?php
+require_once 'conexao.php'; // Conexão com banco
+
+// PROCESSAMENTO DO FORMULÁRIO DE CADASTRO DE USUÁRIO
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $nome   = $_POST["nome"];
+    $email  = $_POST["email"];
+    $senha  = password_hash($_POST["senha"], PASSWORD_DEFAULT); // senha criptografada
+    $cargo  = $_POST["cargo"];
+
+    try {
+        // Insere novo usuário
+        $stmt = $pdo->prepare("INSERT INTO usuario (nome, email, senha, cargo) VALUES (:nome, :email, :senha, :cargo)");
+        $stmt->bindParam(':nome', $nome);
+        $stmt->bindParam(':email', $email);
+        $stmt->bindParam(':senha', $senha);
+        $stmt->bindParam(':cargo', $cargo);
+
+        if ($stmt->execute()) {
+            echo "<script>alert('✅ Usuário cadastrado com sucesso!'); window.location='usuarios.php';</script>";
+        } else {
+            echo "<script>alert('❌ Erro ao cadastrar usuário!');</script>";
+        }
+    } catch (PDOException $e) {
+        echo "<script>alert('Erro: " . $e->getMessage() . "');</script>";
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Registrar - Manutenção de Celulares</title>
-  <link rel="stylesheet" href="css/cadastro.css" />
-  <link rel="icon" href="img/logo.png" type="image/png">
+  <meta charset="UTF-8">
+  <title>Cadastro de Usuário</title>
+  <link rel="stylesheet" href="css/form.css">
 </head>
 <body>
-  <div class="register-container">
-    <h2>Criar Conta</h2>
-    <form>
-      <div class="form-group fade-in">
-        <label for="nome">Nome completo:</label>
-        <input type="text" id="nome" name="nome" required />
-      </div>
-      <div class="form-group fade-in delay-1">
-        <label for="usuario">Usuário:</label>
-        <input type="text" id="usuario" name="usuario" required />
-      </div>
-      <div class="form-group fade-in delay-2">
-        <label for="email">E-mail:</label>
-        <input type="email" id="email" name="email" required />
-      </div>
-      <div class="form-group fade-in delay-3">
-        <label for="senha">Senha:</label>
-        <input type="password" id="senha" name="senha" required />
-      </div>
-      <button type="submit" class="btn-register fade-in delay-4">Registrar</button>
-      <a href="login.php" class="back-link fade-in delay-5">Já tem uma conta? Entrar</a>
+  <div class="form-container">
+    <h2>👥 Cadastro de Usuário</h2>
+    <form method="POST">
+      <label for="nome">Nome:</label>
+      <input type="text" id="nome" name="nome" required>
+
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required>
+
+      <label for="senha">Senha:</label>
+      <input type="password" id="senha" name="senha" required>
+
+      <label for="cargo">Cargo:</label>
+      <select id="cargo" name="cargo" required>
+        <option value="Gerente">Gerente</option>
+        <option value="Atendente">Atendente</option>
+        <option value="Tecnico">Técnico</option>
+      </select>
+
+      <button type="submit">Cadastrar</button>
     </form>
   </div>
 </body>
