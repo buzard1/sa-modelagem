@@ -3,49 +3,78 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from faker import Faker
-import random
 import time
 
+# Configurações do navegador
+options = webdriver.ChromeOptions()
+options.add_argument("--disable-notifications")
+options.add_argument("--disable-infobars")
+options.add_argument("--disable-extensions")
+
+driver = webdriver.Chrome(options=options)
+wait = WebDriverWait(driver, 10)
+
+# Gerador de dados falsos
 fake = Faker("pt_BR")
-driver = webdriver.Chrome()
-wait = WebDriverWait(driver, 10)  # espera máxima de 10s
 
 # ====== LOGIN ======
 driver.get("http://localhost:8080/sa-modelagem/login.php")
-wait.until(EC.presence_of_element_located((By.ID, "email"))).send_keys("admin@admin")
-driver.find_element(By.ID, "senha").send_keys("123")
+print("🌐 Acessando página de login...")
+time.sleep(3)  # pausa para você ver a tela de login
+
+# Email
+campo_email = wait.until(EC.presence_of_element_located((By.ID, "email")))
+campo_email.send_keys("admin@admin")
+print(f"[LOGIN] Email digitado: admin@admin")
+time.sleep(2)
+
+# Senha
+campo_senha = driver.find_element(By.ID, "senha")
+campo_senha.send_keys("123")
+print(f"[LOGIN] Senha digitada: 123")
+time.sleep(2)
+
+print("👉 Clicando no botão de login...")
 driver.find_element(By.CSS_SELECTOR, "button[type='submit']").click()
+print("✅ Login realizado com sucesso!")
+time.sleep(3)  # pausa para visualizar redirecionamento
 
 # ====== IR PARA FORNECEDORES ======
+print("👉 Indo para a tela de fornecedores...")
 link_fornecedores = wait.until(
     EC.element_to_be_clickable((By.CSS_SELECTOR, ".sidebar .menu li a[href='fornecedor.php']"))
 )
 link_fornecedores.click()
+print("✅ Página de fornecedores aberta!")
+time.sleep(3)  # pausa para visualizar a tela
 
-# ====== CLICAR EM CADASTRAR ======
-botao_cadastrar = wait.until(
-    EC.element_to_be_clickable((By.ID, "btn-cadastrar"))
-)
-botao_cadastrar.click()
+# ====== ESPERAR FORMULÁRIO CARREGAR ======
+wait.until(EC.presence_of_element_located((By.ID, "nome_fornecedor")))
+print("📋 Formulário de cadastro carregado.")
 
 # ====== PREENCHER FORMULÁRIO ======
 nome_fornecedor = fake.company()
 telefone = fake.msisdn()[0:11]
 email = fake.company_email()
-endereco = fake.address().replace("\n", ", ")
-cnpj = "".join([str(random.randint(0, 9)) for _ in range(14)])
 
-# Espera cada campo individualmente antes de preencher
-wait.until(EC.visibility_of_element_located((By.NAME, "nome_fornecedor"))).send_keys(nome_fornecedor)
-wait.until(EC.visibility_of_element_located((By.NAME, "telefone"))).send_keys(telefone)
-wait.until(EC.visibility_of_element_located((By.NAME, "email"))).send_keys(email)
-wait.until(EC.visibility_of_element_located((By.NAME, "endereco"))).send_keys(endereco)
-wait.until(EC.visibility_of_element_located((By.NAME, "cnpj"))).send_keys(cnpj)
+campo_nome = driver.find_element(By.ID, "nome_fornecedor")
+campo_nome.send_keys(nome_fornecedor)
+print(f"[CADASTRO] Nome do fornecedor digitado: {nome_fornecedor}")
+time.sleep(2)
 
-time.sleep(1)  # pausa para visualização
+campo_tel = driver.find_element(By.ID, "telefone")
+campo_tel.send_keys(telefone)
+print(f"[CADASTRO] Telefone digitado: {telefone}")
+time.sleep(2)
+
+campo_email = driver.find_element(By.ID, "email")
+campo_email.send_keys(email)
+print(f"[CADASTRO] Email digitado: {email}")
+time.sleep(2)
 
 # ====== ENVIAR FORMULÁRIO ======
-driver.find_element(By.CSS_SELECTOR, "button[type='submit']").click()
+print("👉 Clicando no botão CADASTRAR fornecedor...")
+driver.find_element(By.CSS_SELECTOR, "form button[type='submit']").click()
 print("✅ Fornecedor cadastrado com sucesso!")
 
 time.sleep(5)  # espera para visualizar resultado
