@@ -115,6 +115,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </form>
   </div>
 
+  <!-- Máscaras de entrada -->
+  <script src="https://cdn.jsdelivr.net/npm/inputmask/dist/inputmask.min.js"></script>
+  <script>
+    Inputmask({ mask: "(99) 99999-9999" }).mask("#telefone");
+    Inputmask({ mask: "(99) 99999-9999" }).mask("#edit_telefone");
+  </script>
+
   <!-- Máscara para CPF -->
   <script>
     document.getElementById('cpf').addEventListener('input', function (e) {
