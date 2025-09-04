@@ -1,17 +1,18 @@
 <?php 
-session_start();
-require_once 'conexao.php';
+session_start(); // Inicia a sessão para acessar as variáveis de sessão
+require_once 'conexao.php'; // Inclui o arquivo de conexão com o banco de dados
 
 // VERIFICA SE O USUARIO TEM PERMISSAO
+// Se não existir um cargo na sessão OU se o cargo não for Gerente, Atendente ou Técnico
 if (!isset($_SESSION['cargo']) || ($_SESSION['cargo'] != "Gerente" && $_SESSION['cargo'] != "Atendente" && $_SESSION['cargo'] != "Tecnico")) {
-    echo "Acesso Negado!";
-    header("Location: login.php");
-    exit();
+    echo "Acesso Negado!"; // Mostra mensagem de acesso negado
+    header("Location: login.php"); // Redireciona para o login
+    exit(); // Encerra o script
 }
 
 // Definir os menus com base no cargo
 $menus = [
-    'Gerente' => [
+    'Gerente' => [ // Opções de menu para o cargo Gerente
         ['href' => 'dashboard.php', 'icon' => '👤', 'text' => 'Perfil'],
         ['href' => 'cadastro-cliente.php', 'icon' => '📋', 'text' => 'Cadastro Cliente'],
         ['href' => 'cadastro-ordem_serv.php', 'icon' => '🛠️', 'text' => 'Cadastro de<br>Ordem de Serviço'],
@@ -23,7 +24,7 @@ $menus = [
         ['href' => 'suporte.php', 'icon' => '🆘', 'text' => 'Suporte'],
         ['href' => 'logout.php', 'icon' => '🚪', 'text' => 'Sair']
     ],
-    'Atendente' => [
+    'Atendente' => [ // Opções de menu para o cargo Atendente
         ['href' => 'dashboard.php', 'icon' => '👤', 'text' => 'Perfil'],
         ['href' => 'cadastro-cliente.php', 'icon' => '📋', 'text' => 'Cadastro Cliente'],
         ['href' => 'cadastro-ordem_serv.php', 'icon' => '🛠️', 'text' => 'Cadastro de<br>Ordem de Serviço'],
@@ -33,7 +34,7 @@ $menus = [
         ['href' => 'suporte.php', 'icon' => '🆘', 'text' => 'Suporte'],
         ['href' => 'logout.php', 'icon' => '🚪', 'text' => 'Sair']
     ],
-    'Tecnico' => [
+    'Tecnico' => [ // Opções de menu para o cargo Técnico
         ['href' => 'dashboard.php', 'icon' => '👤', 'text' => 'Perfil'],
         ['href' => 'ordem_serv.php', 'icon' => '💼', 'text' => 'Ordem de serviço'],
         ['href' => 'suporte.php', 'icon' => '🆘', 'text' => 'Suporte'],
@@ -42,6 +43,7 @@ $menus = [
 ];
 
 // Obter o menu correspondente ao cargo do usuário
+// Verifica se o cargo está setado e existe no array $menus
 $menuItems = isset($_SESSION['cargo']) && isset($menus[$_SESSION['cargo']]) ? $menus[$_SESSION['cargo']] : [];
 ?>
 <!DOCTYPE html>
@@ -50,33 +52,36 @@ $menuItems = isset($_SESSION['cargo']) && isset($menus[$_SESSION['cargo']]) ? $m
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Perfil do Usuário</title>
-    <link rel="stylesheet" href="css/sidebar.css" />
-    <link rel="stylesheet" href="css/dashboard.css" />
-    <link rel="icon" href="img/logo.png" type="image/png">
+    <link rel="stylesheet" href="css/sidebar.css" /> <!-- CSS da sidebar -->
+    <link rel="stylesheet" href="css/dashboard.css" /> <!-- CSS do dashboard -->
+    <link rel="icon" href="img/logo.png" type="image/png"> <!-- Ícone da aba -->
 
-    <!-- Cropper.js CDN -->
+    <!-- Biblioteca Cropper.js para recorte/redimensionamento de imagem -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"/>
 </head>
 <body>
+    <!-- MENU LATERAL -->
     <nav class="sidebar">
         <div class="logo">
-            <img src="img/logo.png" alt="Logo do sistema">
+            <img src="img/logo.png" alt="Logo do sistema"> <!-- Logo do sistema -->
         </div>
         <ul class="menu">
-            <?php foreach ($menuItems as $item): ?>
+            <?php foreach ($menuItems as $item): ?> <!-- Gera o menu de acordo com o cargo -->
                 <li><a href="<?php echo $item['href']; ?>"><?php echo $item['icon']; ?> <span><?php echo $item['text']; ?></span></a></li>
             <?php endforeach; ?>
         </ul>
     </nav>
 
+    <!-- CONTEÚDO PRINCIPAL -->
     <main class="content">
         <div class="profile-card">
             <h2>Perfil do Usuário</h2>
             <div class="profile-container">
+                <!-- Foto de perfil -->
                 <div class="profile-photo-box">
                     <img id="profile-photo" class="profile-photo" src="img/default-user.png" alt="Foto de perfil">
                     <br />
-                    <input type="file" id="photo-input" accept="image/*" style="display: none;" />
+                    <input type="file" id="photo-input" accept="image/*" style="display: none;" /> <!-- Input escondido para upload -->
                     <button class="change-photo-btn" onclick="document.getElementById('photo-input').click()">Alterar Foto</button>
                     
                     <!-- Editor de redimensionamento manual -->
@@ -90,6 +95,7 @@ $menuItems = isset($_SESSION['cargo']) && isset($menus[$_SESSION['cargo']]) ? $m
                     </div>
                 </div>
 
+                <!-- Informações do usuário -->
                 <div class="profile-info">
                     <p><strong>Nome:</strong> <span><?php echo htmlspecialchars($_SESSION['nome']); ?></span></p>
                     <div class="email-container">
@@ -111,8 +117,12 @@ $menuItems = isset($_SESSION['cargo']) && isset($menus[$_SESSION['cargo']]) ? $m
         </div>
     </main>
 
+    <!-- Script da biblioteca Cropper -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <script>
+    // ----------------------------
+    // SEÇÃO DE FOTO DE PERFIL
+    // ----------------------------
     const profilePhoto = document.getElementById('profile-photo');
     const photoInput = document.getElementById('photo-input');
     const editorContainer = document.getElementById('editor-container');
@@ -125,17 +135,18 @@ $menuItems = isset($_SESSION['cargo']) && isset($menus[$_SESSION['cargo']]) ? $m
     const storedPhoto = localStorage.getItem('fotoPerfil');
     if (storedPhoto) { profilePhoto.src = storedPhoto; }
 
+    // Quando o usuário seleciona uma imagem
     photoInput.addEventListener('change', function() {
-        const file = this.files[0];
-        if (file && file.type.startsWith('image/')) {
+        const file = this.files[0]; // Pega o arquivo selecionado
+        if (file && file.type.startsWith('image/')) { // Se for imagem
             const reader = new FileReader();
             reader.onload = function(e) {
-                cropperImage.src = e.target.result;
-                editorContainer.style.display = 'block';
+                cropperImage.src = e.target.result; // Mostra imagem no editor
+                editorContainer.style.display = 'block'; // Exibe editor
 
-                if(cropper) cropper.destroy();
+                if(cropper) cropper.destroy(); // Se já tiver cropper, destroi
                 cropper = new Cropper(cropperImage, {
-                    aspectRatio: 1,
+                    aspectRatio: 1, // Mantém proporção quadrada
                     viewMode: 1,
                     movable: true,
                     zoomable: true,
@@ -143,24 +154,28 @@ $menuItems = isset($_SESSION['cargo']) && isset($menus[$_SESSION['cargo']]) ? $m
                     scalable: false,
                 });
             };
-            reader.readAsDataURL(file);
+            reader.readAsDataURL(file); // Lê imagem como base64
         }
     });
 
+    // Botão aplicar corte
     applyCropBtn.addEventListener('click', function() {
         const canvas = cropper.getCroppedCanvas({ width: 200, height: 200, imageSmoothingQuality: 'high' });
         const croppedData = canvas.toDataURL('image/png');
-        profilePhoto.src = croppedData;
-        localStorage.setItem('fotoPerfil', croppedData);
-        editorContainer.style.display = 'none';
+        profilePhoto.src = croppedData; // Mostra foto cortada
+        localStorage.setItem('fotoPerfil', croppedData); // Salva no localStorage
+        editorContainer.style.display = 'none'; // Fecha editor
     });
 
+    // Botão cancelar corte
     cancelCropBtn.addEventListener('click', function() {
         editorContainer.style.display = 'none';
-        if(cropper) cropper.destroy();
+        if(cropper) cropper.destroy(); // Destroi instância do cropper
     });
 
-    // Email editável
+    // ----------------------------
+    // SEÇÃO DE EMAIL EDITÁVEL
+    // ----------------------------
     const emailDisplay = document.getElementById('email');
     const emailInput = document.getElementById('email-input');
     emailInput.value = emailDisplay.textContent;
@@ -169,6 +184,7 @@ $menuItems = isset($_SESSION['cargo']) && isset($menus[$_SESSION['cargo']]) ? $m
     const saveEmailBtn = document.getElementById('save-email-btn');
     const cancelEmailBtn = document.getElementById('cancel-email-btn');
 
+    // Editar email
     editEmailBtn.addEventListener('click', function() {
         emailDisplay.style.display = 'none';
         emailInput.style.display = 'inline-block';
@@ -177,6 +193,8 @@ $menuItems = isset($_SESSION['cargo']) && isset($menus[$_SESSION['cargo']]) ? $m
         cancelEmailBtn.style.display = 'inline-block';
         emailInput.focus();
     });
+
+    // Cancelar edição
     cancelEmailBtn.addEventListener('click', function() {
         emailInput.value = emailDisplay.textContent;
         emailDisplay.style.display = 'inline';
@@ -185,11 +203,13 @@ $menuItems = isset($_SESSION['cargo']) && isset($menus[$_SESSION['cargo']]) ? $m
         saveEmailBtn.style.display = 'none';
         cancelEmailBtn.style.display = 'none';
     });
+
+    // Salvar email
     saveEmailBtn.addEventListener('click', function() {
         const newEmail = emailInput.value.trim();
-        if (newEmail && newEmail.includes('@')) {
+        if (newEmail && newEmail.includes('@')) { // Validação simples
             emailDisplay.textContent = newEmail;
-            localStorage.setItem('emailFuncionario', newEmail);
+            localStorage.setItem('emailFuncionario', newEmail); // Salva localmente
             emailDisplay.style.display = 'inline';
             emailInput.style.display = 'none';
             editEmailBtn.style.display = 'inline-block';
@@ -200,15 +220,19 @@ $menuItems = isset($_SESSION['cargo']) && isset($menus[$_SESSION['cargo']]) ? $m
         }
     });
 
-    // Último login
+    // ----------------------------
+    // SEÇÃO DE ÚLTIMO LOGIN
+    // ----------------------------
     document.getElementById('ultimo-login').textContent = localStorage.getItem('ultimoLogin') || new Date().toLocaleString();
 
-    // Ativa menu atual na sidebar
+    // ----------------------------
+    // MARCA MENU ATUAL NA SIDEBAR
+    // ----------------------------
     const links = document.querySelectorAll('.sidebar .menu li a');
-    const currentPage = window.location.pathname.split('/').pop();
+    const currentPage = window.location.pathname.split('/').pop(); // Pega o nome da página atual
     links.forEach(link => {
         if (link.getAttribute('href') === currentPage) {
-            link.classList.add('active');
+            link.classList.add('active'); // Adiciona destaque
         }
     });
     </script>
