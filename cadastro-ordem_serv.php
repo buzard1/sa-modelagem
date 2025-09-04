@@ -1,8 +1,10 @@
 <?php 
-session_start();
-require_once 'conexao.php';
+session_start(); // Inicia a sessão para usar variáveis de sessão
+require_once 'conexao.php'; // Importa a conexão com o banco de dados
 
 // VERIFICA SE O USUARIO TEM PERMISSAO
+// Só permite acesso se o usuário tiver cargo "Gerente" ou "Atendente"
+// Caso contrário, redireciona para o dashboard
 if (!isset($_SESSION['cargo']) || ($_SESSION['cargo'] != "Gerente" && $_SESSION['cargo'] != "Atendente")) {
     echo "Acesso Negado!";
     header("Location: dashboard.php");
@@ -10,6 +12,7 @@ if (!isset($_SESSION['cargo']) || ($_SESSION['cargo'] != "Gerente" && $_SESSION[
 }
 
 // Definir os menus com base no cargo
+// Cada cargo (Gerente, Atendente, Técnico) possui menus diferentes
 $menus = [
     'Gerente' => [
         ['href' => 'dashboard.php', 'icon' => '👤', 'text' => 'Perfil'],
@@ -41,40 +44,42 @@ $menus = [
     ],
 ];
 
-// Obter o menu correspondente ao cargo do usuário
+// Obter o menu correspondente ao cargo logado
 $menuItems = isset($_SESSION['cargo']) && isset($menus[$_SESSION['cargo']]) ? $menus[$_SESSION['cargo']] : [];
 
 // PROCESSAMENTO DO FORMULÁRIO
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+  // Captura os dados enviados pelo formulário
   $cpfcliente  = $_POST["cpfcliente"];
   $aparelho    = $_POST["aparelho"];
-  $servico = $_POST["servico"];
+  $servico     = $_POST["servico"];
   $problema    = $_POST["problema"];
   $valor       = $_POST["valor"];
   $pagamento   = $_POST["Pagamento"];
   $status      = $_POST["status"];
-  $idusuario   = isset($_SESSION['idusuario']) ? $_SESSION['idusuario'] : 1; // usuário logado
+  $idusuario   = isset($_SESSION['idusuario']) ? $_SESSION['idusuario'] : 1; // pega o usuário logado (ou 1 como fallback)
 
-  // Conexão
+  // Cria conexão com o banco
   $pdo = new PDO("mysql:host=localhost;dbname=sa_mobilerepair", "root", "");
   $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-  // Buscar ID do cliente pelo CPF
+  // Busca cliente no banco através do CPF
   $stmtCliente = $pdo->prepare("SELECT cpf FROM cliente WHERE cpf = :cpf");
   $stmtCliente->bindParam(':cpf', $cpfcliente);
   $stmtCliente->execute();
   $cliente = $stmtCliente->fetch(PDO::FETCH_ASSOC);
 
   if ($cliente) {
-      $idcliente = $cliente['cpf'];
+      $idcliente = $cliente['cpf']; // guarda o CPF do cliente
 
-      // Inserir ordem de serviço
+      // Prepara a inserção da ordem de serviço
       $stmt = $pdo->prepare("
           INSERT INTO ordem_serv 
           (aparelho, servico, status, valor, tipo_pagamento, problema, cpf, idusuario, data_entrada) 
           VALUES (:aparelho, :servico, :status, :valor, :tipo_pagamento, :problema, :cpf, :idusuario, NOW())
       ");
 
+      // Faz o bind dos valores para evitar SQL Injection
       $stmt->bindParam(':aparelho', $aparelho);
       $stmt->bindParam(':servico', $servico);
       $stmt->bindParam(':status', $status);
@@ -84,12 +89,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       $stmt->bindParam(':cpf', $idcliente); 
       $stmt->bindParam(':idusuario', $idusuario);
 
+      // Executa a query
       if ($stmt->execute()) {
+          // Sucesso → alerta e redireciona para lista de ordens
           echo "<script>alert('✅ Ordem de serviço cadastrada com sucesso!'); window.location='ordem_serv.php';</script>";
       } else {
+          // Erro → alerta
           echo "<script>alert('❌ Erro ao cadastrar ordem de serviço!');</script>";
       }
   } else {
+      // Caso o CPF não exista no banco
       echo "<script>alert('⚠️ Cliente não encontrado para o CPF informado!');</script>";
   }
 }
@@ -111,12 +120,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       <img src="img/logo.png" alt="Logo do sistema">
     </div>
     <ul class="menu">
+      <!-- Geração dinâmica do menu com base no cargo -->
       <?php foreach ($menuItems as $item): ?>
         <li><a href="<?php echo $item['href']; ?>"><?php echo $item['icon']; ?> <span><?php echo $item['text']; ?></span></a></li>
       <?php endforeach; ?>
     </ul>
   </nav>
   
+  <!-- Formulário de cadastro da ordem -->
   <div class="form-container">
     <h2>🛠️ Cadastro de Ordem de serviço</h2>
     <form method="POST">
@@ -160,7 +171,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     const currentPage = window.location.pathname.split('/').pop();
     links.forEach(link => {
       if (link.getAttribute('href') === currentPage) {
-        link.classList.add('active');
+        link.classList.add('active'); // adiciona classe "active" no link da página atual
       }
     });
   </script>
@@ -174,17 +185,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       const valor = parseFloat(valorInput.value);
       if (isNaN(valor) || valor < 0) {
         alert("O valor não pode ser negativo.");
-        event.preventDefault();
+        event.preventDefault(); // impede envio caso o valor seja inválido
       }
     });
   </script>
 
-  <!-- Máscara CPF -->
+  <!-- Máscara para CPF no input -->
   <script>
     document.getElementById('cpfcliente').addEventListener('input', function (e) {
-      let value = e.target.value.replace(/\D/g, "");
-      if (value.length > 11) value = value.slice(0, 11);
+      let value = e.target.value.replace(/\D/g, ""); // remove tudo que não é número
+      if (value.length > 11) value = value.slice(0, 11); // limita a 11 dígitos
 
+      // Aplica formatação XXX.XXX.XXX-XX
       value = value.replace(/(\d{3})(\d)/, "$1.$2");
       value = value.replace(/(\d{3})(\d)/, "$1.$2");
       value = value.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
