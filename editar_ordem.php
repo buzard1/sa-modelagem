@@ -19,13 +19,19 @@ if ($id_ordem <= 0) {
 
 // Buscar dados da ordem no banco de dados
 try {
-    $stmt = $pdo->prepare("SELECT * FROM ordem_serv WHERE id_ordem_serv = :id");
-    $stmt->execute([':id' => $id_ordem]);
-    $ordem = $stmt->fetch(PDO::FETCH_ASSOC);
+  $stmt = $pdo->prepare("
+  SELECT os.*, c.nome, c.cpf
+  FROM ordem_serv os
+  JOIN cliente c ON os.cpf = c.cpf
+  WHERE os.id_ordem_serv = :id
+");
+$stmt->execute([':id' => $id_ordem]);
+$ordem = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if (!$ordem) {
-        die("Ordem de serviço não encontrada.");
-    }
+if (!$ordem) {
+  die("Ordem de serviço não encontrada.");
+}
+
 } catch (PDOException $e) {
     die("Erro ao buscar ordem: " . $e->getMessage());
 }
@@ -148,6 +154,9 @@ function fecharModal() {
 <body>
 <div class="form-container">
     <h2>✏️ Editar Ordem de Serviço</h2>
+    <p><strong>Cliente:</strong> <?php echo htmlspecialchars($ordem['nome']); ?></p>
+<p><strong>CPF:</strong> <?php echo htmlspecialchars($ordem['cpf']); ?></p>
+
     <!-- Formulário principal de edição da ordem -->
     <form method="post">
         <label>Aparelho:</label>
@@ -224,10 +233,16 @@ function fecharModal() {
 </button>
 
         <label>Valor:</label>
-        <input type="number" step="0.01" name="valor" value="<?php echo htmlspecialchars($ordem['valor']); ?>">
+        <input type="number" step="0.01" name="valor" min="1" value="<?php echo htmlspecialchars($ordem['valor']); ?>">
 
-        <label>Tipo de Pagamento:</label>
-        <input type="text" name="tipo_pagamento" value="<?php echo htmlspecialchars($ordem['tipo_pagamento']); ?>">
+
+        <label for="tipo_pagamento">Forma de pagamento:</label>
+        <select id="tipo_pagamento" name="tipo_pagamento">
+           <option value="Pix" <?php echo ($ordem['tipo_pagamento'] == 'Pix') ? 'selected' : ''; ?>>Pix</option>
+          <option value="Dinheiro" <?php echo ($ordem['tipo_pagamento'] == 'Dinheiro') ? 'selected' : ''; ?>>Dinheiro</option>
+          <option value="Cartão" <?php echo ($ordem['tipo_pagamento'] == 'Cartão') ? 'selected' : ''; ?>>Cartão de crédito/débito</option>
+          <option value="Boleto" <?php echo ($ordem['tipo_pagamento'] == 'Boleto') ? 'selected' : ''; ?>>Boleto</option>
+        </select>
 
         <label>Status:</label>
         <select name="status" required>
