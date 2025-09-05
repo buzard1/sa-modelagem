@@ -22,6 +22,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['acao']) && $_POST['ac
             $endereco = $_POST['endereco'] ?? '';
             $cpf      = $_POST['cpf'] ?? '';
 
+            // Remover máscaras antes de salvar
+            $telefone = preg_replace('/\D/', '', $telefone);
+            $cpf = preg_replace('/\D/', '', $cpf);
+
             $sql = "INSERT INTO cliente (cpf, nome, email, telefone, endereco) 
                     VALUES (:cpf, :nome, :email, :telefone, :endereco)";
             $stmt = $pdo->prepare($sql);
@@ -232,8 +236,8 @@ $menuItems = isset($_SESSION['cargo']) && isset($menus[$_SESSION['cargo']]) ? $m
       
       <!-- Campos extras para Cliente -->
       <div id="edit-campos-cliente" style="display:none;">
-        <input type="text" name="cpf" id="edit-cpf" placeholder="CPF do cliente" />
-        <input type="text" name="telefone" id="edit-telefone" placeholder="Telefone do cliente" />
+        <input type="text" name="cpf" id="edit-cpf" placeholder="CPF do cliente" oninput="mascaraCPF(this)" maxlength="14" />
+        <input type="text" name="telefone" id="edit-telefone" placeholder="Telefone do cliente" oninput="mascaraTelefone(this)" maxlength="15" />
         <input type="text" name="endereco" id="edit-endereco" placeholder="Endereço do cliente" />
       </div>
       
@@ -282,8 +286,8 @@ $menuItems = isset($_SESSION['cargo']) && isset($menus[$_SESSION['cargo']]) ? $m
 
         <!-- Campos extras para Cliente -->
         <div id="campos-cliente" style="display:none;">
-          <input type="text" name="cpf" placeholder="CPF do cliente" />
-          <input type="text" name="telefone" placeholder="Telefone do cliente" />
+          <input type="text" name="cpf" placeholder="CPF do cliente" oninput="mascaraCPF(this)" maxlength="14" />
+          <input type="text" name="telefone" placeholder="Telefone do cliente" oninput="mascaraTelefone(this)" maxlength="15" />
           <input type="text" name="endereco" placeholder="Endereço do cliente" />
         </div>
 
@@ -312,8 +316,8 @@ $menuItems = isset($_SESSION['cargo']) && isset($menus[$_SESSION['cargo']]) ? $m
         <input type="text" id="filtro-email" placeholder="Email" class="filtro-input">
 
         <!-- Inputs extras aparecem só quando for Cliente -->
-        <input type="text" id="filtro-cpf" placeholder="CPF" class="filtro-input" style="display:none;">
-        <input type="text" id="filtro-telefone" placeholder="Telefone" class="filtro-input" style="display:none;">
+        <input type="text" id="filtro-cpf" placeholder="CPF" class="filtro-input" style="display:none;" oninput="mascaraCPF(this)" maxlength="14">
+        <input type="text" id="filtro-telefone" placeholder="Telefone" class="filtro-input" style="display:none;" oninput="mascaraTelefone(this)" maxlength="15">
 
         <select id="filtro-cargo" class="filtro-input" onchange="atualizarFiltro()">
             <option value="">Todos os Cargos</option>
@@ -351,9 +355,9 @@ $menuItems = isset($_SESSION['cargo']) && isset($menus[$_SESSION['cargo']]) ? $m
           <td><?php echo htmlspecialchars($u['cargo']); ?></td>
           <td><?php echo $u['ativo'] ? 'Ativo' : 'Inativo'; ?></td>
           <?php if ($filtroCargo === 'Cliente'): ?>
-            <td><?php echo htmlspecialchars($u['telefone'] ?? ''); ?></td>
+            <td><?php echo htmlspecialchars(formatarTelefone($u['telefone'] ?? '')); ?></td>
             <td><?php echo htmlspecialchars($u['endereco'] ?? ''); ?></td>
-            <td><?php echo htmlspecialchars($u['cpf'] ?? 'Não informado'); ?></td>
+            <td><?php echo htmlspecialchars(formatarCPF($u['cpf'] ?? 'Não informado')); ?></td>
           <?php endif; ?>
           <td>
             <button class="editar">✏️</button>
@@ -373,6 +377,53 @@ $menuItems = isset($_SESSION['cargo']) && isset($menus[$_SESSION['cargo']]) ? $m
     </div>
   </div>
 <script>
+// Funções para formatação de CPF e telefone
+function formatarCPF(cpf) {
+  if (!cpf || cpf === 'Não informado') return cpf;
+  cpf = cpf.replace(/\D/g, '');
+  return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+}
+
+function formatarTelefone(telefone) {
+  if (!telefone) return telefone;
+  telefone = telefone.replace(/\D/g, '');
+  if (telefone.length === 11) {
+    return telefone.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
+  } else if (telefone.length === 10) {
+    return telefone.replace(/(\d{2})(\d{4})(\d{4})/, "($1) $2-$3");
+  }
+  return telefone;
+}
+
+// Função para aplicar máscara de CPF
+function mascaraCPF(campo) {
+    let cpf = campo.value.replace(/\D/g, '');
+    cpf = cpf.substring(0, 11);
+    cpf = cpf.replace(/(\d{3})(\d)/, '$1.$2');
+    cpf = cpf.replace(/(\d{3})(\d)/, '$1.$2');
+    cpf = cpf.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+    campo.value = cpf;
+}
+
+// Função para aplicar máscara de telefone
+function mascaraTelefone(campo) {
+    let telefone = campo.value.replace(/\D/g, '');
+    telefone = telefone.substring(0, 11);
+    
+    // Verifica se é celular (11 dígitos) ou fixo (10 dígitos)
+    if (telefone.length === 11) {
+        telefone = telefone.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+    } else if (telefone.length === 10) {
+        telefone = telefone.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
+    } else if (telefone.length > 6) {
+        telefone = telefone.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
+    } else if (telefone.length > 2) {
+        telefone = telefone.replace(/(\d{2})(\d{0,5})/, '($1) $2');
+    }
+    
+    campo.value = telefone;
+}
+
   /* ---------- helpers ---------- */
 function normalizar(str) {
   return String(str || '').normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
@@ -445,9 +496,9 @@ function renderTable(data, cargo) {
     tr.appendChild(tdStatus);
 
     if (cargo === 'Cliente') {
-      const tdTel = document.createElement('td'); tdTel.textContent = u.telefone ?? '';
+      const tdTel = document.createElement('td'); tdTel.textContent = formatarTelefone(u.telefone ?? '');
       const tdEnd = document.createElement('td'); tdEnd.textContent = u.endereco ?? '';
-      const tdCpf = document.createElement('td'); tdCpf.textContent = u.cpf ?? 'Não informado';
+      const tdCpf = document.createElement('td'); tdCpf.textContent = formatarCPF(u.cpf ?? 'Não informado');
       tr.appendChild(tdTel);
       tr.appendChild(tdEnd);
       tr.appendChild(tdCpf);
@@ -603,8 +654,8 @@ function handleEdit(event) {
   document.getElementById('edit-ativo').checked = Number(ativo) === 1;
 
   if (cargo === 'Cliente') {
-    document.getElementById('edit-cpf').value = cpf || '';
-    document.getElementById('edit-telefone').value = telefone || '';
+    document.getElementById('edit-cpf').value = formatarCPF(cpf || '');
+    document.getElementById('edit-telefone').value = formatarTelefone(telefone || '');
     document.getElementById('edit-endereco').value = endereco || '';
   }
 
