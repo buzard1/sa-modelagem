@@ -3,7 +3,7 @@ session_start();
 require_once 'conexao.php';
 
 if (!isset($_SESSION['usuario_id'])) {
-    header("Location: login.php");
+    header("Location: index.php");
     exit();
 }
 
@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
         $stmt->bindParam(':id', $_SESSION['usuario_id']);
         $stmt->execute();
 
-        echo "<script>alert('Senha alterada com sucesso!');window.location.href='login.php';</script>";
+        echo "<script>alert('Senha alterada com sucesso!');window.location.href='index.php';</script>";
         exit();
     } else {
         echo "<script>alert('As senhas não coincidem!');</script>";

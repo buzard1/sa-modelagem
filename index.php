@@ -60,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Falha no login
-    echo "<script>alert('E-mail ou senha inválidos!');window.location.href='login.php';</script>";
+    echo "<script>alert('E-mail ou senha inválidos!');window.location.href='index.php';</script>";
     exit();
 }
 ?>
@@ -80,7 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <h2 class="fade-in">Login</h2>
-    <form action="login.php" method="POST">
+    <form action="index.php" method="POST">
       <div class="form-group fade-in delay-1">
         <label for="email">E-mail:</label>
         <input type="text" id="email" name="email" required />

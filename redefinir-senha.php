@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
         $conteudo .= "Atenciosamente,\nEquipe de Suporte";
         file_put_contents($arquivo, $conteudo);
 
-        echo "<script>alert('Uma senha temporária foi enviada (simulação em arquivo .txt). Verifique o arquivo: {$arquivo}');window.location.href='login.php';</script>";
+        echo "<script>alert('Uma senha temporária foi enviada (simulação em arquivo .txt). Verifique o arquivo: {$arquivo}');window.location.href='index.php';</script>";
         exit();
     } else {
         echo "<script>alert('E-mail não encontrado!');window.location.href='redefinir-senha.php';</script>";

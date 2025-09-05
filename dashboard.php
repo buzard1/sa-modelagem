@@ -6,7 +6,7 @@ require_once 'conexao.php'; // Inclui o arquivo de conexão com o banco de dados
 // Se não existir um cargo na sessão OU se o cargo não for Gerente, Atendente ou Técnico
 if (!isset($_SESSION['cargo']) || ($_SESSION['cargo'] != "Gerente" && $_SESSION['cargo'] != "Atendente" && $_SESSION['cargo'] != "Tecnico")) {
     echo "Acesso Negado!"; // Mostra mensagem de acesso negado
-    header("Location: login.php"); // Redireciona para o login
+    header("Location: index.php"); // Redireciona para o login
     exit(); // Encerra o script
 }
 
