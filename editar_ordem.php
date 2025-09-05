@@ -235,8 +235,14 @@ function fecharModal() {
         <label>Valor:</label>
         <input type="number" step="0.01" name="valor" min="1" value="<?php echo htmlspecialchars($ordem['valor']); ?>">
 
-        <label>Tipo de Pagamento:</label>
-        <input type="text" name="tipo_pagamento" value="<?php echo htmlspecialchars($ordem['tipo_pagamento']); ?>">
+
+        <label for="tipo_pagamento">Forma de pagamento:</label>
+        <select id="tipo_pagamento" name="tipo_pagamento">
+           <option value="Pix" <?php echo ($ordem['tipo_pagamento'] == 'Pix') ? 'selected' : ''; ?>>Pix</option>
+          <option value="Dinheiro" <?php echo ($ordem['tipo_pagamento'] == 'Dinheiro') ? 'selected' : ''; ?>>Dinheiro</option>
+          <option value="Cartão" <?php echo ($ordem['tipo_pagamento'] == 'Cartão') ? 'selected' : ''; ?>>Cartão de crédito/débito</option>
+          <option value="Boleto" <?php echo ($ordem['tipo_pagamento'] == 'Boleto') ? 'selected' : ''; ?>>Boleto</option>
+        </select>
 
         <label>Status:</label>
         <select name="status" required>
