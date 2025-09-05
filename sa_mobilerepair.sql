@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 29/08/2025 às 21:21
+-- Tempo de geração: 05/09/2025 às 19:20
 -- Versão do servidor: 10.4.32-MariaDB
 -- Versão do PHP: 8.2.12
 
@@ -50,7 +50,7 @@ INSERT INTO `cliente` (`cpf`, `telefone`, `nome`, `email`, `endereco`) VALUES
 ('123', '(12) 31231-2312', 'testess', 'testeste@asdas', 'peidpo anal'),
 ('124.798.560-11', '+55 41 3834 8547', 'Eduardo Cunha', 'cecilia20@bol.com.br', 'Passarela Davi da Rocha'),
 ('145.069.237-07', '61 8827-6874', 'Heloísa da Conceição', 'xcardoso@bol.com.br', 'Viaduto Vitor Aragão'),
-('145.736.982-64', '+55 (081) 7010 6223', 'Leandro Duarte', 'vitorpinto@alves.org', 'Aeroporto Murilo Araújo'),
+('145.736.982-62', '+55 (081) 7010 6223', 'Leandro Duarte', 'vitorpinto@alves.org', 'Aeroporto Murilo Araújo'),
 ('150.692.738-68', '+55 31 6337-7982', 'Davi Lucas Vieira', 'joao-guilhermefogaca@das.com', 'Passarela de Lopes'),
 ('204.398.165-05', '+55 71 9384-1644', 'Danilo Dias', 'marcos-vinicius91@ig.com.br', 'Fazenda Bruno Almeida'),
 ('209.165.478-76', '61 3471 3222', 'Davi Lucas Gomes', 'barroscatarina@vieira.br', 'Área Enzo Carvalho'),
@@ -100,7 +100,9 @@ INSERT INTO `cliente` (`cpf`, `telefone`, `nome`, `email`, `endereco`) VALUES
 ('1', 'a', 'a', 'a@a', '1'),
 ('123.123.123-12', '(12) 31231-2312', 'teste', 'teste@email', 'teste'),
 ('151123124124', '21312312', 'testecliente', 'omoura@uol.com.br', 'peidooo'),
-('123.123.123-12', '(12) 31231-2312', 'teste', 'teste@clientee', 'rua dos peidos');
+('123.123.123-12', '(12) 31231-2312', 'teste', 'teste@clientee', 'rua dos peidos'),
+('123123123', '123123', 'teste de cadastrado', 'email@email.com', '123123'),
+('123123', '123123', 'Administrador tesudo', 'teste@email', '123123');
 
 -- --------------------------------------------------------
 
@@ -131,10 +133,10 @@ INSERT INTO `estoque` (`id_estoque`, `quantidade`) VALUES
 (11, 70),
 (12, 41),
 (13, 60),
-(14, 83),
+(14, 86),
 (15, 98),
 (16, 77),
-(17, 8),
+(17, 6),
 (18, 17),
 (19, 32),
 (20, 62),
@@ -166,8 +168,8 @@ INSERT INTO `estoque` (`id_estoque`, `quantidade`) VALUES
 (46, 76),
 (47, 23),
 (48, 61),
-(49, 21),
-(50, 94),
+(49, 16),
+(50, 89),
 (51, 12),
 (52, 65),
 (53, 53),
@@ -197,7 +199,6 @@ CREATE TABLE `fornecedor` (
 --
 
 INSERT INTO `fornecedor` (`id_fornecedor`, `nome_fornecedor`, `telefone`, `email`) VALUES
-(1, 'Carvalho', '+55 51 2191 2054', 'cardosoraul@hotmail.com'),
 (2, 'Correia Carvalho Ltda.', '+55 (021) 2765-4034', 'rafaelamelo@cardoso.br'),
 (3, 'da Mota Martins S/A', '0900-671-9417', 'lucca12@bol.com.br'),
 (4, 'Cardoso Cunha Ltda.', '+55 (021) 0102 5683', 'ribeiromilena@monteiro.br'),
@@ -256,7 +257,8 @@ INSERT INTO `fornecedor` (`id_fornecedor`, `nome_fornecedor`, `telefone`, `email
 (57, 'da Rocha S.A.', '+55 (081) 8512 0844', 'marcos-viniciusfarias@yahoo.com.br'),
 (58, 'da Costa Viana - EI', '+55 21 4213 6138', 'cavalcanticarlos-eduardo@fernandes.com'),
 (59, 'Vieira Cardoso - ME', '11 7500-9602', 'milena69@azevedo.org'),
-(60, 'Gonçalves', '+55 81 3646 9579', 'isismoraes@campos.br');
+(60, 'Gonçalves', '+55 81 3646 9579', 'isismoraes@campos.br'),
+(0, 'Nunes S.A.', '(55) 41922-5730', 'augusto33@costela.br');
 
 -- --------------------------------------------------------
 
@@ -296,10 +298,9 @@ INSERT INTO `ordem_serv` (`id_ordem_serv`, `Aparelho`, `servico`, `status`, `val
 (11, 'Asus ROG Phone 5', 'Troca de alto-falante', 'Concluído', 258.83, 'Dinheiro', 'Microfone mudo', '597.840.312-05', 24, '2025-01-31', '2025-02-03'),
 (12, 'iPhone 13 Mini', 'Atualização de software', 'Em andamento', 187.81, 'Cartão Débito', 'Câmera não funciona', '124.798.560-11', 48, '2025-03-14', NULL),
 (13, 'iPhone SE', 'Troca de bateria', 'Cancelado', 340.92, 'Pix', 'Botão power travado', '392.618.745-09', 6, '2025-02-09', '2025-02-11'),
-(14, 'Nokia X30', 'Troca de microfone', 'Cancelado', 108.14, 'Boleto Bancário', 'Sistema lento', '809.576.421-30', 40, '2025-04-24', '2025-04-26'),
+(14, 'teste de troca', 'troca', 'Cancelado', 999.00, 'pix', 'Sistema lento', '809.576.421-30', 40, '2025-04-01', '2025-05-01'),
 (15, 'Xiaomi Poco X5 Pro', 'Formatação', 'Concluído', 567.69, 'Boleto Bancário', 'Conta Google bloqueada', '970.425.136-06', 23, '2024-09-13', '2024-09-16'),
 (16, 'Realme GT', 'Troca de botão power', 'Cancelado', 762.81, 'Boleto Bancário', 'Tela quebrada', '760.284.519-67', 18, '2024-10-02', '2024-10-04'),
-(17, 'iPhone 13 Mini', 'Desbloqueio de conta', 'Cancelado', 522.50, 'Pix', 'Sistema lento', '145.736.982-64', 7, '2025-04-02', '2025-04-04'),
 (18, 'Xiaomi Poco X5 Pro', 'Troca de tela', 'Concluído', 961.96, 'Dinheiro', 'Câmera não funciona', '315.428.906-24', 36, '2024-09-06', '2024-09-09'),
 (19, 'Realme GT', 'Substituição de conector de carga', 'Em andamento', 980.47, 'Cartão Crédito', 'Sistema lento', '397.650.421-16', 60, '2024-07-28', NULL),
 (20, 'Nokia X30', 'Atualização de software', 'Em andamento', 750.86, 'Boleto Bancário', 'Microfone mudo', '471.839.562-37', 28, '2024-04-28', NULL),
@@ -336,13 +337,14 @@ INSERT INTO `ordem_serv` (`id_ordem_serv`, `Aparelho`, `servico`, `status`, `val
 (51, 'iPhone 14', 'Atualização de software', 'Concluído', 770.08, 'Dinheiro', 'Conta Google bloqueada', '857.123.046-35', 18, '2025-01-12', '2025-01-15'),
 (52, 'Xiaomi Redmi Note 12', 'Formatação', 'Concluído', 481.50, 'Boleto Bancário', 'Conector de carga danificado', '569.047.281-67', 51, '2024-08-02', '2024-08-05'),
 (53, 'Samsung Galaxy A54', 'Substituição de conector de carga', 'Cancelado', 516.58, 'Cartão Débito', 'Sistema lento', '831.549.720-05', 12, '2025-03-08', '2025-03-10'),
-(54, 'Samsung Galaxy A54', 'Reparo de câmera', 'Concluído', 461.20, 'Dinheiro', 'Microfone mudo', '093.785.241-41', 57, '2024-04-26', '2024-04-29'),
+(54, 'Samsung Galaxy A54', 'Reparo de câmera', 'Cancelado', 461.20, 'Dinheiro', 'Microfone mudo', '093.785.241-41', 57, '2024-04-26', '2024-04-29'),
 (55, 'Asus ROG Phone 5', 'Reparo de câmera', 'Cancelado', 282.86, 'Cartão Crédito', 'Microfone mudo', '718.203.596-03', 2, '2025-03-15', '2025-03-17'),
 (56, 'Asus ROG Phone 5', 'Formatação', 'Cancelado', 283.44, 'Pix', 'Botão power travado', '867.140.932-50', 35, '2024-10-15', '2024-10-17'),
 (57, 'Samsung Galaxy A54', 'Reparo de câmera', 'Cancelado', 560.07, 'Boleto Bancário', 'Câmera não funciona', '907.312.854-41', 57, '2024-06-30', '2024-07-02'),
 (58, 'Samsung Galaxy A54', 'Substituição de conector de carga', 'Cancelado', 134.06, 'Boleto Bancário', 'Câmera não funciona', '289.036.475-56', 31, '2024-06-24', '2024-06-26'),
 (59, 'Samsung Z Flip', 'Formatação', 'Em andamento', 553.54, 'Cartão Crédito', 'Bateria descarregando rápido', '079.561.832-86', 49, '2024-10-06', NULL),
-(60, 'OnePlus Nord CE', 'Troca de alto-falante', 'Concluído', 924.93, 'Pix', 'Conector de carga danificado', '824.076.519-01', 43, '2024-09-23', '2024-09-26');
+(60, 'OnePlus Nord CE', 'Troca de alto-falante', 'Concluído', 924.93, 'Pix', 'Conector de carga danificado', '824.076.519-01', 43, '2024-09-23', '2024-09-26'),
+(61, 'Motorola G9', 'Troca de bateria', 'Concluído', 1000.00, 'Boleto', 'Bateria não carrega', '492.165.837-46', 1, '2025-09-05', '2025-09-13');
 
 -- --------------------------------------------------------
 
@@ -595,7 +597,6 @@ INSERT INTO `servico_produto` (`quantidade`, `id_produto`, `id_ordem_serv`) VALU
 (4, 48, 18),
 (2, 48, 35),
 (4, 48, 47),
-(3, 52, 24),
 (4, 53, 44),
 (5, 55, 8),
 (5, 55, 31),
@@ -613,7 +614,10 @@ INSERT INTO `servico_produto` (`quantidade`, `id_produto`, `id_ordem_serv`) VALU
 (5, 59, 59),
 (3, 60, 11),
 (1, 60, 15),
-(2, 60, 48);
+(2, 60, 48),
+(1, 22, 24),
+(5, 59, 24),
+(1, 22, 61);
 
 -- --------------------------------------------------------
 
@@ -637,7 +641,8 @@ CREATE TABLE `usuario` (
 
 INSERT INTO `usuario` (`id_usuario`, `email`, `senha`, `cargo`, `nome_completo`, `ativo`, `senha_temporaria`) VALUES
 (1, 'omoura@uol.com.br', '$2y$10$GN9lV5jSfZcRzTKnYsVbFOOZ0Oilne1tP7qcwhD5mfU4EwEFFhPaS', 'Gerente', '123', 1, 0),
-(666, 'admin@admin', '$2y$10$rG6ZPww5vL9nhzYxacQ4zO6sXosHNuQfMnH3a.ZnoEwNaB.WT6Iny', 'Gerente', 'admin', 1, 0);
+(667, 'admin@admin', '$2y$10$Xx4ducKMM7phOedP3pSzU.DOxXjFhR5ZHJ62g1A5zy.KzQBvK7JHq', 'Gerente', 'admin', 1, 0),
+(668, 'tecnico@tecnico', '$2y$10$IB2pA4.wi0KPGfuxEGSck.hIAexhfvrYQpmvW2MbzvbFx.AZyeBye', 'Tecnico', 'tecnico', 1, 0);
 
 --
 -- Índices para tabelas despejadas
@@ -654,6 +659,12 @@ ALTER TABLE `estoque`
 --
 ALTER TABLE `ordem_serv`
   ADD PRIMARY KEY (`id_ordem_serv`);
+
+--
+-- Índices de tabela `produto`
+--
+ALTER TABLE `produto`
+  ADD PRIMARY KEY (`id_produto`);
 
 --
 -- Índices de tabela `usuario`
@@ -675,13 +686,19 @@ ALTER TABLE `estoque`
 -- AUTO_INCREMENT de tabela `ordem_serv`
 --
 ALTER TABLE `ordem_serv`
-  MODIFY `id_ordem_serv` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
+  MODIFY `id_ordem_serv` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=62;
+
+--
+-- AUTO_INCREMENT de tabela `produto`
+--
+ALTER TABLE `produto`
+  MODIFY `id_produto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
 
 --
 -- AUTO_INCREMENT de tabela `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=667;
+  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=669;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
