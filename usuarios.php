@@ -231,19 +231,25 @@ $menuItems = isset($_SESSION['cargo']) && isset($menus[$_SESSION['cargo']]) ? $m
     <form id="editForm" method="POST" action="">
       <input type="hidden" name="acao" value="editar">
       <input type="hidden" name="id" id="edit-id">
+      <label for="nome">Nome</label>
       <input type="text" name="nome" id="edit-nome" placeholder="Nome" required />
+      <label for="email">E-mail</label>
       <input type="email" name="email" id="edit-email" placeholder="Email" required />
       
       <!-- Campos extras para Cliente -->
       <div id="edit-campos-cliente" style="display:none;">
+        <label for="cpf">Cpf</label>
         <input type="text" name="cpf" id="edit-cpf" placeholder="CPF do cliente" oninput="mascaraCPF(this)" maxlength="14" />
+        <label for="produto">Telefone</label>
         <input type="text" name="telefone" id="edit-telefone" placeholder="Telefone do cliente" oninput="mascaraTelefone(this)" maxlength="15" />
+        <label for="endereco">Endereço</label>
         <input type="text" name="endereco" id="edit-endereco" placeholder="Endereço do cliente" />
       </div>
       
       <!-- Senha somente para usuários -->
       <input type="password" name="senha" id="edit-senha" placeholder="Nova senha (opcional)" />
       
+      <label for="cargo">Cargo</label>
       <select name="cargo" id="edit-cargo" required onchange="toggleEditCampos()">
         <option value="Gerente">Gerente</option>
         <option value="Atendente">Atendente</option>
