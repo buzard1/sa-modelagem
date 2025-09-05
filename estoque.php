@@ -5,6 +5,7 @@ require_once 'conexao.php'; // conexão PDO
 // Verifica permissão de acesso
 if (!isset($_SESSION['cargo']) || !in_array($_SESSION['cargo'], ['Gerente', 'Atendente'])) {
     echo "Acesso Negado!";
+    header("Location: dashboard.php");
     exit();
 }
 
