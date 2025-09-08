@@ -34,7 +34,7 @@ try {
     //   - "host=$host": o servidor do banco de dados (o valor da variável $host, ou seja, 'localhost').
     //   - "dbname=$dbname": o nome do banco de dados (o valor da variável $dbname, ou seja, 'senai_login').
     // As variáveis $user e $pass são o nome de usuário e a senha para autenticação.
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $user, $pass);
+    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $user, $pass);
 
     // Configura o PDO para lançar exceções em caso de erros.
     // PDO::ATTR_ERRMODE: Define o modo de relatório de erros.
