@@ -46,12 +46,14 @@ $menuItems = isset($_SESSION['cargo']) && isset($menus[$_SESSION['cargo']]) ? $m
 // Processar formulário de cadastro
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action']) && $_POST['action'] == 'cadastrar') {
     $nome = $_POST['nome_fornecedor'];
+    $cnpj = $_POST['cnpj'];
     $telefone = $_POST['telefone'];
     $email = $_POST['email'];
 
-    $sql = "INSERT INTO fornecedor (nome_fornecedor, telefone, email) VALUES (:nome_fornecedor, :telefone, :email)";
+    $sql = "INSERT INTO fornecedor (nome_fornecedor, cnpj, telefone, email) VALUES (:nome_fornecedor, :cnpj, :telefone, :email)";
     $stmt = $pdo->prepare($sql);
     $stmt->bindParam(':nome_fornecedor', $nome);
+    $stmt->bindParam(':cnpj', $cnpj);
     $stmt->bindParam(':telefone', $telefone);
     $stmt->bindParam(':email', $email);
 
@@ -66,13 +68,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action']) && $_POST['a
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action']) && $_POST['action'] == 'editar') {
     $id = $_POST['id_fornecedor'];
     $nome = $_POST['nome_fornecedor'];
+    $cnpj = $_POST['cnpj'];
     $telefone = $_POST['telefone'];
     $email = $_POST['email'];
 
-    $sql = "UPDATE fornecedor SET nome_fornecedor = :nome_fornecedor, telefone = :telefone, email = :email WHERE id_fornecedor = :id";
+    $sql = "UPDATE fornecedor SET nome_fornecedor = :nome_fornecedor, cnpj = :cnpj, telefone = :telefone, email = :email WHERE id_fornecedor = :id";
     $stmt = $pdo->prepare($sql);
     $stmt->bindParam(':id', $id);
     $stmt->bindParam(':nome_fornecedor', $nome);
+    $stmt->bindParam(':cnpj', $cnpj);
     $stmt->bindParam(':telefone', $telefone);
     $stmt->bindParam(':email', $email);
 
@@ -181,6 +185,9 @@ $fornecedores = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <label for="telefone">Telefone:</label>
         <input type="tel" id="telefone" name="telefone" required />
 
+        <label for="cnpj">CNPJ:</label>
+        <input type="text" id="cnpj" name="cnpj" required />
+
         <label for="email">E-mail:</label>
         <input type="email" id="email" name="email" required />
 
@@ -198,6 +205,7 @@ $fornecedores = $stmt->fetchAll(PDO::FETCH_ASSOC);
       <thead>
         <tr>
           <th>Nome</th>
+          <th>CNPJ</th>
           <th>Telefone</th>
           <th>Email</th>
           <th>Ações</th>
@@ -208,6 +216,7 @@ $fornecedores = $stmt->fetchAll(PDO::FETCH_ASSOC);
           <?php foreach ($fornecedores as $fornecedor): ?>
             <tr>
               <td><?php echo htmlspecialchars($fornecedor['nome_fornecedor']); ?></td>
+              <td><?php echo htmlspecialchars($fornecedor['cnpj']); ?></td>
               <td><?php echo htmlspecialchars($fornecedor['telefone']); ?></td>
               <td><?php echo htmlspecialchars($fornecedor['email']); ?></td>
               <td class="action-buttons">
@@ -240,6 +249,8 @@ $fornecedores = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <input type="hidden" name="id_fornecedor" id="edit_id_fornecedor">
         <label for="edit_nome_fornecedor">Nome completo:</label>
         <input type="text" id="edit_nome_fornecedor" name="nome_fornecedor" required />
+        <label for="edit_cnpj">CNPJ:</label>
+        <input type="text" id="edit_cnpj" name="cnpj" required />
         <label for="edit_telefone">Telefone:</label>
         <input type="tel" id="edit_telefone" name="telefone" required />
         <label for="edit_email">E-mail:</label>
@@ -267,6 +278,7 @@ $fornecedores = $stmt->fetchAll(PDO::FETCH_ASSOC);
     function openEditModal(id, nome, telefone, email) {
       document.getElementById('edit_id_fornecedor').value = id;
       document.getElementById('edit_nome_fornecedor').value = nome;
+      document.getElementById('edit_cnpj').value = cnpj;
       document.getElementById('edit_telefone').value = telefone;
       document.getElementById('edit_email').value = email;
       document.getElementById('editModal').style.display = 'block';
@@ -288,8 +300,10 @@ $fornecedores = $stmt->fetchAll(PDO::FETCH_ASSOC);
   <!-- Máscaras de entrada -->
   <script src="https://cdn.jsdelivr.net/npm/inputmask/dist/inputmask.min.js"></script>
   <script>
+    Inputmask({ mask: "99.999.999/9999-99" }).mask("#cnpj");
+    Inputmask({ mask: "99.999.999/9999-99" }).mask("#edit_cnpj");
     Inputmask({ mask: "(99) 99999-9999" }).mask("#telefone");
-    Inputmask({ mask: "(99) 99999-9999" }).mask("#edit_telefone");
+    Inputmask({ mask: "(99) 99999-9999" }).mask("#edit_telefone");  
   </script>
 
   <!-- Script do botão cancelar -->
