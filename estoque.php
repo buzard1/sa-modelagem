@@ -72,7 +72,7 @@ if (isset($_GET['excluir'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $produto = trim($_POST['produto'] ?? '');
     $quantidade = intval($_POST['quantidade'] ?? 0);
-    $cnpj = intval($_POST['cnpj'] ?? 0);
+    $cnpj = $_POST['fornecedor'] ?? '';
     $valor = floatval(str_replace(',', '.', $_POST['valor'] ?? '0'));
     $id_produto = intval($_POST['id_produto'] ?? 0); // vem no form de edição
 
@@ -83,12 +83,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $mensagem = "Quantidade não pode ser negativa.";
     } elseif ($valor < 0) {
         $mensagem = "Valor unitário não pode ser negativo.";
+    } elseif (!preg_match('/^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/', $cnpj)) {
+        $mensagem = "CNPJ inválido. Use o formato XX.XXX.XXX/XXXX-XX.";
     } else {
         // Verificar se fornecedor existe
         $stmt = $pdo->prepare("SELECT COUNT(*) FROM fornecedor WHERE cnpj = ?");
         $stmt->execute([$cnpj]);
         if ($stmt->fetchColumn() == 0) {
-            $mensagem = "Fornecedor inválido selecionado.";
+            $mensagem = "Fornecedor inválido selecionado. CNPJ: " . $cnpj;
         } else {
             try {
                 if ($id_produto > 0) {
@@ -188,7 +190,7 @@ $menuItems = $_SESSION['cargo'] && isset($menus[$_SESSION['cargo']]) ? $menus[$_
   <link rel="stylesheet" href="css/form.css" />
   <link rel="stylesheet" href="css/estoque.css" />
   <link rel="icon" href="img/logo.png" type="image/png" />
- 
+  <script src="https://cdn.jsdelivr.net/npm/inputmask/dist/inputmask.min.js"></script>
   <script>
     let linhaEditando = null;
 
@@ -244,7 +246,7 @@ $menuItems = $_SESSION['cargo'] && isset($menus[$_SESSION['cargo']]) ? $menus[$_
         alert('Valor unitário não pode ser negativo.');
         return;
       }
-      if (!cnpj) {
+      if (!cnpj || cnpj === '') {
         alert('Selecione um fornecedor.');
         return;
       }
@@ -255,7 +257,7 @@ $menuItems = $_SESSION['cargo'] && isset($menus[$_SESSION['cargo']]) ? $menus[$_
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: `produto=${encodeURIComponent(produto)}&quantidade=${quantidade}&valor=${valor}&fornecedor=${cnpj}&id_produto=${id_produto}&idestoque=${idestoque}`
+        body: `produto=${encodeURIComponent(produto)}&quantidade=${quantidade}&valor=${valor}&fornecedor=${encodeURIComponent(cnpj)}&id_produto=${id_produto}&idestoque=${idestoque}`
       })
       .then(response => response.text())
       .then(data => {
@@ -377,7 +379,7 @@ $menuItems = $_SESSION['cargo'] && isset($menus[$_SESSION['cargo']]) ? $menus[$_
         <select id="fornecedor" name="fornecedor" class="form-input" required>
           <option value="">Selecione o fornecedor</option>
           <?php foreach ($fornecedores as $forn): ?>
-            <option value="<?= $forn['cnpj'] ?>"><?= htmlspecialchars($forn['nome_fornecedor']) ?></option>
+            <option value="<?= htmlspecialchars($forn['cnpj']) ?>"><?= htmlspecialchars($forn['nome_fornecedor']) ?></option>
           <?php endforeach; ?>
         </select>
       </div>
@@ -449,7 +451,7 @@ $menuItems = $_SESSION['cargo'] && isset($menus[$_SESSION['cargo']]) ? $menus[$_
           <select id="edit-fornecedor" class="form-input" required>
             <option value="">Selecione o fornecedor</option>
             <?php foreach ($fornecedores as $forn): ?>
-              <option value="<?= $forn['cnpj'] ?>"><?= htmlspecialchars($forn['nome_fornecedor']) ?></option>
+              <option value="<?= htmlspecialchars($forn['cnpj']) ?>"><?= htmlspecialchars($forn['nome_fornecedor']) ?></option>
             <?php endforeach; ?>
           </select>
         </div>
