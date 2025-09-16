@@ -52,9 +52,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // 🔑 Se senha for temporária → forçar troca
             if (!empty($usuario['senha_temporaria']) && $usuario['senha_temporaria'] == 1) {
                 header("Location: trocar-senha.php");
-            } else {
-                header("Location: cadastro-cliente.php");
             }
+
+            // 🚦 Redirecionamento por cargo
+    switch ($_SESSION['cargo']) {
+        case 'Gerente':
+            header("Location: dashboard.php");
+            break;
+        case 'Atendente':
+            header("Location: cadastro-cliente.php");
+            break;
+        case 'Tecnico':
+            header("Location: ordem_serv.php");
+            break;
+        default:
+            header("Location: index.php");
+            break;
+    }
             exit();
         }
     }

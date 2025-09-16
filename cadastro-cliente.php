@@ -80,17 +80,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <link rel="stylesheet" href="css/form.css">
 </head>
 <body>
+  
   <!-- Sidebar -->
   <nav class="sidebar">
     <div class="logo">
-      <img src="img/logo.png" alt="Logo">
+      <img src="img/logo.png" alt="Logo do sistema">
     </div>
     <ul class="menu">
+      <!-- Geração dinâmica do menu com base no cargo -->
       <?php foreach ($menuItems as $item): ?>
-        <li><a href="<?= $item['href'] ?>"><?= $item['icon'] ?> <span><?= $item['text'] ?></span></a></li>
+        <li><a href="<?php echo $item['href']; ?>"><?php echo $item['icon']; ?> <span><?php echo $item['text']; ?></span></a></li>
       <?php endforeach; ?>
     </ul>
   </nav>
+
+    <!-- Script para ativar automaticamente o menu ativo -->
+  <script>
+    const links = document.querySelectorAll('.sidebar .menu li a');
+    const currentPage = window.location.pathname.split('/').pop();
+    links.forEach(link => {
+      if (link.getAttribute('href') === currentPage) {
+        link.classList.add('active'); // adiciona classe "active" no link da página atual
+      }
+    });
+  </script>
 
   <!-- Formulário de cadastro -->
   <div class="form-container">
