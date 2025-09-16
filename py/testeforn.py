@@ -18,7 +18,7 @@ wait = WebDriverWait(driver, 10)
 fake = Faker("pt_BR")
 
 # ====== LOGIN ======
-driver.get("http://localhost:8080/sa-modelagem/login.php")
+driver.get("http://localhost:8080/sa-modelagem/index.php")
 print("🌐 Acessando página de login...")
 time.sleep(3)  # pausa para você ver a tela de login
 

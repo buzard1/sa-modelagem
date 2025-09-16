@@ -11,7 +11,7 @@ fake = Faker("pt_BR")
 driver = webdriver.Chrome()
 
 # ====== ETAPA 1: Login ======
-driver.get("http://localhost:8080/sa-modelagem/login.php")  # ajuste a URL
+driver.get("http://localhost:8080/sa-modelagem/index.php")  # ajuste a URL
 print("✅ Página de login aberta")
 time.sleep(2)
 
