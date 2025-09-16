@@ -13,9 +13,9 @@ $mensagem = "";
 
 // Função para buscar produtos para listar na página
 function buscarProdutos($pdo) {
-    $sql = "SELECT p.id_produto, p.nome_produto, p.valor, f.nome_fornecedor, p.idfornecedor, e.quantidade, p.idestoque
+    $sql = "SELECT p.id_produto, p.nome_produto, p.valor, f.nome_fornecedor, p.cnpj, e.quantidade, p.idestoque
             FROM produto p
-            LEFT JOIN fornecedor f ON p.idfornecedor = f.id_fornecedor
+            LEFT JOIN fornecedor f ON p.cnpj = f.cnpj
             LEFT JOIN estoque e ON p.idestoque = e.id_estoque
             ORDER BY p.nome_produto";
     $stmt = $pdo->query($sql);
@@ -24,7 +24,7 @@ function buscarProdutos($pdo) {
 
 // Buscar fornecedores para popular o select
 try {
-    $stmt = $pdo->query("SELECT id_fornecedor, nome_fornecedor FROM fornecedor ORDER BY nome_fornecedor");
+    $stmt = $pdo->query("SELECT cnpj, nome_fornecedor FROM fornecedor ORDER BY nome_fornecedor");
     $fornecedores = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     $fornecedores = [];
@@ -72,7 +72,7 @@ if (isset($_GET['excluir'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $produto = trim($_POST['produto'] ?? '');
     $quantidade = intval($_POST['quantidade'] ?? 0);
-    $id_fornecedor = intval($_POST['fornecedor'] ?? 0);
+    $cnpj = intval($_POST['cnpj'] ?? 0);
     $valor = floatval(str_replace(',', '.', $_POST['valor'] ?? '0'));
     $id_produto = intval($_POST['id_produto'] ?? 0); // vem no form de edição
 
@@ -85,8 +85,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $mensagem = "Valor unitário não pode ser negativo.";
     } else {
         // Verificar se fornecedor existe
-        $stmt = $pdo->prepare("SELECT COUNT(*) FROM fornecedor WHERE id_fornecedor = ?");
-        $stmt->execute([$id_fornecedor]);
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM fornecedor WHERE cnpj = ?");
+        $stmt->execute([$cnpj]);
         if ($stmt->fetchColumn() == 0) {
             $mensagem = "Fornecedor inválido selecionado.";
         } else {
@@ -100,8 +100,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $stmtEst->execute([$quantidade, $_POST['idestoque']]);
 
                     // Atualizar produto
-                    $stmtProd = $pdo->prepare("UPDATE produto SET nome_produto = ?, valor = ?, idfornecedor = ? WHERE id_produto = ?");
-                    $stmtProd->execute([$produto, $valor, $id_fornecedor, $id_produto]);
+                    $stmtProd = $pdo->prepare("UPDATE produto SET nome_produto = ?, valor = ?, cnpj = ? WHERE id_produto = ?");
+                    $stmtProd->execute([$produto, $valor, $cnpj, $id_produto]);
 
                     $pdo->commit();
 
@@ -116,8 +116,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $id_estoque = $pdo->lastInsertId();
 
                     // Inserir produto
-                    $stmtProduto = $pdo->prepare("INSERT INTO produto (nome_produto, valor, idfornecedor, idestoque) VALUES (?, ?, ?, ?)");
-                    $stmtProduto->execute([$produto, $valor, $id_fornecedor, $id_estoque]);
+                    $stmtProduto = $pdo->prepare("INSERT INTO produto (nome_produto, valor, cnpj, idestoque) VALUES (?, ?, ?, ?)");
+                    $stmtProduto->execute([$produto, $valor, $cnpj, $id_estoque]);
 
                     $pdo->commit();
 
@@ -227,7 +227,7 @@ $menuItems = $_SESSION['cargo'] && isset($menus[$_SESSION['cargo']]) ? $menus[$_
       const produto = document.getElementById('edit-produto').value;
       const quantidade = document.getElementById('edit-quantidade').value;
       const valor = document.getElementById('edit-valor').value;
-      const id_fornecedor = document.getElementById('edit-fornecedor').value;
+      const cnpj = document.getElementById('edit-fornecedor').value;
       const id_produto = document.getElementById('edit-id-produto').value;
       const idestoque = document.getElementById('edit-idestoque').value;
 
@@ -244,7 +244,7 @@ $menuItems = $_SESSION['cargo'] && isset($menus[$_SESSION['cargo']]) ? $menus[$_
         alert('Valor unitário não pode ser negativo.');
         return;
       }
-      if (!id_fornecedor) {
+      if (!cnpj) {
         alert('Selecione um fornecedor.');
         return;
       }
@@ -255,7 +255,7 @@ $menuItems = $_SESSION['cargo'] && isset($menus[$_SESSION['cargo']]) ? $menus[$_
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: `produto=${encodeURIComponent(produto)}&quantidade=${quantidade}&valor=${valor}&fornecedor=${id_fornecedor}&id_produto=${id_produto}&idestoque=${idestoque}`
+        body: `produto=${encodeURIComponent(produto)}&quantidade=${quantidade}&valor=${valor}&fornecedor=${cnpj}&id_produto=${id_produto}&idestoque=${idestoque}`
       })
       .then(response => response.text())
       .then(data => {
@@ -377,7 +377,7 @@ $menuItems = $_SESSION['cargo'] && isset($menus[$_SESSION['cargo']]) ? $menus[$_
         <select id="fornecedor" name="fornecedor" class="form-input" required>
           <option value="">Selecione o fornecedor</option>
           <?php foreach ($fornecedores as $forn): ?>
-            <option value="<?= $forn['id_fornecedor'] ?>"><?= htmlspecialchars($forn['nome_fornecedor']) ?></option>
+            <option value="<?= $forn['cnpj'] ?>"><?= htmlspecialchars($forn['nome_fornecedor']) ?></option>
           <?php endforeach; ?>
         </select>
       </div>
@@ -449,7 +449,7 @@ $menuItems = $_SESSION['cargo'] && isset($menus[$_SESSION['cargo']]) ? $menus[$_
           <select id="edit-fornecedor" class="form-input" required>
             <option value="">Selecione o fornecedor</option>
             <?php foreach ($fornecedores as $forn): ?>
-              <option value="<?= $forn['id_fornecedor'] ?>"><?= htmlspecialchars($forn['nome_fornecedor']) ?></option>
+              <option value="<?= $forn['cnpj'] ?>"><?= htmlspecialchars($forn['nome_fornecedor']) ?></option>
             <?php endforeach; ?>
           </select>
         </div>

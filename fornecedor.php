@@ -66,13 +66,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action']) && $_POST['a
 
 // Processar edição de fornecedor
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action']) && $_POST['action'] == 'editar') {
-    $id = $_POST['id_fornecedor'];
+    $id = $_POST['cnpj'];
     $nome = $_POST['nome_fornecedor'];
     $cnpj = $_POST['cnpj'];
     $telefone = $_POST['telefone'];
     $email = $_POST['email'];
 
-    $sql = "UPDATE fornecedor SET nome_fornecedor = :nome_fornecedor, cnpj = :cnpj, telefone = :telefone, email = :email WHERE id_fornecedor = :id";
+    $sql = "UPDATE fornecedor SET nome_fornecedor = :nome_fornecedor, cnpj = :cnpj, telefone = :telefone, email = :email WHERE cnpj = :id";
     $stmt = $pdo->prepare($sql);
     $stmt->bindParam(':id', $id);
     $stmt->bindParam(':nome_fornecedor', $nome);
@@ -89,9 +89,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action']) && $_POST['a
 
 // Processar exclusão de fornecedor
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action']) && $_POST['action'] == 'excluir') {
-    $id = $_POST['id_fornecedor'];
+    $id = $_POST['cnpj'];
 
-    $sql = "DELETE FROM fornecedor WHERE id_fornecedor = :id";
+    $sql = "DELETE FROM fornecedor WHERE cnpj = :id";
     $stmt = $pdo->prepare($sql);
     $stmt->bindParam(':id', $id);
 
@@ -103,7 +103,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action']) && $_POST['a
 }
 
 // Buscar fornecedores do banco de dados
-$sql = "SELECT id_fornecedor, nome_fornecedor, telefone, email FROM fornecedor";
+$sql = "SELECT cnpj, nome_fornecedor, telefone, email FROM fornecedor";
 $stmt = $pdo->prepare($sql);
 $stmt->execute();
 $fornecedores = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -220,11 +220,11 @@ $fornecedores = $stmt->fetchAll(PDO::FETCH_ASSOC);
               <td><?php echo htmlspecialchars($fornecedor['telefone']); ?></td>
               <td><?php echo htmlspecialchars($fornecedor['email']); ?></td>
               <td class="action-buttons">
-                <button onclick="openEditModal(<?php echo $fornecedor['id_fornecedor']; ?>, '<?php echo htmlspecialchars($fornecedor['nome_fornecedor']); ?>', '<?php echo htmlspecialchars($fornecedor['telefone']); ?>', '<?php echo htmlspecialchars($fornecedor['email']); ?>')">Editar</button>
+                <button onclick="openEditModal(<?php echo $fornecedor['cnpj']; ?>, '<?php echo htmlspecialchars($fornecedor['nome_fornecedor']); ?>', '<?php echo htmlspecialchars($fornecedor['telefone']); ?>', '<?php echo htmlspecialchars($fornecedor['email']); ?>')">Editar</button>
                 <br><br>
                 <form action="fornecedor.php" method="POST" style="display:inline;">
                   <input type="hidden" name="action" value="excluir">
-                  <input type="hidden" name="id_fornecedor" value="<?php echo $fornecedor['id_fornecedor']; ?>">
+                  <input type="hidden" name="cnpj" value="<?php echo $fornecedor['cnpj']; ?>">
                   <button type="submit" onclick="return confirm('Tem certeza que deseja excluir este fornecedor?')">Excluir</button>
                 </form>
               </td>
@@ -246,7 +246,7 @@ $fornecedores = $stmt->fetchAll(PDO::FETCH_ASSOC);
       <h2>Editar Fornecedor</h2>
       <form action="fornecedor.php" method="POST">
         <input type="hidden" name="action" value="editar">
-        <input type="hidden" name="id_fornecedor" id="edit_id_fornecedor">
+        <input type="hidden" name="cnpj" id="edit_cnpj">
         <label for="edit_nome_fornecedor">Nome completo:</label>
         <input type="text" id="edit_nome_fornecedor" name="nome_fornecedor" required />
         <label for="edit_cnpj">CNPJ:</label>
@@ -276,7 +276,7 @@ $fornecedores = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // Funções para o modal
     function openEditModal(id, nome, telefone, email) {
-      document.getElementById('edit_id_fornecedor').value = id;
+      document.getElementById('edit_cnpj').value = id;
       document.getElementById('edit_nome_fornecedor').value = nome;
       document.getElementById('edit_cnpj').value = cnpj;
       document.getElementById('edit_telefone').value = telefone;
