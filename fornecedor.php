@@ -66,13 +66,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action']) && $_POST['a
 
 // Processar edição de fornecedor
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action']) && $_POST['action'] == 'editar') {
-    $id = $_POST['cnpj'];
+    $id = $_POST['cnpj_original']; // CNPJ antigo
     $nome = $_POST['nome_fornecedor'];
-    $cnpj = $_POST['cnpj'];
+    $cnpj = $_POST['cnpj']; // novo valor
     $telefone = $_POST['telefone'];
     $email = $_POST['email'];
 
-    $sql = "UPDATE fornecedor SET nome_fornecedor = :nome_fornecedor, cnpj = :cnpj, telefone = :telefone, email = :email WHERE cnpj = :id";
+    $sql = "UPDATE fornecedor 
+            SET nome_fornecedor = :nome_fornecedor, cnpj = :cnpj, telefone = :telefone, email = :email 
+            WHERE cnpj = :id";
     $stmt = $pdo->prepare($sql);
     $stmt->bindParam(':id', $id);
     $stmt->bindParam(':nome_fornecedor', $nome);
@@ -120,7 +122,6 @@ $fornecedores = $stmt->fetchAll(PDO::FETCH_ASSOC);
   <link rel="stylesheet" href="css/form.css" />
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
-    /* Estilo para o modal */
     .modal {
       display: none;
       position: fixed;
@@ -220,7 +221,7 @@ $fornecedores = $stmt->fetchAll(PDO::FETCH_ASSOC);
               <td><?php echo htmlspecialchars($fornecedor['telefone']); ?></td>
               <td><?php echo htmlspecialchars($fornecedor['email']); ?></td>
               <td class="action-buttons">
-                <button onclick="openEditModal(<?php echo $fornecedor['cnpj']; ?>, '<?php echo htmlspecialchars($fornecedor['nome_fornecedor']); ?>', '<?php echo htmlspecialchars($fornecedor['telefone']); ?>', '<?php echo htmlspecialchars($fornecedor['email']); ?>')">Editar</button>
+                <button onclick="openEditModal('<?php echo $fornecedor['cnpj']; ?>', '<?php echo htmlspecialchars($fornecedor['nome_fornecedor']); ?>', '<?php echo htmlspecialchars($fornecedor['telefone']); ?>', '<?php echo htmlspecialchars($fornecedor['email']); ?>')">Editar</button>
                 <br><br>
                 <form action="fornecedor.php" method="POST" style="display:inline;">
                   <input type="hidden" name="action" value="excluir">
@@ -232,7 +233,7 @@ $fornecedores = $stmt->fetchAll(PDO::FETCH_ASSOC);
           <?php endforeach; ?>
         <?php else: ?>
           <tr>
-            <td colspan="4">Nenhum fornecedor cadastrado.</td>
+            <td colspan="5">Nenhum fornecedor cadastrado.</td>
           </tr>
         <?php endif; ?>
       </tbody>
@@ -246,15 +247,21 @@ $fornecedores = $stmt->fetchAll(PDO::FETCH_ASSOC);
       <h2>Editar Fornecedor</h2>
       <form action="fornecedor.php" method="POST">
         <input type="hidden" name="action" value="editar">
-        <input type="hidden" name="cnpj" id="edit_cnpj">
+        <!-- Guarda o CNPJ original -->
+        <input type="hidden" name="cnpj_original" id="edit_cnpj_original">
+
         <label for="edit_nome_fornecedor">Nome completo:</label>
         <input type="text" id="edit_nome_fornecedor" name="nome_fornecedor" required />
+
         <label for="edit_cnpj">CNPJ:</label>
         <input type="text" id="edit_cnpj" name="cnpj" required />
+
         <label for="edit_telefone">Telefone:</label>
         <input type="tel" id="edit_telefone" name="telefone" required />
+
         <label for="edit_email">E-mail:</label>
         <input type="email" id="edit_email" name="email" required />
+
         <div class="form-buttons">
           <button type="submit">Salvar</button>
           <button type="button" onclick="closeEditModal()">Cancelar</button>
@@ -275,8 +282,8 @@ $fornecedores = $stmt->fetchAll(PDO::FETCH_ASSOC);
     });
 
     // Funções para o modal
-    function openEditModal(id, nome, telefone, email) {
-      document.getElementById('edit_cnpj').value = id;
+    function openEditModal(cnpj, nome, telefone, email) {
+      document.getElementById('edit_cnpj_original').value = cnpj;
       document.getElementById('edit_nome_fornecedor').value = nome;
       document.getElementById('edit_cnpj').value = cnpj;
       document.getElementById('edit_telefone').value = telefone;
@@ -288,7 +295,7 @@ $fornecedores = $stmt->fetchAll(PDO::FETCH_ASSOC);
       document.getElementById('editModal').style.display = 'none';
     }
 
-    // Fechar o modal ao clicar fora dele
+    // Fechar modal ao clicar fora
     window.onclick = function(event) {
       const modal = document.getElementById('editModal');
       if (event.target == modal) {
@@ -297,7 +304,7 @@ $fornecedores = $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
   </script>
 
-  <!-- Máscaras de entrada -->
+  <!-- Máscaras -->
   <script src="https://cdn.jsdelivr.net/npm/inputmask/dist/inputmask.min.js"></script>
   <script>
     Inputmask({ mask: "99.999.999/9999-99" }).mask("#cnpj");
@@ -306,14 +313,12 @@ $fornecedores = $stmt->fetchAll(PDO::FETCH_ASSOC);
     Inputmask({ mask: "(99) 99999-9999" }).mask("#edit_telefone");  
   </script>
 
-  <!-- Script do botão cancelar -->
+  <!-- Botão cancelar -->
   <script>
     document.getElementById("cancelar").addEventListener("click", () => {
       const form = document.querySelector("form");
-      form.reset(); // limpa todos os campos
+      form.reset();
     });
   </script>
-
-  <!-- Remover script de CPF (não usado no formulário de fornecedor) -->
 </body>
 </html>
