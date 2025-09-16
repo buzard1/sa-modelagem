@@ -93,16 +93,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action']) && $_POST['a
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action']) && $_POST['action'] == 'excluir') {
     $id = $_POST['cnpj'];
 
-    $sql = "DELETE FROM fornecedor WHERE cnpj = :id";
-    $stmt = $pdo->prepare($sql);
-    $stmt->bindParam(':id', $id);
+    try {
+        $sql = "DELETE FROM fornecedor WHERE cnpj = :id";
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindParam(':id', $id);
 
-    if ($stmt->execute()) {
-        echo "<script>alert('Fornecedor excluído com sucesso!');</script>";
-    } else {
-        echo "<script>alert('Erro ao excluir o Fornecedor!');</script>";
+        if ($stmt->execute()) {
+            echo "<script>alert('Fornecedor excluído com sucesso!');</script>";
+        } else {
+            echo "<script>alert('Erro ao excluir o Fornecedor!');</script>";
+        }
+    } catch (PDOException $e) {
+        // Código 23000 = erro de integridade referencial (chave estrangeira)
+        if ($e->getCode() == "23000") {
+            echo "<script>alert('Não é possível excluir: o fornecedor está associado a um ou mais produtos.');</script>";
+        } else {
+            echo "<script>alert('Erro inesperado ao excluir o fornecedor: " . $e->getMessage() . "');</script>";
+        }
     }
 }
+
 
 // Buscar fornecedores do banco de dados
 $sql = "SELECT cnpj, nome_fornecedor, telefone, email FROM fornecedor";

@@ -64,7 +64,7 @@ if (isset($_GET['excluir'])) {
         if ($pdo->inTransaction()) {
             $pdo->rollBack();
         }
-        $mensagem = "Erro ao excluir produto: " . $e->getMessage();
+        $mensagem = "Erro ao excluir produto: está associado a uma ordem de serviço";
     }
 }
 
