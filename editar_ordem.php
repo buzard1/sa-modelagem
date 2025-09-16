@@ -53,7 +53,7 @@ try {
 // Processar formulário de edição quando enviado via POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Obter dados do formulário
-    $aparelho = $_POST['Aparelho'] ?? '';
+    $aparelho = $_POST['aparelho'] ?? '';
     $servico = $_POST['servico'] ?? '';
     $data_entrada = $_POST['data_entrada'] ?? '';
     $data_saida = $_POST['data_saida'] ?? '';
@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Preparar e executar query de atualização
         $stmt = $pdo->prepare("
             UPDATE ordem_serv SET
-                Aparelho = :aparelho,
+                aparelho = :aparelho,
                 servico = :servico,
                 data_entrada = :data_entrada,
                 data_saida = :data_saida,
@@ -160,7 +160,7 @@ function fecharModal() {
     <!-- Formulário principal de edição da ordem -->
     <form method="post">
         <label>Aparelho:</label>
-        <input type="text" name="Aparelho" value="<?php echo htmlspecialchars($ordem['Aparelho']); ?>" required>
+        <input type="text" name="aparelho" value="<?php echo htmlspecialchars($ordem['aparelho']); ?>" required>
 
         <label>Serviço:</label>
         <input type="text" name="servico" value="<?php echo htmlspecialchars($ordem['servico']); ?>" required>

@@ -253,7 +253,7 @@ try {
               <td><?php echo htmlspecialchars($o['telefone_cliente'] ?? '-'); ?></td>
               <td><?php echo htmlspecialchars($o['email_cliente'] ?? '-'); ?></td>
               <td><?php echo htmlspecialchars($o['endereco_cliente'] ?? '-'); ?></td>
-              <td><?php echo htmlspecialchars($o['Aparelho'] ?? '-'); ?></td>
+              <td><?php echo htmlspecialchars($o['aparelho'] ?? '-'); ?></td>
               <td><?php echo htmlspecialchars($o['servico'] ?? '-'); ?></td>
               <td><?php echo !empty($o['data_entrada']) ? date('d/m/Y', strtotime($o['data_entrada'])) : '-'; ?></td>
               <td><?php echo !empty($o['data_saida']) ? date('d/m/Y', strtotime($o['data_saida'])) : '-'; ?></td>
