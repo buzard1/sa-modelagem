@@ -15,7 +15,7 @@ driver = webdriver.Chrome(options=options)
 wait = WebDriverWait(driver, 10)
 
 # ====== LOGIN ======
-driver.get("http://localhost:8080/sa-modelagem/login.php")
+driver.get("http://localhost:8080/sa-modelagem/index.php")
 print("🌐 Acessando página de login...")
 time.sleep(3)
 
