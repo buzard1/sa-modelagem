@@ -74,6 +74,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
+<link rel="icon" href="img/logo.png" type="image/png">
+<link rel="icon" href="img/logo.png" type="image/png">
   <meta charset="UTF-8">
   <title>Cadastro de Cliente</title>
   <link rel="stylesheet" href="css/sidebar.css">

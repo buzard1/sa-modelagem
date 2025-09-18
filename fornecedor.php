@@ -131,6 +131,7 @@ $fornecedores = $stmt->fetchAll(PDO::FETCH_ASSOC);
   <link rel="stylesheet" href="css/sidebar.css" />
   <link rel="stylesheet" href="css/form.css" />
   <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="icon" href="img/logo.png" type="image/png">
   <style>
     .modal {
       display: none;
