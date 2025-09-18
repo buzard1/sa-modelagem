@@ -20,7 +20,7 @@ fake = Faker("pt_BR")
 # ====== LOGIN ======
 driver.get("http://localhost:8080/sa-modelagem/index.php")
 print("🌐 Acessando página de login...")
-time.sleep(3)  # pausa para você ver a tela de login
+time.sleep(3)
 
 # Email
 campo_email = wait.until(EC.presence_of_element_located((By.ID, "email")))
@@ -37,7 +37,7 @@ time.sleep(2)
 print("👉 Clicando no botão de login...")
 driver.find_element(By.CSS_SELECTOR, "button[type='submit']").click()
 print("✅ Login realizado com sucesso!")
-time.sleep(3)  # pausa para visualizar redirecionamento
+time.sleep(3)
 
 # ====== IR PARA FORNECEDORES ======
 print("👉 Indo para a tela de fornecedores...")
@@ -46,7 +46,7 @@ link_fornecedores = wait.until(
 )
 link_fornecedores.click()
 print("✅ Página de fornecedores aberta!")
-time.sleep(3)  # pausa para visualizar a tela
+time.sleep(3)
 
 # ====== ESPERAR FORMULÁRIO CARREGAR ======
 wait.until(EC.presence_of_element_located((By.ID, "nome_fornecedor")))
@@ -56,20 +56,30 @@ print("📋 Formulário de cadastro carregado.")
 nome_fornecedor = fake.company()
 telefone = fake.msisdn()[0:11]
 email = fake.company_email()
+cnpj = fake.cnpj()  # Novo campo CNPJ
 
+# Nome
 campo_nome = driver.find_element(By.ID, "nome_fornecedor")
 campo_nome.send_keys(nome_fornecedor)
 print(f"[CADASTRO] Nome do fornecedor digitado: {nome_fornecedor}")
 time.sleep(2)
 
+# Telefone
 campo_tel = driver.find_element(By.ID, "telefone")
 campo_tel.send_keys(telefone)
 print(f"[CADASTRO] Telefone digitado: {telefone}")
 time.sleep(2)
 
+# Email
 campo_email = driver.find_element(By.ID, "email")
 campo_email.send_keys(email)
 print(f"[CADASTRO] Email digitado: {email}")
+time.sleep(2)
+
+# CNPJ
+campo_cnpj = driver.find_element(By.ID, "cnpj")
+campo_cnpj.send_keys(cnpj)
+print(f"[CADASTRO] CNPJ digitado: {cnpj}")
 time.sleep(2)
 
 # ====== ENVIAR FORMULÁRIO ======
@@ -77,5 +87,5 @@ print("👉 Clicando no botão CADASTRAR fornecedor...")
 driver.find_element(By.CSS_SELECTOR, "form button[type='submit']").click()
 print("✅ Fornecedor cadastrado com sucesso!")
 
-time.sleep(5)  # espera para visualizar resultado
+time.sleep(5)
 driver.quit()

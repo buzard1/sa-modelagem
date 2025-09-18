@@ -54,13 +54,10 @@ produtos = [
     "Display OLED iPhone 12"
 ]
 
-fornecedores_ids = list(range(1, 61))  # IDs de 1 a 60 conforme banco de dados
-
 # Selecionar dados aleatórios
 nome_produto = random.choice(produtos)
 quantidade = random.randint(1, 100)
 valor = round(random.uniform(10, 500), 2)
-fornecedor_id = random.choice(fornecedores_ids)
 
 # Nome do produto
 campo_produto = wait.until(EC.visibility_of_element_located((By.ID, "produto")))
@@ -80,10 +77,15 @@ campo_valor.send_keys(str(valor))
 print(f"[ESTOQUE] Valor digitado: R$ {valor}")
 time.sleep(2)
 
-# Fornecedor
+# Fornecedor (select pelo CNPJ existente no <select>)
 select_fornecedor = Select(driver.find_element(By.ID, "fornecedor"))
-select_fornecedor.select_by_value(str(fornecedor_id))
-print(f"[ESTOQUE] Fornecedor selecionado: ID {fornecedor_id}")
+opcoes = select_fornecedor.options
+
+# Escolher uma opção aleatória (ignorar a primeira se for "Selecione...")
+opcao_escolhida = random.choice(opcoes[1:]) if len(opcoes) > 1 else opcoes[0]
+select_fornecedor.select_by_value(opcao_escolhida.get_attribute("value"))
+
+print(f"[ESTOQUE] Fornecedor selecionado: {opcao_escolhida.text} (CNPJ: {opcao_escolhida.get_attribute('value')})")
 time.sleep(2)
 
 # ====== SALVAR ======
